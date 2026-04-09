@@ -53,10 +53,44 @@ export async function PATCH(
     }
 
     const updates = await req.json();
-    const doc = await db.document.updateMany({
+
+    // Fetch current doc to detect clientId change
+    const existing = await db.document.findFirst({
       where: { id, userId: session.user.id },
-      data: updates,
     });
+    if (!existing) {
+      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+    }
+
+    const doc = await db.document.update({
+      where: { id },
+      data: updates,
+      include: { client: { select: { id: true, name: true } } },
+    });
+
+    // Send notification if a new client is being tagged
+    const newClientId = updates.clientId;
+    if (newClientId && newClientId !== existing.clientId) {
+      try {
+        const client = await db.client.findUnique({
+          where: { id: newClientId },
+          include: { portalUser: { select: { email: true, name: true } } },
+        });
+        if (client?.email) {
+          const cpa = await db.user.findUnique({
+            where: { id: session.user.id },
+            select: { name: true },
+          });
+          const cpaName = cpa?.name || "Your accountant";
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const toEmail = client.portalUser?.email ?? client.email;
+          const toName = client.portalUser?.name ?? client.name;
+          await sendDocumentTaggedEmail(toEmail, toName, cpaName, existing.originalName, `${appUrl}/portal`);
+        }
+      } catch (err) {
+        console.error("Failed to send document tag notification:", err);
+      }
+    }
 
     return NextResponse.json(doc);
   } catch (error) {
