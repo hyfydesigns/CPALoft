@@ -32,6 +32,7 @@ import {
   ImageIcon,
   FileSpreadsheet,
   FileArchive,
+  User,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
 
