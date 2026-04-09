@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     const safeName = client.name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
     const filename = `cpaloft-client-${safeName}-${Date.now()}.zip`;
 
-    return new NextResponse(zipBuffer, {
+    return new NextResponse(zipBuffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/zip",
         "Content-Disposition": `attachment; filename="${filename}"`,
