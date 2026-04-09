@@ -3,8 +3,14 @@ import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import Stripe from "stripe";
 
-// Stripe requires the raw body for webhook signature verification
 export const runtime = "nodejs";
+
+function periodEnd(subscription: Stripe.Subscription): Date | null {
+  // In Stripe v22 (dahlia), current_period_end moved to SubscriptionItem
+  const item = subscription.items?.data?.[0];
+  if (!item) return null;
+  return new Date((item as unknown as { current_period_end: number }).current_period_end * 1000);
+}
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -33,7 +39,6 @@ export async function POST(req: Request) {
         );
         const userId = checkoutSession.metadata?.userId;
         const plan = checkoutSession.metadata?.plan || "pro";
-
         if (!userId) break;
 
         await db.user.update({
@@ -42,7 +47,7 @@ export async function POST(req: Request) {
             plan,
             stripeSubscriptionId: subscription.id,
             stripePriceId: subscription.items.data[0].price.id,
-            stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            stripeCurrentPeriodEnd: periodEnd(subscription),
           },
         });
         break;
@@ -50,7 +55,11 @@ export async function POST(req: Request) {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = invoice.subscription as string;
+        // In dahlia API, subscription lives on invoice.parent.subscription_details.subscription
+        const subscriptionRef = invoice.parent?.subscription_details?.subscription;
+        const subscriptionId = typeof subscriptionRef === "string"
+          ? subscriptionRef
+          : subscriptionRef?.id;
         if (!subscriptionId) break;
 
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -61,7 +70,7 @@ export async function POST(req: Request) {
           data: {
             plan,
             stripePriceId: subscription.items.data[0].price.id,
-            stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            stripeCurrentPeriodEnd: periodEnd(subscription),
           },
         });
         break;
@@ -71,8 +80,6 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription;
         const plan = subscription.metadata?.plan || "pro";
         const status = subscription.status;
-
-        // If canceled/past_due/unpaid → downgrade to free
         const activePlan = ["active", "trialing"].includes(status) ? plan : "free";
 
         await db.user.updateMany({
@@ -80,7 +87,7 @@ export async function POST(req: Request) {
           data: {
             plan: activePlan,
             stripePriceId: subscription.items.data[0].price.id,
-            stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            stripeCurrentPeriodEnd: periodEnd(subscription),
           },
         });
         break;
