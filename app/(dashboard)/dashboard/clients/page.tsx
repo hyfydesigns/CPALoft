@@ -267,6 +267,23 @@ export default function ClientsPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  async function resendInvite(client: Client) {
+    setResendingId(client.id);
+    try {
+      const res = await fetch("/api/clients/resend-invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: client.id }),
+      });
+      if (res.ok) {
+        setResendSuccess(client.id);
+        setTimeout(() => setResendSuccess(null), 3000);
+      }
+    } finally {
+      setResendingId(null);
+    }
+  }
+
   async function deleteClient(id: string) {
     if (!confirm("Delete this client and all their documents?")) return;
     await fetch(`/api/clients/${id}`, { method: "DELETE" });
