@@ -473,8 +473,20 @@ export default function DocumentsPage() {
                         setPreviewDoc(doc);
                       }}
                       className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                      title="Preview"
                     >
                       <Eye className="w-4 h-4 text-gray-700" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTaggingDoc(doc);
+                        setTagClientId(doc.client?.id ?? "none");
+                      }}
+                      className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-forest-50 transition-colors"
+                      title="Tag to client"
+                    >
+                      <Tag className="w-4 h-4 text-forest-600" />
                     </button>
                     <button
                       onClick={(e) => {
@@ -482,6 +494,7 @@ export default function DocumentsPage() {
                         deleteDocument(doc.id);
                       }}
                       className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors"
+                      title="Delete"
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </button>
