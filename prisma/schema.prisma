@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("cpa") // cpa, client, admin
+  plan          String    @default("free") // free, pro, premium
+  firm          String?
+  phone         String?
+  licenseNumber String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  documents      Document[]
+  clients        Client[]
+  chats          Chat[]
+  aiUsage        AiUsage[]
+  // For client portal users — which Client record they map to
+  clientProfile  Client?   @relation("ClientPortalUser")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Client {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?
+  phone         String?
+  company       String?
+  taxId         String?
+  status        String    @default("active") // active, inactive, pending
+  notes         String?
+  userId        String   // the CPA who owns this client
+  // Portal fields
+  portalEnabled Boolean   @default(false)
+  portalUserId  String?   @unique // linked User account for portal login
+  inviteToken   String?   @unique
+  inviteExpiry  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portalUser  User?      @relation("ClientPortalUser", fields: [portalUserId], references: [id], onDelete: SetNull)
+  documents   Document[]
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  name         String
+  originalName String
+  type         String   // pdf, xlsx, csv, image, etc.
+  size         Int
+  url          String
+  category     String   @default("general") // tax, financial, audit, payroll, etc.
+  tags         String?  // JSON array stored as string
+  status       String   @default("active") // active, archived
+  uploadedBy   String   @default("cpa")    // cpa, client
+  userId       String
+  clientId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+}
+
+model Chat {
+  id        String    @id @default(cuid())
+  title     String    @default("New Chat")
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  role      String   // user, assistant
+  content   String
+  chatId    String
+  createdAt DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model AiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  tokens    Int
+  type      String   // chat, document_analysis
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

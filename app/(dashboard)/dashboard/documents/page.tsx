@@ -1,0 +1,435 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  FileText,
+  Upload,
+  Search,
+  Trash2,
+  Eye,
+  X,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  ImageIcon,
+  FileSpreadsheet,
+  FileArchive,
+} from "lucide-react";
+import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
+
+interface Document {
+  id: string;
+  name: string;
+  originalName: string;
+  type: string;
+  size: number;
+  url: string;
+  category: string;
+  createdAt: string;
+  client?: { id: string; name: string } | null;
+}
+
+const CATEGORIES = [
+  { value: "all", label: "All Categories" },
+  { value: "tax", label: "Tax Returns" },
+  { value: "financial", label: "Financial Statements" },
+  { value: "audit", label: "Audit Reports" },
+  { value: "payroll", label: "Payroll" },
+  { value: "general", label: "General" },
+];
+
+function getFileIcon(type: string, size = 5) {
+  const cls = `w-${size} h-${size}`;
+  if (type === "pdf") return <FileText className={cn(cls, "text-red-600")} />;
+  if (type === "image") return <ImageIcon className={cn(cls, "text-purple-600")} />;
+  if (type === "spreadsheet") return <FileSpreadsheet className={cn(cls, "text-green-600")} />;
+  return <FileArchive className={cn(cls, "text-forest-600")} />;
+}
+
+function PDFPreviewModal({
+  doc,
+  onClose,
+}: {
+  doc: Document;
+  onClose: () => void;
+}) {
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b flex-row items-center justify-between space-y-0">
+          <div className="flex items-center gap-3">
+            {getFileIcon(doc.type, 5)}
+            <div>
+              <DialogTitle className="text-base">{doc.originalName}</DialogTitle>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {formatBytes(doc.size)} · {formatRelativeDate(doc.createdAt)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href={doc.url}
+              download={doc.originalName}
+              className="text-sm text-forest-600 hover:underline flex items-center gap-1"
+            >
+              Download
+            </a>
+          </div>
+        </DialogHeader>
+        <div className="flex-1 overflow-hidden bg-gray-100">
+          {doc.type === "pdf" ? (
+            <iframe
+              src={`${doc.url}#toolbar=1&navpanes=1`}
+              className="w-full h-full"
+              title={doc.originalName}
+            />
+          ) : doc.type === "image" ? (
+            <div className="flex items-center justify-center h-full p-8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={doc.url}
+                alt={doc.originalName}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+              {getFileIcon(doc.type, 16)}
+              <p className="text-gray-600">
+                Preview not available for this file type
+              </p>
+              <a href={doc.url} download={doc.originalName}>
+                <Button>Download File</Button>
+              </a>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default function DocumentsPage() {
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string[]>([]);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [category]);
+
+  async function loadDocuments() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (category !== "all") params.set("category", category);
+      const res = await fetch(`/api/documents?${params}`);
+      const data = await res.json();
+      setDocuments(Array.isArray(data) ? data : []);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+    setUploading(true);
+    setUploadError("");
+    setUploadSuccess(false);
+    setUploadProgress([]);
+
+    const newDocs: Document[] = [];
+
+    for (const file of acceptedFiles) {
+      setUploadProgress((prev) => [...prev, `Uploading ${file.name}...`]);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("category", category !== "all" ? category : "general");
+
+        const res = await fetch("/api/documents", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          setUploadError(err.error || `Failed to upload ${file.name}`);
+        } else {
+          const doc = await res.json();
+          newDocs.push(doc);
+          setUploadProgress((prev) =>
+            prev.map((p) =>
+              p.includes(file.name) ? `✓ ${file.name} uploaded` : p
+            )
+          );
+        }
+      } catch {
+        setUploadError(`Upload failed for ${file.name}`);
+      }
+    }
+
+    setDocuments((prev) => [...newDocs, ...prev]);
+    setUploading(false);
+    if (newDocs.length > 0) {
+      setUploadSuccess(true);
+      setTimeout(() => {
+        setUploadSuccess(false);
+        setUploadProgress([]);
+      }, 3000);
+    }
+  }, [category]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "application/pdf": [".pdf"],
+      "image/*": [".jpg", ".jpeg", ".png", ".gif"],
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+      "text/csv": [".csv"],
+      "application/msword": [".doc"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+    },
+    maxSize: 10 * 1024 * 1024,
+    multiple: true,
+  });
+
+  async function deleteDocument(id: string) {
+    if (!confirm("Delete this document?")) return;
+    await fetch(`/api/documents/${id}`, { method: "DELETE" });
+    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  }
+
+  const filtered = documents.filter(
+    (d) =>
+      !search ||
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      d.originalName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Upload and manage your client documents
+          </p>
+        </div>
+        <Badge variant="outline" className="text-sm">
+          {documents.length} files
+        </Badge>
+      </div>
+
+      {/* Upload Zone */}
+      <Card className="mb-6">
+        <CardContent className="p-0">
+          <div
+            {...getRootProps()}
+            className={cn(
+              "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors",
+              isDragActive
+                ? "border-forest-600 bg-forest-50"
+                : "border-gray-200 hover:border-forest-300 hover:bg-gray-50"
+            )}
+          >
+            <input {...getInputProps()} />
+            {uploading ? (
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-10 h-10 text-forest-600 animate-spin" />
+                <div className="space-y-1">
+                  {uploadProgress.map((p, i) => (
+                    <p key={i} className="text-sm text-gray-600">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            ) : uploadSuccess ? (
+              <div className="flex flex-col items-center gap-2">
+                <CheckCircle2 className="w-10 h-10 text-green-500" />
+                <p className="text-sm font-medium text-green-600">
+                  Files uploaded successfully!
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="w-14 h-14 bg-forest-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Upload className="w-7 h-7 text-forest-600" />
+                </div>
+                <p className="text-gray-800 font-medium mb-1">
+                  {isDragActive
+                    ? "Drop files here..."
+                    : "Drag & drop files here"}
+                </p>
+                <p className="text-sm text-gray-400 mb-4">
+                  or click to browse — PDF, Excel, Word, Images (max 10MB each)
+                </p>
+                <Button variant="outline" className="text-sm">
+                  Browse Files
+                </Button>
+              </>
+            )}
+          </div>
+          {uploadError && (
+            <div className="flex items-center gap-2 text-red-600 text-sm p-4 border-t border-red-50 bg-red-50/50">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              {uploadError}
+              <button onClick={() => setUploadError("")} className="ml-auto">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Filters */}
+      <div className="flex gap-3 mb-6">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Search documents..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Documents Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-40 shimmer rounded-xl" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-16 text-gray-400">
+          <FileText className="w-14 h-14 mx-auto mb-3 opacity-20" />
+          <p className="font-medium text-gray-500">No documents found</p>
+          <p className="text-sm mt-1">
+            {search ? "Try a different search term" : "Upload your first document above"}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filtered.map((doc) => (
+            <Card
+              key={doc.id}
+              className="group hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => setPreviewDoc(doc)}
+            >
+              <CardContent className="p-4">
+                {/* File type icon / preview */}
+                <div className="w-full h-28 bg-gray-50 rounded-lg flex items-center justify-center mb-3 overflow-hidden relative">
+                  {doc.type === "image" ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={doc.url}
+                      alt={doc.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : doc.type === "pdf" ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <FileText className="w-10 h-10 text-red-500" />
+                      <span className="text-xs font-bold text-red-500 uppercase tracking-wide">
+                        PDF
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1">
+                      {getFileIcon(doc.type, 10)}
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                        {doc.type}
+                      </span>
+                    </div>
+                  )}
+                  {/* Actions overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewDoc(doc);
+                      }}
+                      className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+                    >
+                      <Eye className="w-4 h-4 text-gray-700" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteDocument(doc.id);
+                      }}
+                      className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="truncate text-sm font-medium text-gray-800 mb-1">
+                  {doc.originalName}
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>{formatBytes(doc.size)}</span>
+                  <span>{formatRelativeDate(doc.createdAt)}</span>
+                </div>
+                {doc.client && (
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    {doc.client.name}
+                  </Badge>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* PDF/Image Preview Modal */}
+      {previewDoc && (
+        <PDFPreviewModal
+          doc={previewDoc}
+          onClose={() => setPreviewDoc(null)}
+        />
+      )}
+    </div>
+  );
+}

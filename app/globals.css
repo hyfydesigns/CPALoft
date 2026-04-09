@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* CPA Loft palette */
+    --background: 160 33% 98%;           /* #f7fbfa — Cloud */
+    --foreground: 161 51% 12%;           /* #0f2e24 — Midnight */
+
+    --card: 0 0% 100%;
+    --card-foreground: 161 51% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 161 51% 12%;
+
+    --primary: 163 61% 26%;              /* #1a6b54 — Forest */
+    --primary-foreground: 160 33% 98%;   /* #f7fbfa — Cloud */
+
+    --secondary: 162 39% 94%;            /* #e8f5f1 — Mist */
+    --secondary-foreground: 163 61% 26%;
+
+    --muted: 162 39% 94%;
+    --muted-foreground: 163 20% 45%;
+
+    --accent: 162 39% 94%;
+    --accent-foreground: 163 61% 26%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 160 33% 98%;
+
+    --border: 162 28% 86%;
+    --input: 162 28% 86%;
+    --ring: 163 61% 26%;
+    --radius: 0.5rem;
+
+    /* Sidebar — Midnight */
+    --sidebar-background: 161 51% 12%;   /* #0f2e24 */
+    --sidebar-foreground: 160 33% 98%;   /* Cloud */
+    --sidebar-primary: 161 66% 50%;      /* #2dd4a0 — Mint */
+    --sidebar-primary-foreground: 161 51% 12%;
+    --sidebar-accent: 161 45% 17%;
+    --sidebar-accent-foreground: 160 33% 98%;
+    --sidebar-border: 161 45% 17%;
+    --sidebar-ring: 161 66% 50%;
+  }
+
+  .dark {
+    --background: 161 51% 12%;
+    --foreground: 160 33% 98%;
+    --card: 161 51% 12%;
+    --card-foreground: 160 33% 98%;
+    --popover: 161 51% 12%;
+    --popover-foreground: 160 33% 98%;
+    --primary: 161 66% 50%;              /* Mint in dark mode */
+    --primary-foreground: 161 51% 12%;
+    --secondary: 161 45% 17%;
+    --secondary-foreground: 160 33% 98%;
+    --muted: 161 45% 17%;
+    --muted-foreground: 160 20% 65%;
+    --accent: 161 45% 17%;
+    --accent-foreground: 160 33% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 160 33% 98%;
+    --border: 161 45% 17%;
+    --input: 161 45% 17%;
+    --ring: 161 66% 50%;
+
+    --sidebar-background: 161 51% 8%;
+    --sidebar-foreground: 160 33% 98%;
+    --sidebar-primary: 161 66% 50%;
+    --sidebar-primary-foreground: 161 51% 12%;
+    --sidebar-accent: 161 45% 13%;
+    --sidebar-accent-foreground: 160 33% 98%;
+    --sidebar-border: 161 45% 13%;
+    --sidebar-ring: 161 66% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  /* Georgia serif for all headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Prose styles for AI chat */
+.prose-chat {
+  @apply text-sm leading-relaxed;
+}
+.prose-chat h1, .prose-chat h2, .prose-chat h3 {
+  @apply font-semibold mt-4 mb-2;
+  font-family: Georgia, serif;
+}
+.prose-chat h1 { @apply text-xl; }
+.prose-chat h2 { @apply text-lg; }
+.prose-chat h3 { @apply text-base; }
+.prose-chat p { @apply mb-3; }
+.prose-chat ul, .prose-chat ol { @apply mb-3 pl-4; }
+.prose-chat li { @apply mb-1; }
+.prose-chat ul li { @apply list-disc; }
+.prose-chat ol li { @apply list-decimal; }
+.prose-chat strong { @apply font-semibold; }
+.prose-chat code {
+  @apply bg-muted px-1 py-0.5 rounded text-xs font-mono;
+}
+.prose-chat pre {
+  @apply bg-muted p-3 rounded-lg overflow-x-auto mb-3;
+}
+.prose-chat pre code {
+  @apply bg-transparent p-0;
+}
+.prose-chat table {
+  @apply w-full border-collapse mb-3 text-xs;
+}
+.prose-chat th {
+  @apply border border-border bg-muted px-2 py-1.5 text-left font-semibold;
+}
+.prose-chat td {
+  @apply border border-border px-2 py-1.5;
+}
+.prose-chat blockquote {
+  @apply border-l-4 border-primary/50 pl-4 italic text-muted-foreground mb-3;
+}
+
+/* Loading shimmer */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--border)) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

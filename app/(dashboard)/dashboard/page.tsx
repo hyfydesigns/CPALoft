@@ -1,0 +1,368 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Brain,
+  FileText,
+  Users,
+  MessageSquare,
+  ArrowRight,
+  TrendingUp,
+  Upload,
+  Plus,
+  Clock,
+  Zap,
+} from "lucide-react";
+import { formatRelativeDate, formatBytes, PLANS } from "@/lib/utils";
+
+interface DashboardData {
+  stats: {
+    totalClients: number;
+    activeClients: number;
+    totalDocuments: number;
+    totalChats: number;
+    aiUsageThisMonth: number;
+  };
+  recentDocuments: Array<{
+    id: string;
+    name: string;
+    originalName: string;
+    type: string;
+    size: number;
+    createdAt: string;
+    client?: { name: string } | null;
+  }>;
+  recentActivity: Array<{
+    id: string;
+    title: string;
+    updatedAt: string;
+    messages: Array<{ content: string }>;
+  }>;
+}
+
+const quickActions = [
+  {
+    href: "/dashboard/ai-assistant",
+    icon: Brain,
+    label: "Ask AI",
+    description: "Get instant tax answers",
+    color: "bg-forest-600",
+  },
+  {
+    href: "/dashboard/documents",
+    icon: Upload,
+    label: "Upload Doc",
+    description: "Add new document",
+    color: "bg-purple-600",
+  },
+  {
+    href: "/dashboard/clients",
+    icon: Plus,
+    label: "Add Client",
+    description: "New client profile",
+    color: "bg-green-600",
+  },
+];
+
+export default function DashboardPage() {
+  const { data: session } = useSession();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/dashboard")
+      .then((r) => r.json())
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
+  const aiUsed = data?.stats?.aiUsageThisMonth || 0;
+  const aiLimit = plan.aiMessages === -1 ? 100 : plan.aiMessages;
+  const aiPercent = plan.aiMessages === -1 ? 10 : Math.min((aiUsed / aiLimit) * 100, 100);
+
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {greeting}, {session?.user?.name?.split(" ")[0] || "there"} 👋
+        </h1>
+        <p className="text-gray-500 mt-1">
+          Here&apos;s what&apos;s happening in your practice today.
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[
+          {
+            label: "Total Clients",
+            value: loading ? "—" : data?.stats?.totalClients,
+            sub: `${data?.stats?.activeClients || 0} active`,
+            icon: Users,
+            color: "text-forest-600",
+            bg: "bg-forest-50",
+            href: "/dashboard/clients",
+          },
+          {
+            label: "Documents",
+            value: loading ? "—" : data?.stats?.totalDocuments,
+            sub: "uploaded",
+            icon: FileText,
+            color: "text-purple-600",
+            bg: "bg-purple-50",
+            href: "/dashboard/documents",
+          },
+          {
+            label: "AI Chats",
+            value: loading ? "—" : data?.stats?.totalChats,
+            sub: "conversations",
+            icon: MessageSquare,
+            color: "text-green-600",
+            bg: "bg-green-50",
+            href: "/dashboard/ai-assistant",
+          },
+          {
+            label: "AI Usage",
+            value: loading ? "—" : `${aiUsed}`,
+            sub: plan.aiMessages === -1 ? "unlimited" : `of ${aiLimit} this month`,
+            icon: Brain,
+            color: "text-orange-600",
+            bg: "bg-orange-50",
+            href: "/dashboard/ai-assistant",
+          },
+        ].map((stat) => (
+          <Link key={stat.label} href={stat.href}>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center`}>
+                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                  </div>
+                  <TrendingUp className="w-4 h-4 text-green-500" />
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  {stat.value}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {stat.label} · {stat.sub}
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {quickActions.map((action) => (
+              <Link key={action.href} href={action.href}>
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className={`w-9 h-9 ${action.color} rounded-lg flex items-center justify-center`}>
+                    <action.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">
+                      {action.label}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {action.description}
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-gray-400" />
+                </div>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* AI Usage */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-center justify-between">
+              AI Usage This Month
+              <Badge
+                variant={session?.user?.plan === "premium" ? "default" : "info"}
+                className="text-xs"
+              >
+                {plan.name} Plan
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-600">Messages used</span>
+                  <span className="font-semibold">
+                    {aiUsed} / {plan.aiMessages === -1 ? "∞" : aiLimit}
+                  </span>
+                </div>
+                <Progress value={aiPercent} className="h-2" />
+                {plan.aiMessages !== -1 && aiPercent > 75 && (
+                  <p className="text-xs text-orange-600 mt-1.5 flex items-center gap-1">
+                    <Zap className="w-3 h-3" />
+                    {Math.round(100 - aiPercent)}% remaining — consider upgrading
+                  </p>
+                )}
+              </div>
+
+              {session?.user?.plan !== "premium" && (
+                <Link href="/dashboard/billing">
+                  <Button className="w-full bg-gradient-to-r from-forest-600 to-forest-700 hover:opacity-90 transition-opacity text-sm">
+                    <Zap className="w-4 h-4 mr-1.5" />
+                    Upgrade for More
+                  </Button>
+                </Link>
+              )}
+
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                <div className="bg-gray-50 rounded-lg p-2.5">
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {plan.clients === -1 ? "∞" : plan.clients}
+                  </div>
+                  <div>clients allowed</div>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-2.5">
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {plan.storage}
+                  </div>
+                  <div>storage</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent AI Chats */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-center justify-between">
+              Recent AI Chats
+              <Link href="/dashboard/ai-assistant">
+                <Button variant="ghost" size="sm" className="text-xs h-7">
+                  View all
+                </Button>
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-12 shimmer rounded-lg" />
+                ))}
+              </div>
+            ) : data?.recentActivity?.length === 0 ? (
+              <div className="text-center py-6 text-gray-400 text-sm">
+                <Brain className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                No chats yet. Ask the AI something!
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {data?.recentActivity?.slice(0, 4).map((chat) => (
+                  <Link
+                    key={chat.id}
+                    href={`/dashboard/ai-assistant?chat=${chat.id}`}
+                  >
+                    <div className="p-2.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                      <div className="text-sm font-medium text-gray-800 truncate">
+                        {chat.title}
+                      </div>
+                      <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-400">
+                        <Clock className="w-3 h-3" />
+                        {formatRelativeDate(chat.updatedAt)}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Documents */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold flex items-center justify-between">
+            Recent Documents
+            <Link href="/dashboard/documents">
+              <Button variant="ghost" size="sm" className="text-xs h-7">
+                View all
+                <ArrowRight className="w-3 h-3 ml-1" />
+              </Button>
+            </Link>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-14 shimmer rounded-lg" />
+              ))}
+            </div>
+          ) : data?.recentDocuments?.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-sm">
+              <FileText className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p>No documents yet.</p>
+              <Link href="/dashboard/documents">
+                <Button variant="outline" size="sm" className="mt-3">
+                  Upload your first document
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {data?.recentDocuments?.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 -mx-2 transition-colors"
+                >
+                  <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-800 truncate">
+                      {doc.originalName}
+                    </div>
+                    <div className="text-xs text-gray-400 flex items-center gap-2">
+                      <span>{formatBytes(doc.size)}</span>
+                      {doc.client && (
+                        <>
+                          <span>·</span>
+                          <span>{doc.client.name}</span>
+                        </>
+                      )}
+                      <span>·</span>
+                      <span>{formatRelativeDate(doc.createdAt)}</span>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs shrink-0">
+                    {doc.type.toUpperCase()}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
