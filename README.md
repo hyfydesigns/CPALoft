@@ -60,6 +60,13 @@ NEXT_PUBLIC_APP_NAME="CPA Loft"
 |---|---|
 | `NEXTAUTH_SECRET` | Run `openssl rand -base64 32` in your terminal |
 | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) → API Keys |
+| `SMTP_HOST` | Your SMTP server (e.g. `smtp.gmail.com`) |
+| `SMTP_USER` | Your SMTP username / email address |
+| `SMTP_PASS` | Your SMTP password or App Password |
+
+> **Gmail tip:** Enable 2FA on your Google account, then go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and create an App Password. Use that as `SMTP_PASS`.
+
+> **No SMTP?** If SMTP is not configured, the app still works — verification links are printed to the server console so you can test locally without sending real emails.
 
 ### 4. Set up the database
 
