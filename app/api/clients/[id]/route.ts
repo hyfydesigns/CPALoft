@@ -72,9 +72,19 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await db.client.deleteMany({
+    // Verify ownership before deleting
+    const client = await db.client.findFirst({
       where: { id, userId: session.user.id },
     });
+    if (!client) {
+      return NextResponse.json({ error: "Client not found" }, { status: 404 });
+    }
+
+    // Delete documents first (schema uses SetNull, not Cascade)
+    await db.document.deleteMany({ where: { clientId: id } });
+
+    // Now delete the client
+    await db.client.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
