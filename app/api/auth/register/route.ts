@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { db } from "@/lib/db";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +31,12 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 12);
-    const user = await db.user.create({
+
+    // Generate a secure 48-char hex verification token (24 bytes)
+    const verifyToken = crypto.randomBytes(24).toString("hex");
+    const verifyExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    await db.user.create({
       data: {
         name,
         email,
@@ -37,15 +44,21 @@ export async function POST(req: NextRequest) {
         firm: firm || null,
         plan: plan || "free",
         role: "cpa",
+        verifyToken,
+        verifyExpiry,
+        // emailVerified remains null until they click the link
       },
     });
 
-    return NextResponse.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      plan: user.plan,
-    });
+    // Build the verification URL
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const verifyUrl = `${appUrl}/api/auth/verify-email?token=${verifyToken}`;
+
+    // Send verification email (logs URL to console if SMTP not configured)
+    await sendVerificationEmail(email, name, verifyUrl);
+
+    return NextResponse.json({ requiresVerification: true });
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
