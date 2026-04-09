@@ -146,6 +146,10 @@ export default function DocumentsPage() {
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string[]>([]);
+  const [uploadClientId, setUploadClientId] = useState("none");
+  const [taggingDoc, setTaggingDoc] = useState<Document | null>(null);
+  const [tagClientId, setTagClientId] = useState("none");
+  const [tagging, setTagging] = useState(false);
 
   useEffect(() => {
     loadClients();
