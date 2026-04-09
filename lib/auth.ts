@@ -38,6 +38,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid password");
         }
 
+        // Block unverified CPA accounts (client portal users skip this check)
+        if (user.role === "cpa" && !user.emailVerified) {
+          throw new Error("Please verify your email address before logging in. Check your inbox for the verification link.");
+        }
+
         return {
           id: user.id,
           email: user.email,
