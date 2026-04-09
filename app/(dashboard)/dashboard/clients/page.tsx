@@ -305,10 +305,72 @@ export default function ClientsPage() {
     }
   }
 
-  async function deleteClient(id: string) {
-    if (!confirm("Delete this client and all their documents?")) return;
-    await fetch(`/api/clients/${id}`, { method: "DELETE" });
-    setClients((prev) => prev.filter((c) => c.id !== id));
+  async function exportAndDownload(client: Client) {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/clients/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: client.id }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `cpaloft-client-${client.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function confirmDelete(client: Client) {
+    setDeleting(true);
+    try {
+      await fetch(`/api/clients/${client.id}`, { method: "DELETE" });
+      setClients((prev) => prev.filter((c) => c.id !== client.id));
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleRestoreFileChange(file: File | null) {
+    setRestoreFile(file);
+    setRestorePreview(null);
+    setRestoreSuccess("");
+    if (!file) return;
+    setRestorePreviewing(true);
+    try {
+      const fd = new FormData();
+      fd.append("zip", file);
+      fd.append("preview", "1");
+      const res = await fetch("/api/clients/restore", { method: "POST", body: fd });
+      if (res.ok) setRestorePreview(await res.json());
+    } finally {
+      setRestorePreviewing(false);
+    }
+  }
+
+  async function confirmRestore() {
+    if (!restoreFile) return;
+    setRestoring(true);
+    try {
+      const fd = new FormData();
+      fd.append("zip", restoreFile);
+      const res = await fetch("/api/clients/restore", { method: "POST", body: fd });
+      const data = await res.json();
+      if (res.ok) {
+        setRestoreSuccess(`${data.clientName} restored with ${data.docsRestored} document(s).`);
+        setRestoreFile(null);
+        setRestorePreview(null);
+        loadClients();
+      }
+    } finally {
+      setRestoring(false);
+    }
   }
 
   const filtered = clients.filter(
