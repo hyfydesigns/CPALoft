@@ -160,6 +160,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Notify client if document is tagged to one
+    if (clientId) {
+      notifyClientOfDocument(clientId, session.user.id, file.name);
+    }
+
     return NextResponse.json(doc);
   } catch (error) {
     console.error("Upload error:", error);
