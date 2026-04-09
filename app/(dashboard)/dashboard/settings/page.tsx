@@ -22,6 +22,7 @@ import { getInitials } from "@/lib/utils";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
@@ -30,6 +31,43 @@ export default function SettingsPage() {
     phone: "",
     licenseNumber: "",
   });
+
+  // Danger zone
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [backupDownloaded, setBackupDownloaded] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function exportAccount() {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/account/export", { method: "POST" });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const cd = res.headers.get("Content-Disposition") || "";
+      const match = cd.match(/filename="([^"]+)"/);
+      a.download = match?.[1] || "cpaloft-account-backup.zip";
+      a.click();
+      URL.revokeObjectURL(url);
+      setBackupDownloaded(true);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function deleteAccount() {
+    setDeleting(true);
+    try {
+      await fetch("/api/account/delete", { method: "POST" });
+      await signOut({ redirect: false });
+      router.push("/login");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   function updateField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
