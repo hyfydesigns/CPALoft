@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import crypto from "crypto";
+import { sendClientInviteEmail } from "@/lib/email";
 
 // POST /api/portal/invite — CPA generates an invite link for a client
 export async function POST(req: NextRequest) {
