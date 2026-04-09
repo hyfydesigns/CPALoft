@@ -20,7 +20,11 @@ export async function GET(req: NextRequest) {
     const documents = await db.document.findMany({
       where: {
         userId: session.user.id,
-        ...(clientId && { clientId }),
+        ...(clientId === "none"
+          ? { clientId: null }
+          : clientId
+          ? { clientId }
+          : {}),
         ...(category && category !== "all" && { category }),
         ...(search && {
           OR: [
