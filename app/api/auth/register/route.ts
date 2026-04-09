@@ -55,14 +55,22 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const verifyUrl = `${appUrl}/api/auth/verify-email?token=${verifyToken}`;
 
-    // Send verification email (logs URL to console if SMTP not configured)
-    await sendVerificationEmail(email, name, verifyUrl);
+    // Send verification email — don't let email failure block registration
+    try {
+      await sendVerificationEmail(email, name, verifyUrl);
+    } catch (emailError) {
+      console.error("⚠️  Failed to send verification email:", emailError);
+      // Still succeed — user is created; log the link so dev can verify manually
+      console.log("🔗 Manual verify URL:", verifyUrl);
+    }
 
     return NextResponse.json({ requiresVerification: true });
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
-      { error: "Registration failed" },
+      { error: process.env.NODE_ENV === "development"
+          ? `Registration failed: ${error instanceof Error ? error.message : String(error)}`
+          : "Registration failed" },
       { status: 500 }
     );
   }
