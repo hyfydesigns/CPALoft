@@ -53,6 +53,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Client name is required" }, { status: 400 });
     }
 
+    // Generate invite token upfront if client has an email
+    const hasEmail = Boolean(email);
+    const inviteToken = hasEmail ? crypto.randomBytes(24).toString("hex") : null;
+    const inviteExpiry = hasEmail
+      ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      : null;
+
     const client = await db.client.create({
       data: {
         name,
@@ -61,10 +68,32 @@ export async function POST(req: NextRequest) {
         company: company || null,
         taxId: taxId || null,
         notes: notes || null,
-        status: status || "active",
+        status: status || "pending",
         userId: session.user.id,
+        ...(hasEmail && {
+          inviteToken,
+          inviteExpiry,
+          portalEnabled: true,
+        }),
       },
     });
+
+    // Send invite email if client has an email address
+    if (hasEmail && inviteToken) {
+      const cpaUser = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true },
+      });
+      const cpaName = cpaUser?.name || "Your accountant";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const inviteUrl = `${appUrl}/portal/register?token=${inviteToken}`;
+      try {
+        await sendClientInviteEmail(email, name, cpaName, inviteUrl);
+      } catch (emailError) {
+        console.error("Failed to send client invite email:", emailError);
+        console.log("🔗 Client invite URL (dev):", inviteUrl);
+      }
+    }
 
     return NextResponse.json(client);
   } catch (error) {
