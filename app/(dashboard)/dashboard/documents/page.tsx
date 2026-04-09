@@ -247,6 +247,29 @@ export default function DocumentsPage() {
     multiple: true,
   });
 
+  async function tagDocument() {
+    if (!taggingDoc) return;
+    setTagging(true);
+    try {
+      const res = await fetch(`/api/documents/${taggingDoc.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: tagClientId === "none" ? null : tagClientId,
+        }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setDocuments((prev) =>
+          prev.map((d) => (d.id === taggingDoc.id ? { ...d, client: updated.client } : d))
+        );
+        setTaggingDoc(null);
+      }
+    } finally {
+      setTagging(false);
+    }
+  }
+
   async function deleteDocument(id: string) {
     if (!confirm("Delete this document?")) return;
     await fetch(`/api/documents/${id}`, { method: "DELETE" });
