@@ -49,9 +49,15 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Email verification
+  // Email verification / password reset
   verifyToken    String?   @unique
   verifyExpiry   DateTime?
+
+  // Stripe billing
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  stripeCurrentPeriodEnd DateTime?
 
   accounts       Account[]
   sessions       Session[]
