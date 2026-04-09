@@ -524,6 +524,32 @@ export default function ClientsPage() {
                                 </>
                               )}
                             </DropdownMenuItem>
+                            {client.email && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  resendInvite(client);
+                                }}
+                                disabled={resendingId === client.id}
+                              >
+                                {resendingId === client.id ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Sending…
+                                  </>
+                                ) : resendSuccess === client.id ? (
+                                  <>
+                                    <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
+                                    Invite Sent!
+                                  </>
+                                ) : (
+                                  <>
+                                    <Send className="w-4 h-4 mr-2" />
+                                    Resend Invite Email
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem
                               className="text-red-600"
                               onClick={(e) => {
