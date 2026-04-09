@@ -239,9 +239,12 @@ export default function ClientsPage() {
     setEditClient(null);
   }
 
+  const [inviteEmailSent, setInviteEmailSent] = useState(false);
+
   async function generateInvite(client: Client) {
     setInviteClient(client);
     setInviteUrl("");
+    setInviteEmailSent(false);
     setInviteLoading(true);
     try {
       const res = await fetch("/api/portal/invite", {
@@ -252,6 +255,7 @@ export default function ClientsPage() {
       const data = await res.json();
       if (res.ok) {
         setInviteUrl(data.inviteUrl);
+        setInviteEmailSent(Boolean(data.emailSent));
         setClients((prev) =>
           prev.map((c) => c.id === client.id ? { ...c, portalEnabled: true } : c)
         );
