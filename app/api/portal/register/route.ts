@@ -116,16 +116,32 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Link the user to their client record and clear invite token
-    await db.client.update({
+    // Link the user to their client record, clear invite token, set status active
+    const updatedClient = await db.client.update({
       where: { id: client.id },
       data: {
         portalUserId: portalUser.id,
         inviteToken: null,
         inviteExpiry: null,
         portalEnabled: true,
+        status: "active",
+      },
+      include: {
+        user: { select: { name: true } },
       },
     });
+
+    // Send welcome email
+    if (portalUser.email) {
+      const cpaName = updatedClient.user?.name || "Your accountant";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const portalLoginUrl = `${appUrl}/portal/login`;
+      try {
+        await sendClientWelcomeEmail(portalUser.email, portalUser.name ?? name, cpaName, portalLoginUrl);
+      } catch (emailError) {
+        console.error("Failed to send welcome email:", emailError);
+      }
+    }
 
     return NextResponse.json({
       id: portalUser.id,
