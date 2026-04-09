@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { sendClientWelcomeEmail } from "@/lib/email";
 
 // GET /api/portal/register?token=xxx — validate the invite token
 export async function GET(req: NextRequest) {
