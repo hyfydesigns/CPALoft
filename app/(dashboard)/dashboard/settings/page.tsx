@@ -221,6 +221,99 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      {/* Danger Zone */}
+      <Card className="mb-6 border-red-100">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base text-red-600">
+            <AlertTriangle className="w-4 h-4" />
+            Danger Zone
+          </CardTitle>
+          <CardDescription>
+            Permanently delete your account and all associated data
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between py-3 border border-red-100 rounded-xl px-4 bg-red-50/40">
+            <div>
+              <p className="text-sm font-medium text-gray-800">Delete Account</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Removes your account, all clients, and all documents permanently
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => { setShowDeleteModal(true); setBackupDownloaded(false); }}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Account
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <Dialog open onOpenChange={() => !deleting && setShowDeleteModal(false)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-5 h-5" />
+                Delete Your Account
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <p className="text-sm text-gray-600">
+                This will permanently delete your account, all clients, and all documents.
+                <strong className="text-gray-900"> This cannot be undone.</strong>
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-amber-800 flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Download a backup first
+                </p>
+                <p className="text-xs text-amber-700">
+                  Save a ZIP of your entire workspace — all clients and documents. You can restore it later.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={exporting}
+                  className={backupDownloaded
+                    ? "mt-1 border-green-300 text-green-700 hover:bg-green-50"
+                    : "mt-1 border-amber-300 text-amber-800 hover:bg-amber-100"}
+                  onClick={exportAccount}
+                >
+                  {exporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : backupDownloaded ? (
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  {exporting ? "Preparing ZIP…" : backupDownloaded ? "Backup Downloaded ✓" : "Download Account Backup"}
+                </Button>
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={!backupDownloaded || deleting}
+                title={!backupDownloaded ? "Download the backup first" : undefined}
+                onClick={deleteAccount}
+              >
+                {deleting
+                  ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Deleting…</>
+                  : <><Trash2 className="w-4 h-4 mr-2" />Delete Permanently</>}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Notifications */}
       <Card>
         <CardHeader>
