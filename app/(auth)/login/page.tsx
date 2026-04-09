@@ -32,7 +32,11 @@ function LoginForm() {
         callbackUrl,
       });
       if (result?.error) {
-        setError("Invalid email or password");
+        if (result.error.includes("verify your email")) {
+          setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+        } else {
+          setError("Invalid email or password");
+        }
       } else {
         router.push(callbackUrl);
         router.refresh();
