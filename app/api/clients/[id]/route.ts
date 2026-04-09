@@ -83,8 +83,14 @@ export async function DELETE(
     // Delete documents first (schema uses SetNull, not Cascade)
     await db.document.deleteMany({ where: { clientId: id } });
 
-    // Now delete the client
+    // Delete the client record (captures portalUserId before it's gone)
+    const portalUserId = client.portalUserId;
     await db.client.delete({ where: { id } });
+
+    // Delete the portal user account so the email can be reused
+    if (portalUserId) {
+      await db.user.delete({ where: { id: portalUserId } });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
