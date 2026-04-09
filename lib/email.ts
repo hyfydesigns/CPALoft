@@ -552,6 +552,83 @@ export async function sendDocumentTaggedEmail(
   return { messageId: info.messageId };
 }
 
+export async function sendCpaWelcomeBackEmail(
+  toEmail: string,
+  toName: string,
+  loginUrl: string
+) {
+  const { host, port, user, pass, from } = getSmtpConfig();
+
+  if (!host || !user || !pass) {
+    console.warn("⚠️  SMTP not configured — skipping CPA welcome-back email.");
+    console.log("🔗 Login URL:", loginUrl);
+    return { previewUrl: loginUrl };
+  }
+
+  const transporter = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } });
+  const firstName = toName.split(" ")[0] || toName;
+
+  const html = `
+<!DOCTYPE html><html>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#f7fbfa;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fbfa;padding:40px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(26,107,84,0.08);">
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a6b54 0%,#0f2e24 100%);padding:36px 40px;text-align:center;">
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>
+              <td style="background:#1a6b54;border:2px solid rgba(45,212,160,0.3);border-radius:10px;width:40px;height:40px;text-align:center;vertical-align:middle;">
+                <span style="font-family:Georgia,serif;font-weight:700;color:#f7fbfa;font-size:22px;line-height:40px;">L</span>
+              </td>
+              <td style="padding-left:12px;vertical-align:middle;">
+                <span style="font-family:Georgia,serif;font-size:22px;color:#f7fbfa;font-weight:700;">CPA</span>
+                <span style="font-family:Georgia,serif;font-size:22px;color:#2dd4a0;font-weight:300;"> Loft</span>
+              </td>
+            </tr></table>
+            <p style="color:rgba(247,251,250,0.7);font-size:13px;margin:12px 0 0 0;">Your accounting, elevated.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px 40px 32px;">
+            <div style="display:inline-block;background:#ecfdf5;border:1px solid #6ee7b7;border-radius:20px;padding:4px 14px;margin-bottom:20px;">
+              <span style="color:#059669;font-size:12px;font-weight:600;">👋 Welcome Back</span>
+            </div>
+            <h1 style="color:#0f2e24;font-size:22px;font-weight:700;margin:0 0 8px;font-family:Georgia,serif;">Your workspace is restored, ${firstName}!</h1>
+            <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 8px;">Your CPA Loft account has been fully restored — including all your clients and documents.</p>
+            <p style="color:#4b5563;font-size:15px;line-height:1.6;margin:0 0 24px;">Sign in using your original credentials to pick up right where you left off.</p>
+            <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+              <tr>
+                <td style="background:#1a6b54;border-radius:10px;">
+                  <a href="${loginUrl}" style="display:inline-block;padding:14px 32px;color:#f7fbfa;font-size:15px;font-weight:600;text-decoration:none;">Sign In to CPA Loft →</a>
+                </td>
+              </tr>
+            </table>
+            <hr style="border:none;border-top:1px solid #e8f5f1;margin:28px 0;"/>
+            <p style="color:#9ca3af;font-size:12px;margin:0 0 4px;">Restored account:</p>
+            <p style="color:#1a6b54;font-size:13px;font-weight:600;margin:0;">${toEmail}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f7fbfa;padding:20px 40px;text-align:center;border-top:1px solid #e8f5f1;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} CPA Loft</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+
+  const info = await transporter.sendMail({
+    from,
+    to: `${toName} <${toEmail}>`,
+    subject: "Your CPA Loft workspace has been restored",
+    html,
+    text: `Welcome back, ${firstName}!\n\nYour CPA Loft account has been restored. Sign in here:\n${loginUrl}`,
+  });
+  return { messageId: info.messageId };
+}
+
 export async function sendClientWelcomeBackEmail(
   toEmail: string,
   toName: string,
