@@ -149,6 +149,14 @@ function LoginForm() {
               Create one free
             </Link>
           </div>
+          <div className="mt-3 text-center">
+            <Link
+              href="/restore-account"
+              className="text-xs text-gray-400 hover:text-forest-600 transition-colors inline-flex items-center gap-1"
+            >
+              Restore a deleted account from backup
+            </Link>
+          </div>
         </div>
       </div>
     </div>
