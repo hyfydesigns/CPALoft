@@ -108,7 +108,7 @@ function ClientForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="col-span-2 space-y-2">
+        <div className="col-span-full space-y-2">
           <Label>Full Name *</Label>
           <Input
             value={form.name}
@@ -150,7 +150,7 @@ function ClientForm({
             placeholder="XX-XXXXXXX"
           />
         </div>
-        <div className="col-span-2 space-y-2">
+        <div className="col-span-full space-y-2">
           <Label>Status</Label>
           <Select value={form.status} onValueChange={(v) => update("status", v)}>
             <SelectTrigger>
@@ -163,7 +163,7 @@ function ClientForm({
             </SelectContent>
           </Select>
         </div>
-        <div className="col-span-2 space-y-2">
+        <div className="col-span-full space-y-2">
           <Label>Notes</Label>
           <Input
             value={form.notes}
