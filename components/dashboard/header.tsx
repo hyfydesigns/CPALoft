@@ -22,6 +22,7 @@ interface HeaderProps {
     image?: string | null;
     plan: string;
   };
+  onMenuClick?: () => void;
 }
 
 const planColors: Record<string, string> = {
