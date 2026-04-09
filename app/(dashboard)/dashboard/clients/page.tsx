@@ -198,6 +198,8 @@ export default function ClientsPage() {
   const [inviteUrl, setInviteUrl] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [resendSuccess, setResendSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     loadClients();
