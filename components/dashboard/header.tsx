@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/lib/utils";
-import { Bell, LogOut, Settings, User, CreditCard, Zap } from "lucide-react";
+import { Bell, LogOut, Settings, User, CreditCard, Zap, Menu } from "lucide-react";
 import Link from "next/link";
 
 interface HeaderProps {
