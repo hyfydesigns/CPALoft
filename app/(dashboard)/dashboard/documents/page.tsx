@@ -444,15 +444,19 @@ export default function DocumentsPage() {
                 <div className="truncate text-sm font-medium text-gray-800 mb-1">
                   {doc.originalName}
                 </div>
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
                   <span>{formatBytes(doc.size)}</span>
                   <span>{formatRelativeDate(doc.createdAt)}</span>
                 </div>
-                {doc.client && (
-                  <Badge variant="outline" className="mt-2 text-xs">
-                    {doc.client.name}
-                  </Badge>
-                )}
+                <div className={cn(
+                  "flex items-center gap-1.5 text-xs rounded-md px-2 py-1",
+                  doc.client
+                    ? "bg-forest-50 text-forest-700"
+                    : "bg-gray-100 text-gray-400"
+                )}>
+                  <User className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{doc.client ? doc.client.name : "No client"}</span>
+                </div>
               </CardContent>
             </Card>
           ))}
