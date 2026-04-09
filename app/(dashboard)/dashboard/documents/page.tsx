@@ -48,6 +48,11 @@ interface Document {
   client?: { id: string; name: string } | null;
 }
 
+interface ClientOption {
+  id: string;
+  name: string;
+}
+
 const CATEGORIES = [
   { value: "all", label: "All Categories" },
   { value: "tax", label: "Tax Returns" },
