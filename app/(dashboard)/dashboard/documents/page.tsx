@@ -167,6 +167,8 @@ export default function DocumentsPage() {
     try {
       const params = new URLSearchParams();
       if (category !== "all") params.set("category", category);
+      if (clientFilter === "none") params.set("clientId", "none");
+      else if (clientFilter !== "all") params.set("clientId", clientFilter);
       const res = await fetch(`/api/documents?${params}`);
       const data = await res.json();
       setDocuments(Array.isArray(data) ? data : []);
