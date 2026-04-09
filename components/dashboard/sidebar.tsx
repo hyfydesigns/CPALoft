@@ -36,7 +36,12 @@ const bottomItems = [
   { href: "/help", icon: HelpCircle, label: "Help & Support" },
 ];
 
-export function DashboardSidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function DashboardSidebar({ mobileOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -49,7 +54,11 @@ export function DashboardSidebar() {
     <div
       className={cn(
         "relative flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300",
-        collapsed ? "w-16" : "w-60"
+        // Desktop: always visible, collapsible
+        "hidden md:flex",
+        collapsed ? "md:w-16" : "md:w-60",
+        // Mobile: fixed drawer, slides in/out
+        mobileOpen && "flex fixed inset-y-0 left-0 z-30 w-72 md:relative md:z-auto md:w-auto shadow-2xl"
       )}
     >
       {/* Logo */}
