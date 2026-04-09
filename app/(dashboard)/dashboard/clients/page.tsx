@@ -322,6 +322,7 @@ export default function ClientsPage() {
       a.download = `cpaloft-client-${client.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.zip`;
       a.click();
       URL.revokeObjectURL(url);
+      setBackupDownloaded(true);
     } finally {
       setExporting(false);
     }
