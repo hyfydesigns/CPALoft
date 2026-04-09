@@ -417,7 +417,7 @@ export default function ClientsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {[
           { label: "Total Clients", value: clients.length, icon: Users, color: "text-forest-600", bg: "bg-forest-50" },
           { label: "Active", value: activeCount, icon: User, color: "text-green-600", bg: "bg-green-50" },
