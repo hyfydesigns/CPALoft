@@ -197,6 +197,7 @@ export default function DocumentsPage() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("category", category !== "all" ? category : "general");
+        if (uploadClientId !== "none") formData.append("clientId", uploadClientId);
 
         const res = await fetch("/api/documents", {
           method: "POST",
