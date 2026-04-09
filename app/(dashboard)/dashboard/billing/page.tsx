@@ -1,10 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Zap, Star, Crown, CreditCard, ArrowRight } from "lucide-react";
+import { CheckCircle2, Zap, Star, Crown, CreditCard, ArrowRight, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { PLANS } from "@/lib/utils";
 
 const planDetails = [
@@ -70,15 +72,82 @@ const planDetails = [
 
 export default function BillingPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const currentPlan = session?.user?.plan || "free";
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  function handleUpgrade(plan: string) {
-    // In production: redirect to Stripe Checkout
-    alert(`Upgrade to ${plan} — Stripe integration would be configured here with your API keys.`);
+  // Handle Stripe redirect back
+  useEffect(() => {
+    if (searchParams.get("success") === "1") {
+      setToast({ type: "success", message: "🎉 Subscription activated! Your plan has been upgraded." });
+    } else if (searchParams.get("canceled") === "1") {
+      setToast({ type: "error", message: "Checkout was canceled. No changes were made." });
+    }
+    const timer = setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
+
+  async function handleUpgrade(plan: string) {
+    if (plan === "free") return;
+    setLoadingPlan(plan);
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setToast({ type: "error", message: data.error || "Something went wrong." });
+      }
+    } catch {
+      setToast({ type: "error", message: "Network error. Please try again." });
+    } finally {
+      setLoadingPlan(null);
+    }
+  }
+
+  async function handleManageSubscription() {
+    setLoadingPortal(true);
+    try {
+      const res = await fetch("/api/billing/portal", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setToast({ type: "error", message: data.error || "Could not open billing portal." });
+      }
+    } catch {
+      setToast({ type: "error", message: "Network error. Please try again." });
+    } finally {
+      setLoadingPortal(false);
+    }
   }
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium transition-all ${
+            toast.type === "success"
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
+          }`}
+        >
+          {toast.type === "success" ? (
+            <CheckCircle className="w-4 h-4 shrink-0" />
+          ) : (
+            <XCircle className="w-4 h-4 shrink-0" />
+          )}
+          {toast.message}
+        </div>
+      )}
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Billing & Plans</h1>
         <p className="text-gray-500 text-sm mt-1">
@@ -88,7 +157,7 @@ export default function BillingPage() {
 
       {/* Current Plan Banner */}
       <Card className="mb-8 bg-gradient-to-r from-forest-600 to-forest-900 text-white border-0">
-        <CardContent className="p-6 flex items-center justify-between">
+        <CardContent className="p-6 flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="text-forest-50 text-sm mb-1">Current Plan</p>
             <h2 className="text-2xl font-bold">
@@ -102,11 +171,26 @@ export default function BillingPage() {
                 : "You have unlimited access to all CPA Loft features"}
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold">
-              ${PLANS[currentPlan as keyof typeof PLANS]?.price || 0}
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-3xl font-bold">
+                ${PLANS[currentPlan as keyof typeof PLANS]?.price || 0}
+              </div>
+              <div className="text-forest-50 text-sm">/month</div>
             </div>
-            <div className="text-forest-50 text-sm">/month</div>
+            {currentPlan !== "free" && (
+              <Button
+                variant="outline"
+                className="text-forest-800 border-white/40 hover:bg-white/10 hover:text-white"
+                onClick={handleManageSubscription}
+                disabled={loadingPortal}
+              >
+                {loadingPortal ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : null}
+                Manage Subscription
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -115,6 +199,7 @@ export default function BillingPage() {
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {planDetails.map((plan) => {
           const isCurrent = plan.key === currentPlan;
+          const isLoading = loadingPlan === plan.key;
           return (
             <Card
               key={plan.key}
@@ -124,29 +209,21 @@ export default function BillingPage() {
             >
               {plan.popular && !isCurrent && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-forest-600 text-white px-3">
-                    Most Popular
-                  </Badge>
+                  <Badge className="bg-forest-600 text-white px-3">Most Popular</Badge>
                 </div>
               )}
               {isCurrent && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-green-500 text-white px-3">
-                    Current Plan
-                  </Badge>
+                  <Badge className="bg-green-500 text-white px-3">Current Plan</Badge>
                 </div>
               )}
               <CardHeader className="pb-4">
-                <div
-                  className={`w-10 h-10 ${plan.bg} rounded-xl flex items-center justify-center mb-3`}
-                >
+                <div className={`w-10 h-10 ${plan.bg} rounded-xl flex items-center justify-center mb-3`}>
                   <plan.icon className={`w-5 h-5 ${plan.color}`} />
                 </div>
                 <CardTitle className="text-lg">{plan.name}</CardTitle>
                 <div className="flex items-end gap-1">
-                  <span className="text-3xl font-bold text-gray-900">
-                    ${plan.price}
-                  </span>
+                  <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
                   {plan.price > 0 && (
                     <span className="text-gray-400 mb-1 text-sm">/month</span>
                   )}
@@ -155,10 +232,7 @@ export default function BillingPage() {
               <CardContent>
                 <ul className="space-y-2.5 mb-6">
                   {plan.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-start gap-2 text-sm text-gray-600"
-                    >
+                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
                       <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
                       {f}
                     </li>
@@ -172,10 +246,11 @@ export default function BillingPage() {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => handleUpgrade(plan.key)}
-                    disabled={currentPlan !== "free"}
+                    onClick={handleManageSubscription}
+                    disabled={currentPlan === "free" || loadingPortal}
                   >
-                    {currentPlan !== "free" ? "Downgrade" : "Get Started"}
+                    {loadingPortal ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    {currentPlan === "free" ? "Current Plan" : "Downgrade to Free"}
                   </Button>
                 ) : (
                   <Button
@@ -185,9 +260,13 @@ export default function BillingPage() {
                         : "bg-forest-900 hover:bg-midnight"
                     }`}
                     onClick={() => handleUpgrade(plan.key)}
+                    disabled={isLoading}
                   >
-                    Upgrade to {plan.name}
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : null}
+                    {isLoading ? "Redirecting…" : `Upgrade to ${plan.name}`}
+                    {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
                   </Button>
                 )}
               </CardContent>
@@ -204,7 +283,7 @@ export default function BillingPage() {
             Payment Method
           </CardTitle>
           <CardDescription>
-            Manage your payment details for subscription billing
+            Manage your payment details and billing history via the Stripe portal
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -212,25 +291,21 @@ export default function BillingPage() {
             <div className="text-center py-8 text-gray-400">
               <CreditCard className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm text-gray-500">No payment method on file</p>
-              <p className="text-xs mt-1">
-                Upgrade to a paid plan to add a payment method
-              </p>
+              <p className="text-xs mt-1">Upgrade to a paid plan to add a payment method</p>
             </div>
           ) : (
             <div className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-8 bg-gradient-to-r from-forest-600 to-forest-700 rounded-md flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">VISA</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-800">
-                    •••• •••• •••• 4242
-                  </p>
-                  <p className="text-xs text-gray-400">Expires 12/27</p>
-                </div>
-              </div>
-              <Button variant="outline" size="sm">
-                Update
+              <p className="text-sm text-gray-600">
+                Your billing details and invoices are managed securely via Stripe.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManageSubscription}
+                disabled={loadingPortal}
+              >
+                {loadingPortal ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Open Billing Portal
               </Button>
             </div>
           )}
