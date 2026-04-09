@@ -57,17 +57,9 @@ function SignupForm() {
         setError(data.error || "Registration failed");
         return;
       }
-      // Auto sign in
-      const result = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      });
-      if (result?.error) {
-        router.push("/login");
-      } else {
-        router.push("/dashboard");
-      }
+      // Show "check your email" state
+      setRegisteredEmail(formData.email);
+      setEmailSent(true);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
