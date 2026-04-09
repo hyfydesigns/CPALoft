@@ -31,6 +31,8 @@ function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   function update(field: string, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
