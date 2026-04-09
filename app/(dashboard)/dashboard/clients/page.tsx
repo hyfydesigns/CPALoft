@@ -774,6 +774,12 @@ export default function ClientsPage() {
                       Copied to clipboard!
                     </p>
                   )}
+                  {inviteEmailSent && (
+                    <p className="text-xs text-forest-600 flex items-center gap-1">
+                      <Mail className="w-3.5 h-3.5" />
+                      Invite email sent to {inviteClient?.email}
+                    </p>
+                  )}
                   <a
                     href={inviteUrl}
                     target="_blank"
