@@ -393,16 +393,25 @@ export default function ClientsPage() {
             {activeCount} active · {clients.length} total
           </p>
         </div>
-        <Button
-          onClick={() => {
-            setEditClient(null);
-            setShowModal(true);
-          }}
-          className="bg-forest-600 hover:bg-forest-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Client
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => { setShowRestore(true); setRestoreSuccess(""); setRestoreFile(null); setRestorePreview(null); }}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Restore Client
+          </Button>
+          <Button
+            onClick={() => {
+              setEditClient(null);
+              setShowModal(true);
+            }}
+            className="bg-forest-600 hover:bg-forest-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Client
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
