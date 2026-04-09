@@ -791,6 +791,159 @@ export default function ClientsPage() {
         </Dialog>
       )}
 
+      {/* ── Delete / Export Modal ── */}
+      {deleteTarget && (
+        <Dialog open onOpenChange={() => !deleting && setDeleteTarget(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-5 h-5" />
+                Delete Client
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <p className="text-sm text-gray-600">
+                You are about to permanently delete{" "}
+                <strong className="text-gray-900">{deleteTarget.name}</strong>{" "}
+                and all their documents.
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-amber-800 flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Download a backup first
+                </p>
+                <p className="text-xs text-amber-700">
+                  Save a ZIP of this client&apos;s data and documents. You can use it later to restore the client.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-1 border-amber-300 text-amber-800 hover:bg-amber-100"
+                  disabled={exporting}
+                  onClick={() => exportAndDownload(deleteTarget)}
+                >
+                  {exporting ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  {exporting ? "Preparing ZIP…" : "Download Backup ZIP"}
+                </Button>
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                disabled={deleting}
+                onClick={() => confirmDelete(deleteTarget)}
+              >
+                {deleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+                {deleting ? "Deleting…" : "Delete Permanently"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* ── Restore Client Modal ── */}
+      {showRestore && (
+        <Dialog open onOpenChange={() => !restoring && setShowRestore(false)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <RotateCcw className="w-5 h-5 text-forest-600" />
+                Restore Client from Backup
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              {restoreSuccess ? (
+                <div className="flex flex-col items-center gap-3 py-4 text-center">
+                  <CheckCircle2 className="w-12 h-12 text-green-500" />
+                  <p className="text-sm font-semibold text-gray-900">Client Restored!</p>
+                  <p className="text-xs text-gray-500">{restoreSuccess}</p>
+                  <p className="text-xs text-forest-600">A welcome-back email has been sent to the client.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-600 mb-3">Select a CPA Loft backup ZIP file</p>
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".zip"
+                        className="hidden"
+                        onChange={(e) => handleRestoreFileChange(e.target.files?.[0] ?? null)}
+                      />
+                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Upload className="w-4 h-4" />
+                        Choose ZIP file
+                      </span>
+                    </label>
+                    {restoreFile && (
+                      <p className="text-xs text-gray-500 mt-2">{restoreFile.name}</p>
+                    )}
+                  </div>
+
+                  {restorePreviewing && (
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Reading backup…
+                    </div>
+                  )}
+
+                  {restorePreview && (
+                    <div className="bg-forest-50 border border-forest-100 rounded-xl p-4 space-y-2">
+                      <p className="text-sm font-semibold text-forest-800">Backup contents</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-forest-700">
+                        <span className="text-gray-500">Name</span>
+                        <span className="font-medium">{restorePreview.client.name}</span>
+                        {restorePreview.client.email && (
+                          <>
+                            <span className="text-gray-500">Email</span>
+                            <span>{restorePreview.client.email}</span>
+                          </>
+                        )}
+                        {restorePreview.client.company && (
+                          <>
+                            <span className="text-gray-500">Company</span>
+                            <span>{restorePreview.client.company}</span>
+                          </>
+                        )}
+                        <span className="text-gray-500">Documents</span>
+                        <span>{restorePreview.documentCount}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setShowRestore(false)} disabled={restoring}>
+                {restoreSuccess ? "Close" : "Cancel"}
+              </Button>
+              {!restoreSuccess && (
+                <Button
+                  className="bg-forest-600 hover:bg-forest-700"
+                  disabled={!restorePreview || restoring}
+                  onClick={confirmRestore}
+                >
+                  {restoring ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                  )}
+                  {restoring ? "Restoring…" : "Restore Client"}
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Invite to Portal Modal */}
       {inviteClient && (
         <Dialog open onOpenChange={() => { setInviteClient(null); setInviteUrl(""); }}>
