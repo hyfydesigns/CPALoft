@@ -840,8 +840,9 @@ export default function ClientsPage() {
               </Button>
               <Button
                 variant="destructive"
-                disabled={deleting}
+                disabled={!backupDownloaded || deleting}
                 onClick={() => confirmDelete(deleteTarget)}
+                title={!backupDownloaded ? "Download the backup first" : undefined}
               >
                 {deleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
                 {deleting ? "Deleting…" : "Delete Permanently"}
