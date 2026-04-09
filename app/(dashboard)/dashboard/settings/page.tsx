@@ -156,7 +156,7 @@ export default function SettingsPage() {
                   placeholder="(555) 123-4567"
                 />
               </div>
-              <div className="col-span-2 space-y-2">
+              <div className="col-span-full space-y-2">
                 <Label>CPA License Number</Label>
                 <Input
                   value={form.licenseNumber}
