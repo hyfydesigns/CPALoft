@@ -135,18 +135,32 @@ function PDFPreviewModal({
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [clients, setClients] = useState<ClientOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+  const [clientFilter, setClientFilter] = useState("all");
   const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string[]>([]);
 
   useEffect(() => {
+    loadClients();
+  }, []);
+
+  useEffect(() => {
     loadDocuments();
-  }, [category]);
+  }, [category, clientFilter]);
+
+  async function loadClients() {
+    try {
+      const res = await fetch("/api/clients");
+      const data = await res.json();
+      setClients(Array.isArray(data) ? data.map((c: ClientOption) => ({ id: c.id, name: c.name })) : []);
+    } catch {}
+  }
 
   async function loadDocuments() {
     setLoading(true);
