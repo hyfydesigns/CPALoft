@@ -19,6 +19,7 @@ async function main() {
       firm: "Johnson & Associates CPA",
       phone: "(555) 123-4567",
       licenseNumber: "CPA-2019-TX-48291",
+      emailVerified: new Date(),
     },
   });
 
