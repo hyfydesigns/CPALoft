@@ -39,9 +39,25 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/portal/register?token=${token}`;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const inviteUrl = `${appUrl}/portal/register?token=${token}`;
 
-    return NextResponse.json({ inviteUrl, token, expiry });
+    // Send invite email if the client has an email address
+    if (client.email) {
+      const cpaUser = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true },
+      });
+      const cpaName = cpaUser?.name || "Your accountant";
+      try {
+        await sendClientInviteEmail(client.email, client.name, cpaName, inviteUrl);
+      } catch (emailError) {
+        console.error("Failed to send invite email:", emailError);
+        console.log("🔗 Invite URL (dev):", inviteUrl);
+      }
+    }
+
+    return NextResponse.json({ inviteUrl, token, expiry, emailSent: Boolean(client.email) });
   } catch (error) {
     console.error("Invite error:", error);
     return NextResponse.json({ error: "Failed to generate invite" }, { status: 500 });
