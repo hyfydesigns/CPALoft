@@ -205,6 +205,19 @@ export default function ClientsPage() {
   const [resendingId, setResendingId] = useState<string | null>(null);
   const [resendSuccess, setResendSuccess] = useState<string | null>(null);
 
+  // Delete / export
+  const [deleteTarget, setDeleteTarget] = useState<Client | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // Restore
+  const [showRestore, setShowRestore] = useState(false);
+  const [restoreFile, setRestoreFile] = useState<File | null>(null);
+  const [restorePreview, setRestorePreview] = useState<{ client: { name: string; email?: string | null; company?: string | null }; documentCount: number } | null>(null);
+  const [restorePreviewing, setRestorePreviewing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreSuccess, setRestoreSuccess] = useState("");
+
   useEffect(() => {
     loadClients();
   }, []);
