@@ -648,6 +648,7 @@ export default function ClientsPage() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setDeleteTarget(client);
+                                setBackupDownloaded(false);
                               }}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
