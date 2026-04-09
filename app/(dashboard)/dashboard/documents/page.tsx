@@ -33,6 +33,7 @@ import {
   FileSpreadsheet,
   FileArchive,
   User,
+  Tag,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
 
