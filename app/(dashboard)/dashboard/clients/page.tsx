@@ -209,6 +209,7 @@ export default function ClientsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Client | null>(null);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [backupDownloaded, setBackupDownloaded] = useState(false);
 
   // Restore
   const [showRestore, setShowRestore] = useState(false);
