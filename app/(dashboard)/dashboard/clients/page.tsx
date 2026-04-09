@@ -86,7 +86,7 @@ function ClientForm({
     company: client?.company || "",
     taxId: client?.taxId || "",
     notes: client?.notes || "",
-    status: client?.status || "active",
+    status: client?.status || "pending",
   });
   const [saving, setSaving] = useState(false);
 
