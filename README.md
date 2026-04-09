@@ -50,6 +50,13 @@ ANTHROPIC_API_KEY="sk-ant-api03-..."
 # App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_NAME="CPA Loft"
+
+# SMTP — Email verification
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USER="your@gmail.com"
+SMTP_PASS="your-app-password"
+SMTP_FROM="CPA Loft <noreply@cpaloft.com>"
 ```
 
 > **Never commit `.env.local`** — it is already in `.gitignore`.
