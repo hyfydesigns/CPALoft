@@ -4,6 +4,38 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { sendDocumentTaggedEmail } from "@/lib/email";
+
+async function notifyClientOfDocument(
+  clientId: string,
+  cpaUserId: string,
+  docName: string
+) {
+  try {
+    const client = await db.client.findUnique({
+      where: { id: clientId },
+      include: { portalUser: { select: { email: true, name: true } } },
+    });
+    if (!client?.email) return;
+
+    const cpa = await db.user.findUnique({
+      where: { id: cpaUserId },
+      select: { name: true },
+    });
+    const cpaName = cpa?.name || "Your accountant";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const portalUrl = `${appUrl}/portal`;
+
+    // Send to portal user email if available, otherwise client email
+    const toEmail = client.portalUser?.email ?? client.email;
+    const toName = client.portalUser?.name ?? client.name;
+    if (toEmail) {
+      await sendDocumentTaggedEmail(toEmail, toName, cpaName, docName, portalUrl);
+    }
+  } catch (err) {
+    console.error("Failed to send document notification:", err);
+  }
+}
 
 export async function GET(req: NextRequest) {
   try {
