@@ -301,6 +301,24 @@ export default function DocumentsPage() {
       {/* Upload Zone */}
       <Card className="mb-6">
         <CardContent className="p-0">
+          {/* Client selector for upload */}
+          <div className="flex items-center gap-3 px-6 pt-5 pb-0">
+            <User className="w-4 h-4 text-gray-400 shrink-0" />
+            <span className="text-sm text-gray-600 shrink-0">Tag upload to:</span>
+            <Select value={uploadClientId} onValueChange={setUploadClientId}>
+              <SelectTrigger className="w-56 h-8 text-sm">
+                <SelectValue placeholder="No client" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No client (general)</SelectItem>
+                {clients.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div
             {...getRootProps()}
             className={cn(
