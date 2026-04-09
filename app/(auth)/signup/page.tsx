@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Loader2,
   CheckCircle2,
+  Mail,
 } from "lucide-react";
 import { PLANS } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
