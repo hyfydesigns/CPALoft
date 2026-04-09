@@ -71,6 +71,15 @@ export function DashboardSidebar({ mobileOpen = false, onClose }: SidebarProps) 
       >
         <Logo markSize={28} wordmarkSize="sm" variant="light" className={collapsed ? "hidden" : undefined} />
         {collapsed && <LogoMark size={28} />}
+        {/* Mobile close button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="ml-auto md:hidden p-1 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-sidebar-foreground"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Collapse button */}
