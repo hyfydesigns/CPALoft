@@ -530,6 +530,66 @@ export default function DocumentsPage() {
           onClose={() => setPreviewDoc(null)}
         />
       )}
+
+      {/* Tag to Client Modal */}
+      {taggingDoc && (
+        <Dialog open onOpenChange={() => setTaggingDoc(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-forest-600" />
+                Tag Document to Client
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+                {getFileIcon(taggingDoc.type, 5)}
+                <span className="text-sm font-medium text-gray-800 truncate">
+                  {taggingDoc.originalName}
+                </span>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Assign to client</label>
+                <Select value={tagClientId} onValueChange={setTagClientId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No client (general)</SelectItem>
+                    {clients.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {tagClientId !== "none" && (
+                <p className="text-xs text-forest-600 bg-forest-50 rounded-lg p-3">
+                  The client will receive an email notification about this document.
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setTaggingDoc(null)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-forest-600 hover:bg-forest-700"
+                onClick={tagDocument}
+                disabled={tagging}
+              >
+                {tagging ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Tag className="w-4 h-4 mr-2" />
+                )}
+                Save Tag
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
