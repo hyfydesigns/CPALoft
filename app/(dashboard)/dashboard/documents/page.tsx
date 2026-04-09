@@ -390,7 +390,7 @@ export default function DocumentsPage() {
           />
         </div>
         <Select value={clientFilter} onValueChange={setClientFilter}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="All Clients" />
           </SelectTrigger>
           <SelectContent>
