@@ -13,6 +13,7 @@ import {
   ChevronRight,
   HelpCircle,
   CreditCard,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
