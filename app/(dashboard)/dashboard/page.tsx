@@ -164,7 +164,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Quick Actions */}
         <Card>
           <CardHeader className="pb-3">
