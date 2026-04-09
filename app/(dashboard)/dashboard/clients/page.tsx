@@ -646,7 +646,7 @@ export default function ClientsPage() {
                               className="text-red-600"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                deleteClient(client.id);
+                                setDeleteTarget(client);
                               }}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
