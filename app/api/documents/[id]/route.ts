@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { unlink } from "fs/promises";
 import path from "path";
+import { sendDocumentTaggedEmail } from "@/lib/email";
 
 export async function DELETE(
   req: NextRequest,
