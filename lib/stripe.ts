@@ -17,7 +17,8 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// Keep a named export for convenience — same lazy behaviour
+// Proxy keeps all call-sites using `stripe.xxx` working unchanged,
+// but defers construction until the first actual API call at runtime.
 export const stripe = new Proxy({} as Stripe, {
   get(_target, prop: string | symbol) {
     const client = getStripe() as unknown as Record<string | symbol, unknown>;
@@ -37,4 +38,3 @@ export const PLANS = {
     price: 149,
   },
 };
-</content>
