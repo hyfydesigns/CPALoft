@@ -570,7 +570,7 @@ export default function DocumentsPage() {
       {/* Edit Document Modal */}
       {taggingDoc && (
         <Dialog open onOpenChange={() => setTaggingDoc(null)}>
-          <DialogContent className="max-w-sm">
+          <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Pencil className="w-4 h-4 text-forest-600" />
