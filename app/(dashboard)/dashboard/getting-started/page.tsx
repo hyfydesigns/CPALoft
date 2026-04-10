@@ -194,7 +194,7 @@ export default function GettingStartedPage() {
           <Sparkles className="w-4 h-4" />
           Onboarding
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Getting Started with IntelliCPA</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Getting Started with CPA Loft</h1>
         <p className="text-gray-500 mt-1">
           Work through the checklist below, then explore the guides to get the most out of the platform.
         </p>
