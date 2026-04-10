@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { ONBOARDING_STEPS } from "@/components/onboarding/OnboardingChecklist";
 
-const STORAGE_KEY = "intellicpa_onboarding_steps";
+const STORAGE_KEY = "cpaloft_onboarding_steps";
 
 const SECTIONS = [
   {
