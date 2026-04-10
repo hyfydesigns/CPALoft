@@ -500,6 +500,58 @@ export default function ClientsPage() {
     setClientNotes((prev) => prev.filter((n) => n.id !== noteId));
   }
 
+  async function loadClientRequests(clientId: string) {
+    setRequestsLoading(true);
+    try {
+      const res = await fetch(`/api/document-requests?clientId=${clientId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setClientRequests(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setRequestsLoading(false);
+    }
+  }
+
+  async function addClientRequest(clientId: string) {
+    if (!newRequestTitle.trim()) return;
+    setAddingRequest(true);
+    try {
+      const res = await fetch("/api/document-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId,
+          title: newRequestTitle.trim(),
+          dueDate: newRequestDueDate || null,
+        }),
+      });
+      if (res.ok) {
+        const req = await res.json();
+        setClientRequests((prev) => [req, ...prev]);
+        setNewRequestTitle("");
+        setNewRequestDueDate("");
+      } else {
+        const err = await res.json();
+        setErrorToast(err.error || "Failed to create request");
+        setTimeout(() => setErrorToast(null), 5000);
+      }
+    } finally {
+      setAddingRequest(false);
+    }
+  }
+
+  async function updateRequestStatus(requestId: string, status: string) {
+    await fetch(`/api/document-requests/${requestId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    setClientRequests((prev) =>
+      prev.map((r) => r.id === requestId ? { ...r, status } : r)
+    );
+  }
+
   function activityColor(type: string) {
     const map: Record<string, string> = {
       document_uploaded: "bg-blue-500",
