@@ -54,19 +54,23 @@ model User {
   verifyExpiry   DateTime?
 
   // Stripe billing
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
-  stripePriceId        String?
+  stripeCustomerId       String?   @unique
+  stripeSubscriptionId   String?   @unique
+  stripePriceId          String?
   stripeCurrentPeriodEnd DateTime?
 
-  accounts       Account[]
-  sessions       Session[]
-  documents      Document[]
-  clients        Client[]
-  chats          Chat[]
-  aiUsage        AiUsage[]
-  // For client portal users — which Client record they map to
-  clientProfile  Client?   @relation("ClientPortalUser")
+  accounts         Account[]
+  sessions         Session[]
+  documents        Document[]
+  clients          Client[]
+  chats            Chat[]
+  aiUsage          AiUsage[]
+  clientProfile    Client?           @relation("ClientPortalUser")
+  documentRequests DocumentRequest[]
+  taxDeadlines     TaxDeadline[]
+  clientNotes      ClientNote[]
+  activityLogs     ActivityLog[]
+  savedPrompts     SavedPrompt[]
 }
 
 model VerificationToken {
@@ -86,31 +90,35 @@ model Client {
   taxId         String?
   status        String    @default("active") // active, inactive, pending
   notes         String?
-  userId        String   // the CPA who owns this client
+  userId        String
   // Portal fields
   portalEnabled Boolean   @default(false)
-  portalUserId  String?   @unique // linked User account for portal login
+  portalUserId  String?   @unique
   inviteToken   String?   @unique
   inviteExpiry  DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  portalUser  User?      @relation("ClientPortalUser", fields: [portalUserId], references: [id], onDelete: SetNull)
-  documents   Document[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portalUser       User?             @relation("ClientPortalUser", fields: [portalUserId], references: [id], onDelete: SetNull)
+  documents        Document[]
+  documentRequests DocumentRequest[]
+  taxDeadlines     TaxDeadline[]
+  clientNotes      ClientNote[]
+  activityLogs     ActivityLog[]
 }
 
 model Document {
   id           String   @id @default(cuid())
   name         String
   originalName String
-  type         String   // pdf, xlsx, csv, image, etc.
+  type         String
   size         Int
   url          String
-  category     String   @default("general") // tax, financial, audit, payroll, etc.
-  tags         String?  // JSON array stored as string
-  status       String   @default("active") // active, archived
-  uploadedBy   String   @default("cpa")    // cpa, client
+  category     String   @default("general")
+  tags         String?
+  status       String   @default("active")
+  uploadedBy   String   @default("cpa")
   userId       String
   clientId     String?
   createdAt    DateTime @default(now())
@@ -133,7 +141,7 @@ model Chat {
 
 model Message {
   id        String   @id @default(cuid())
-  role      String   // user, assistant
+  role      String
   content   String
   chatId    String
   createdAt DateTime @default(now())
@@ -145,8 +153,80 @@ model AiUsage {
   id        String   @id @default(cuid())
   userId    String
   tokens    Int
-  type      String   // chat, document_analysis
+  type      String
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── Pro Features ──────────────────────────────────────────────
+
+model DocumentRequest {
+  id          String    @id @default(cuid())
+  clientId    String
+  userId      String
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      String    @default("pending") // pending, fulfilled, cancelled
+  fulfilledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TaxDeadline {
+  id              String    @id @default(cuid())
+  clientId        String
+  userId          String
+  label           String
+  dueDate         DateTime
+  status          String    @default("upcoming") // upcoming, completed, overdue
+  reminderEnabled Boolean   @default(false)
+  reminderSentAt  DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ClientNote {
+  id        String   @id @default(cuid())
+  clientId  String
+  userId    String
+  content   String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  clientId  String
+  userId    String
+  type      String
+  label     String
+  metadata  String?  // JSON string
+  createdAt DateTime @default(now())
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavedPrompt {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
