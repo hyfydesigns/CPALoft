@@ -43,6 +43,7 @@ import {
   User,
   Tag,
   Pencil,
+  Brain,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
 
