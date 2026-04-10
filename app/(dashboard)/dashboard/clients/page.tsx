@@ -682,6 +682,16 @@ export default function ClientsPage() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                exportAndDownload(client);
+                              }}
+                              disabled={exportingId === client.id}
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              {exportingId === client.id ? "Downloading..." : "Download All Documents"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               className="text-red-600"
                               onClick={(e) => {
                                 e.stopPropagation();
