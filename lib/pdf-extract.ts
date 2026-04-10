@@ -22,9 +22,11 @@ export type ExtractResult = {
 
 export async function extractPdfText(buffer: Buffer): Promise<ExtractResult> {
   try {
-    return await extractWithPdfjs(buffer);
+    const result = await extractWithPdfjs(buffer);
+    console.log(`[pdf-extract] method=${result.method} pages=${result.pages} chars=${result.text.length}`);
+    return result;
   } catch (err) {
-    console.error("PDF extraction error:", err);
+    console.error("[pdf-extract] Fatal error:", err);
     return { text: "", method: "none" };
   }
 }
