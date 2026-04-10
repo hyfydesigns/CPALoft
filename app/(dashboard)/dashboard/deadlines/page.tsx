@@ -31,8 +31,25 @@ import {
   CheckCircle2,
   AlertTriangle,
   Clock,
+  LayoutTemplate,
+  X,
+  ChevronRight,
 } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils";
+
+interface TemplateItem {
+  label: string;
+  month: number;
+  day: number;
+  reminderEnabled: boolean;
+}
+
+interface Template {
+  id: string;
+  name: string;
+  items: TemplateItem[];
+  createdAt: string;
+}
 
 interface Client {
   id: string;
