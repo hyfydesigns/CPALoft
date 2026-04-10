@@ -516,6 +516,90 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
       ),
     },
   ],
+  "premium-features": [
+    {
+      q: "What features are exclusive to the Premium plan?",
+      a: (
+        <div className="space-y-2">
+          <p>Premium unlocks these advanced features on top of everything in Pro:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Custom Portal Branding</strong> — show your firm logo and name in your clients&apos; portal</li>
+            <li><strong>AI Document Insights</strong> — analyze any document with AI directly from the preview modal</li>
+            <li><strong>Deadline Templates</strong> — create reusable deadline sets and apply them to multiple clients at once</li>
+            <li><strong>Practice Digest Email</strong> — send yourself an on-demand summary of upcoming deadlines, pending requests, and recent uploads</li>
+            <li><strong>Client Report</strong> — generate a print-optimized summary per client for meetings and handoffs</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      q: "How do I set up custom portal branding?",
+      a: (
+        <div className="space-y-2">
+          <p>Go to <strong>Dashboard → Settings</strong> and scroll to the <strong>Portal Branding</strong> section (visible on Premium only):</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Firm display name</strong> — enter the name you want clients to see in their portal header instead of &quot;CPA Loft&quot;.</li>
+            <li><strong>Firm logo</strong> — click <strong>Upload Logo</strong> to choose a JPG or PNG (max 2 MB). The logo replaces the default CPA Loft mark in the portal header.</li>
+            <li>Click <strong>Save Branding</strong> to apply. Changes are reflected immediately for all clients next time they load their portal.</li>
+          </ul>
+          <p className="text-gray-500">To remove the logo, click the <strong>Remove</strong> button next to the current logo preview.</p>
+        </div>
+      ),
+    },
+    {
+      q: "How does AI Document Insights work?",
+      a: (
+        <div className="space-y-2">
+          <p>On the <strong>Documents</strong> page or the <strong>Dashboard</strong> Recent Documents section, open any document preview. If you&apos;re on the Premium plan, an <strong>Analyze with AI</strong> button appears in the top-right corner of the modal.</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Clicking it creates a new AI chat pre-loaded with the document&apos;s name, type, category, client, and upload date.</li>
+            <li>The AI is prompted to summarize what the document likely contains, highlight key financial or tax information, and suggest action items.</li>
+            <li>You&apos;re taken directly to the AI Assistant with that chat open — ready to ask follow-up questions.</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      q: "How do Deadline Templates work?",
+      a: (
+        <div className="space-y-2">
+          <p>Templates let you define a standard set of deadlines once and apply them to any number of clients instantly.</p>
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>On the <strong>Deadlines</strong> page, click the <strong>Templates</strong> button in the header.</li>
+            <li>Switch to the <strong>Create Template</strong> tab. Enter a template name (e.g. &quot;Individual Annual Pack&quot;) and add items — each item has a label, month, day, and optional reminder toggle.</li>
+            <li>Save the template. It appears in the <strong>My Templates</strong> tab.</li>
+            <li>Click <strong>Apply</strong> on any template, select a target year and which clients to apply it to, then click <strong>Create Deadlines</strong>.</li>
+          </ol>
+          <p className="text-gray-500">The deadlines are created immediately and appear on the Deadlines page and in each client&apos;s Deadlines tab.</p>
+        </div>
+      ),
+    },
+    {
+      q: "How do I send a Practice Digest email?",
+      a: (
+        <p>
+          On the <strong>Dashboard</strong>, click <strong>Practice Digest</strong> in the Quick Actions card. An email is sent immediately to your account&apos;s email address summarizing: upcoming deadlines in the next 14 days, all pending document requests, and recent uploads in the last 7 days. The digest includes a link back to your dashboard. This is an on-demand action — there is no automatic scheduled sending.
+        </p>
+      ),
+    },
+    {
+      q: "How do I generate a Client Report?",
+      a: (
+        <div className="space-y-2">
+          <p>On the <strong>Clients</strong> page, click the <strong>three-dot menu (⋯)</strong> on any client row and select <strong>View Report</strong>. This opens a dedicated report page for that client with:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Client info (name, company, email, phone, tax ID, status)</li>
+            <li>All active documents with type and upload date</li>
+            <li>All deadlines sorted by due date with status badges</li>
+            <li>Pending document requests</li>
+            <li>Client notes (pinned first)</li>
+            <li>Activity timeline (last 15 entries)</li>
+          </ul>
+          <p className="text-gray-500">Click <strong>Print Report</strong> in the top-right corner to open the browser print dialog. The layout is optimized for print — navigation and action buttons are hidden automatically.</p>
+        </div>
+      ),
+    },
+  ],
   "security": [
     {
       q: "How is my data stored and protected?",
