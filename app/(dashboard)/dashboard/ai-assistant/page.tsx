@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import { marked } from "marked";
 
 interface Message {
   id?: string;
