@@ -1019,12 +1019,14 @@ export default function ClientsPage() {
               if (v === "notes" && clientNotes.length === 0 && !notesLoading) loadNotes(viewClient.id);
               if (v === "activity" && activityLog.length === 0 && !activityLoading) loadActivity(viewClient.id);
               if (v === "requests" && clientRequests.length === 0 && !requestsLoading) loadClientRequests(viewClient.id);
+              if (v === "deadlines" && clientDeadlines.length === 0 && !deadlinesLoading) loadClientDeadlines(viewClient.id);
             }}>
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="notes">Notes</TabsTrigger>
-                <TabsTrigger value="activity">Activity</TabsTrigger>
-                <TabsTrigger value="requests">Requests</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 text-xs">
+                <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
+                <TabsTrigger value="notes" className="text-xs">Notes</TabsTrigger>
+                <TabsTrigger value="activity" className="text-xs">Activity</TabsTrigger>
+                <TabsTrigger value="requests" className="text-xs">Requests</TabsTrigger>
+                <TabsTrigger value="deadlines" className="text-xs">Deadlines</TabsTrigger>
               </TabsList>
 
               {/* Details Tab */}
