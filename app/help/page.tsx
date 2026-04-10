@@ -198,12 +198,14 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
     {
       q: "How do I preview a document?",
       a: (
-        <p>
-          On the Documents page, click any file card to open the preview modal. PDFs open in
-          a full inline viewer with the browser&apos;s native toolbar (zoom, scroll, print).
-          Images are displayed directly. For Excel or Word files, use the Download button to
-          open them locally.
-        </p>
+        <div className="space-y-2">
+          <p>You can preview documents from two places:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Documents page</strong> — click any file card to open the preview modal.</li>
+            <li><strong>Dashboard</strong> — click any row in the <strong>Recent Documents</strong> section, or hover over a row and click the <strong>eye icon</strong> that appears on the right.</li>
+          </ul>
+          <p>PDFs open in a full inline viewer with the browser&apos;s native toolbar (zoom, scroll, print). Images are displayed directly. For Excel or Word files, use the Download button to open them locally.</p>
+        </div>
       ),
     },
     {
