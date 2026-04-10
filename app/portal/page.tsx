@@ -97,8 +97,32 @@ export default function ClientPortalPage() {
         .then((r) => r.json())
         .then((data) => setDocs(Array.isArray(data) ? data : []))
         .finally(() => setDocsLoading(false));
+
+      fetch("/api/portal/document-requests")
+        .then((r) => r.json())
+        .then((data) => setDocRequests(Array.isArray(data) ? data : []))
+        .catch(() => setDocRequests([]))
+        .finally(() => setRequestsLoading(false));
     }
   }, [status, session]);
+
+  async function markRequestDone(requestId: string) {
+    setFulfillingId(requestId);
+    try {
+      const res = await fetch(`/api/portal/document-requests/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "fulfilled" }),
+      });
+      if (res.ok) {
+        setDocRequests((prev) =>
+          prev.map((r) => r.id === requestId ? { ...r, status: "fulfilled" } : r)
+        );
+      }
+    } finally {
+      setFulfillingId(null);
+    }
+  }
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
