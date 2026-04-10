@@ -17,7 +17,9 @@
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(echo \"EXIT_CODE:$?\")",
-      "Bash(node -e \"require\\('jszip'\\); console.log\\('jszip OK'\\)\")"
+      "Bash(node -e \"require\\('jszip'\\); console.log\\('jszip OK'\\)\")",
+      "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]/apply\")",
+      "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]\")"
     ]
   },
   "hooks": {
