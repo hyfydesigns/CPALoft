@@ -45,6 +45,8 @@ interface DashboardData {
     originalName: string;
     type: string;
     size: number;
+    url: string;
+    category: string;
     createdAt: string;
     client?: { name: string } | null;
   }>;
