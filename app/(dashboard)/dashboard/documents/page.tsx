@@ -567,14 +567,14 @@ export default function DocumentsPage() {
         />
       )}
 
-      {/* Tag to Client Modal */}
+      {/* Edit Document Modal */}
       {taggingDoc && (
         <Dialog open onOpenChange={() => setTaggingDoc(null)}>
           <DialogContent className="max-w-sm">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Tag className="w-4 h-4 text-forest-600" />
-                Tag Document to Client
+                <Pencil className="w-4 h-4 text-forest-600" />
+                Edit Document
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
@@ -583,6 +583,21 @@ export default function DocumentsPage() {
                 <span className="text-sm font-medium text-gray-800 truncate">
                   {taggingDoc.originalName}
                 </span>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Document type</label>
+                <Select value={tagCategory} onValueChange={setTagCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EDIT_CATEGORIES.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Assign to client</label>
@@ -600,7 +615,7 @@ export default function DocumentsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              {tagClientId !== "none" && (
+              {tagClientId !== "none" && tagClientId !== (taggingDoc.client?.id ?? "none") && (
                 <p className="text-xs text-forest-600 bg-forest-50 rounded-lg p-3">
                   The client will receive an email notification about this document.
                 </p>
@@ -618,9 +633,9 @@ export default function DocumentsPage() {
                 {tagging ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
-                  <Tag className="w-4 h-4 mr-2" />
+                  <Pencil className="w-4 h-4 mr-2" />
                 )}
-                Save Tag
+                Save Changes
               </Button>
             </div>
           </DialogContent>
