@@ -861,17 +861,17 @@ export default function ClientsPage() {
                   className={backupDownloaded
                     ? "mt-1 border-green-300 text-green-700 hover:bg-green-50"
                     : "mt-1 border-amber-300 text-amber-800 hover:bg-amber-100"}
-                  disabled={exporting}
+                  disabled={exportingId === deleteTarget?.id}
                   onClick={() => exportAndDownload(deleteTarget)}
                 >
-                  {exporting ? (
+                  {exportingId === deleteTarget?.id ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : backupDownloaded ? (
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
                   )}
-                  {exporting ? "Preparing ZIP…" : backupDownloaded ? "Backup Downloaded ✓" : "Download Backup ZIP"}
+                  {exportingId === deleteTarget?.id ? "Preparing ZIP…" : backupDownloaded ? "Backup Downloaded ✓" : "Download Backup ZIP"}
                 </Button>
               </div>
             </div>
