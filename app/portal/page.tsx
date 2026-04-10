@@ -237,10 +237,19 @@ export default function ClientPortalPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <LogoMark size={32} />
+            {branding.firmLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={branding.firmLogo} alt="Firm logo" className="h-8 object-contain" />
+            ) : (
+              <LogoMark size={32} />
+            )}
             <div>
               <span className="font-bold font-serif text-gray-900">
-                CPA <span className="text-forest-600">Loft</span>
+                {branding.portalDisplayName ? (
+                  branding.portalDisplayName
+                ) : (
+                  <>CPA <span className="text-forest-600">Loft</span></>
+                )}
               </span>
               <span className="text-gray-400 text-sm ml-2">Client Portal</span>
             </div>
