@@ -33,6 +33,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatRelativeDate, formatBytes, PLANS } from "@/lib/utils";
+import WelcomeModal from "@/components/onboarding/WelcomeModal";
+import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
 
 interface DashboardData {
   stats: {
