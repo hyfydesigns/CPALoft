@@ -889,6 +889,15 @@ export default function ClientsPage() {
                               <Edit2 className="w-4 h-4 mr-2" />
                               Edit Client
                             </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <a
+                                href={`/dashboard/clients/${client.id}/report`}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ClipboardList className="w-4 h-4 mr-2" />
+                                View Report
+                              </a>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
