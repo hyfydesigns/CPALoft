@@ -96,7 +96,8 @@ async function ocrPdf(buffer: Buffer): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const context = canvas.getContext("2d") as any;
 
-    await page.render({ canvasContext: context, viewport }).promise;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
 
     const imageBuffer = canvas.toBuffer("image/png");
     const { data } = await worker.recognize(imageBuffer);
