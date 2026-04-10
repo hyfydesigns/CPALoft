@@ -63,23 +63,12 @@ const SUGGESTED_PROMPTS = [
   "Explain the Qualified Business Income (QBI) deduction limitations",
 ];
 
+// Configure marked once — gfm enables tables, task lists, strikethrough
+marked.setOptions({ gfm: true, breaks: true });
+
 function parseMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`(.*?)`/g, "<code>$1</code>")
-    .replace(/^### (.*?)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.*?)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.*?)$/gm, "<h1>$1</h1>")
-    .replace(/^\| (.*) \|$/gm, (_match: string, row: string) => {
-      const cells = row.split("|").filter((c: string) => c.trim());
-      return `<table><tr>${cells.map((c: string) => `<th>${c.trim()}</th>`).join("")}</tr></table>`;
-    })
-    .replace(/^- (.*?)$/gm, "<li>$1</li>")
-    .replace(/(<li>[\s\S]*?<\/li>)/, "<ul>$1</ul>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/^(?!<[hup])/gm, "")
-    .trim();
+  // marked.parse is synchronous when no async extensions are loaded
+  return marked.parse(text) as string;
 }
 
 function AIAssistantContent() {
