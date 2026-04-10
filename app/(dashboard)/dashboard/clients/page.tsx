@@ -570,6 +570,60 @@ export default function ClientsPage() {
     );
   }
 
+  async function loadClientDeadlines(clientId: string) {
+    setDeadlinesLoading(true);
+    try {
+      const res = await fetch(`/api/tax-deadlines?clientId=${clientId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setClientDeadlines(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setDeadlinesLoading(false);
+    }
+  }
+
+  async function addClientDeadline(clientId: string) {
+    if (!newDeadlineLabel.trim() || !newDeadlineDueDate) return;
+    setAddingDeadline(true);
+    try {
+      const res = await fetch("/api/tax-deadlines", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId,
+          label: newDeadlineLabel.trim(),
+          dueDate: newDeadlineDueDate,
+        }),
+      });
+      if (res.ok) {
+        const deadline = await res.json();
+        setClientDeadlines((prev) => [...prev, deadline].sort(
+          (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        ));
+        setNewDeadlineLabel("");
+        setNewDeadlineDueDate("");
+      } else {
+        const err = await res.json();
+        setErrorToast(err.error || "Failed to add deadline");
+        setTimeout(() => setErrorToast(null), 5000);
+      }
+    } finally {
+      setAddingDeadline(false);
+    }
+  }
+
+  async function markDeadlineComplete(id: string) {
+    await fetch(`/api/tax-deadlines/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "completed" }),
+    });
+    setClientDeadlines((prev) =>
+      prev.map((d) => d.id === id ? { ...d, status: "completed" } : d)
+    );
+  }
+
   function activityColor(type: string) {
     const map: Record<string, string> = {
       document_uploaded: "bg-blue-500",
