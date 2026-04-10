@@ -119,6 +119,44 @@ const proFeatures = [
   },
 ];
 
+const premiumFeatures = [
+  {
+    icon: Palette,
+    title: "Custom Portal Branding",
+    description: "Upload your firm logo and set a display name. Clients see your firm's identity in their portal — not the default CPA Loft header.",
+    color: "text-pink-600",
+    bg: "bg-pink-50",
+  },
+  {
+    icon: Sparkles,
+    title: "AI Document Insights",
+    description: "One click to analyze any document with AI. Opens a pre-loaded chat with full context — file type, client, category — ready to go.",
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Deadline Templates",
+    description: "Build reusable deadline sets for common filing packages (e.g. Individual Annual). Apply them to multiple clients at once in seconds.",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  {
+    icon: Mail,
+    title: "Practice Digest Email",
+    description: "One-click email to yourself summarizing upcoming deadlines, pending document requests, and recent client uploads — your practice at a glance.",
+    color: "text-teal-600",
+    bg: "bg-teal-50",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Client Report (Print View)",
+    description: "Generate a clean, print-optimized summary per client — documents, deadlines, activity, requests, and notes — perfect for client meetings.",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+];
+
 const pricingPlans = [
   {
     name: "Free",
