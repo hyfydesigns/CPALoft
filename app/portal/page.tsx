@@ -82,6 +82,11 @@ export default function ClientPortalPage() {
   const [requestsLoading, setRequestsLoading] = useState(true);
   const [fulfillingId, setFulfillingId] = useState<string | null>(null);
 
+  // Inline category editing
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
+  const [editingCategory, setEditingCategory] = useState("general");
+  const [savingCategory, setSavingCategory] = useState(false);
+
   // Redirect if not a client
   useEffect(() => {
     if (status === "unauthenticated") {
