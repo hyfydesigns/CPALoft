@@ -261,6 +261,13 @@ export default function ClientsPage() {
   const [newRequestDueDate, setNewRequestDueDate] = useState("");
   const [addingRequest, setAddingRequest] = useState(false);
 
+  // Deadlines in client detail
+  const [clientDeadlines, setClientDeadlines] = useState<TaxDeadline[]>([]);
+  const [deadlinesLoading, setDeadlinesLoading] = useState(false);
+  const [newDeadlineLabel, setNewDeadlineLabel] = useState("");
+  const [newDeadlineDueDate, setNewDeadlineDueDate] = useState("");
+  const [addingDeadline, setAddingDeadline] = useState(false);
+
   // Restore
   const [showRestore, setShowRestore] = useState(false);
   const [restoreFile, setRestoreFile] = useState<File | null>(null);
