@@ -74,12 +74,23 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [upgradeToast, setUpgradeToast] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/dashboard")
       .then((r) => r.json())
       .then(setData)
       .finally(() => setLoading(false));
+
+    // Show success toast if redirected here after a plan upgrade
+    const params = new URLSearchParams(window.location.search);
+    const upgraded = params.get("upgraded");
+    if (upgraded) {
+      setUpgradeToast(`🎉 You're now on the ${upgraded.charAt(0).toUpperCase() + upgraded.slice(1)} plan!`);
+      // Clean up URL without reload
+      window.history.replaceState({}, "", "/dashboard");
+      setTimeout(() => setUpgradeToast(null), 6000);
+    }
   }, []);
 
   const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
