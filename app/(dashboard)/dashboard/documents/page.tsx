@@ -292,11 +292,6 @@ export default function DocumentsPage() {
       d.originalName.toLowerCase().includes(search.toLowerCase())
   );
 
-  const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
-  const docLimit = plan.documents as number;
-  const isOverLimit = docLimit !== -1 && documents.length > docLimit;
-  const atLimit = docLimit !== -1 && documents.length >= docLimit;
-
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Over-limit warning banner */}
