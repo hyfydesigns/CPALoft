@@ -235,6 +235,11 @@ export default function DocumentsPage() {
     }
   }, [category]);
 
+  const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
+  const docLimit = plan.documents as number;
+  const isOverLimit = docLimit !== -1 && documents.length > docLimit;
+  const atLimit = docLimit !== -1 && documents.length >= docLimit;
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: atLimit ? () => setUploadError(`Document limit reached (${docLimit}). Upgrade your plan to upload more.`) : onDrop,
     disabled: atLimit,
