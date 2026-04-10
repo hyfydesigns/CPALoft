@@ -246,17 +246,25 @@ export default function ClientsPage() {
       setClients((prev) =>
         prev.map((c) => (c.id === editClient.id ? { ...c, ...data } : c))
       );
+      setShowModal(false);
+      setEditClient(null);
     } else {
       const res = await fetch("/api/clients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (!res.ok) {
+        const err = await res.json();
+        setErrorToast(err.error || "Failed to add client.");
+        setTimeout(() => setErrorToast(null), 6000);
+        return;
+      }
       const newClient = await res.json();
       setClients((prev) => [{ ...newClient, _count: { documents: 0 } }, ...prev]);
+      setShowModal(false);
+      setEditClient(null);
     }
-    setShowModal(false);
-    setEditClient(null);
   }
 
   const [inviteEmailSent, setInviteEmailSent] = useState(false);
