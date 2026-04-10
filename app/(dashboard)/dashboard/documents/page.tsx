@@ -63,8 +63,11 @@ const CATEGORIES = [
   { value: "financial", label: "Financial Statements" },
   { value: "audit", label: "Audit Reports" },
   { value: "payroll", label: "Payroll" },
+  { value: "receipts", label: "Receipts / Expenses" },
   { value: "general", label: "General" },
 ];
+
+const EDIT_CATEGORIES = CATEGORIES.filter((c) => c.value !== "all");
 
 function getFileIcon(type: string, size = 5) {
   const cls = `w-${size} h-${size}`;
