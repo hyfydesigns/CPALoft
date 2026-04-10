@@ -39,16 +39,30 @@ export async function POST(req: Request) {
       });
     }
 
-    // If already subscribed, redirect to customer portal instead
+    // Already subscribed → upgrade/downgrade the existing subscription in place
     if (user.stripeSubscriptionId) {
-      const portalSession = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: `${appUrl}/dashboard/billing`,
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      const currentItemId = subscription.items.data[0].id;
+
+      await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        items: [{ id: currentItemId, price: selectedPlan.priceId }],
+        proration_behavior: "always_invoice", // charge/credit the difference immediately
+        metadata: { userId: user.id, plan },
       });
-      return NextResponse.json({ url: portalSession.url });
+
+      // Sync DB immediately — no webhook needed
+      await db.user.update({
+        where: { id: user.id },
+        data: {
+          plan,
+          stripePriceId: selectedPlan.priceId,
+        },
+      });
+
+      return NextResponse.json({ url: `${appUrl}/dashboard?upgraded=${plan}` });
     }
 
-    // Create checkout session
+    // No existing subscription → create a new checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
