@@ -8,3 +8,13 @@ export function requirePro(plan: string) {
   }
   return null;
 }
+
+export function requirePremium(plan: string) {
+  if (plan !== "premium") {
+    return NextResponse.json(
+      { error: "This feature requires a Premium plan. Upgrade to unlock it." },
+      { status: 403 }
+    );
+  }
+  return null;
+}
