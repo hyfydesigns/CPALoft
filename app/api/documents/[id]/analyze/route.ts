@@ -38,8 +38,12 @@ export async function POST(
     let initialMessage: string;
 
     if (doc.type === "pdf") {
-      const filePath = path.join(process.cwd(), "public", doc.url);
-      const buffer = await readFile(filePath);
+      // Resolve full URL — local dev uses relative paths, production uses absolute blob URLs
+      const fileUrl = doc.url.startsWith("http")
+        ? doc.url
+        : `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}${doc.url}`;
+      const res = await fetch(fileUrl);
+      const buffer = Buffer.from(await res.arrayBuffer());
       const { text, method, pages } = await extractPdfText(buffer);
 
       if (text.length > 0) {
