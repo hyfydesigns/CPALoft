@@ -27,6 +27,8 @@ import {
   ImageIcon,
   FileSpreadsheet,
   ClipboardList,
+  Pencil,
+  Check,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo";
