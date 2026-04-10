@@ -154,6 +154,103 @@ function AIAssistantContent() {
     }
   }
 
+  // Streams an AI response given an explicit messages array and chatId.
+  // Used by both sendMessage and auto-send after document analyze navigation.
+  const streamResponse = useCallback(async (msgs: Message[], chatId: string | undefined) => {
+    const assistantMessage: Message = { role: "assistant", content: "" };
+    setMessages([...msgs, assistantMessage]);
+    setStreaming(true);
+
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: msgs, chatId }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: "assistant", content: `Error: ${err.error || "Something went wrong"}` };
+          return updated;
+        });
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) return;
+
+      let fullText = "";
+      let resolvedChatId = chatId;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = new TextDecoder().decode(value);
+        for (const line of chunk.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.text) {
+              fullText += data.text;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: "assistant", content: fullText };
+                return updated;
+              });
+            }
+            if (data.error) {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: "assistant", content: `⚠️ ${data.error}` };
+                return updated;
+              });
+            }
+            if (data.chatId) resolvedChatId = data.chatId;
+            if (data.done && resolvedChatId) {
+              await loadChat(resolvedChatId);
+              await loadChats();
+            }
+          } catch { /* ignore parse errors */ }
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: "assistant", content: "Connection error. Please try again." };
+          return updated;
+        });
+      }
+    } finally {
+      setStreaming(false);
+    }
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load a chat and automatically trigger the AI if the last message has no reply yet.
+  // This handles the "Analyze with AI" flow where the chat is pre-seeded with a user message.
+  async function loadChatAndMaybeAutoSend(chatId: string) {
+    try {
+      const res = await fetch(`/api/chat/${chatId}`);
+      const chat = await res.json();
+      setCurrentChat(chat);
+      const msgs: Message[] = chat.messages || [];
+      setMessages(msgs);
+
+      // If the chat ends on a user message, the AI hasn't replied yet — fire automatically
+      if (msgs.length > 0 && msgs[msgs.length - 1].role === "user") {
+        await streamResponse(msgs, chat.id);
+      }
+    } catch (error) {
+      console.error("Failed to load chat", error);
+    }
+  }
+
   function newChat() {
     setCurrentChat(null);
     setMessages([]);
