@@ -334,24 +334,69 @@ export default function DashboardPage() {
             <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {quickActions.map((action) => (
-              <Link key={action.href} href={action.href}>
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                  <div className={`w-9 h-9 ${action.color} rounded-lg flex items-center justify-center`}>
-                    <action.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">
-                      {action.label}
+            {quickActions.map((action) => {
+              const isDigest = action.label === "Practice Digest";
+              const isLocked = action.premium && !isPremium;
+
+              if (isDigest && isPremium) {
+                return (
+                  <button
+                    key="digest"
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer text-left"
+                    onClick={sendDigest}
+                    disabled={digestSending}
+                  >
+                    <div className={`w-9 h-9 ${action.color} rounded-lg flex items-center justify-center`}>
+                      {digestSending ? (
+                        <Brain className="w-5 h-5 text-white animate-spin" />
+                      ) : (
+                        <action.icon className="w-5 h-5 text-white" />
+                      )}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {action.description}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">{action.label}</div>
+                      <div className="text-xs text-gray-500">{action.description}</div>
                     </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                  </button>
+                );
+              }
+
+              if (isLocked) {
+                return (
+                  <Link key={action.label} href="/dashboard/billing">
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer opacity-60">
+                      <div className="w-9 h-9 bg-gray-400 rounded-lg flex items-center justify-center">
+                        <action.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 flex items-center gap-1.5">
+                          {action.label}
+                          <Lock className="w-3 h-3 text-gray-400" />
+                        </div>
+                        <div className="text-xs text-gray-500">{action.description}</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </Link>
+                );
+              }
+
+              return (
+                <Link key={action.href} href={action.href}>
+                  <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div className={`w-9 h-9 ${action.color} rounded-lg flex items-center justify-center`}>
+                      <action.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">{action.label}</div>
+                      <div className="text-xs text-gray-500">{action.description}</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-400" />
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </CardContent>
         </Card>
 
