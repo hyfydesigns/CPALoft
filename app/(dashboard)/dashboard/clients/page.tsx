@@ -89,6 +89,16 @@ interface ActivityLog {
   metadata?: string | null;
 }
 
+interface DocumentRequest {
+  id: string;
+  title: string;
+  description?: string | null;
+  dueDate?: string | null;
+  status: string;
+  createdAt: string;
+  client?: { name: string; email?: string | null };
+}
+
 const statusColors: Record<string, string> = {
   active: "success",
   inactive: "secondary",
