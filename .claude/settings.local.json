@@ -9,7 +9,9 @@
       "Bash(DATABASE_URL=\"file:./dev.db\" npx prisma generate)",
       "mcp__Claude_Preview__preview_start",
       "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/clients/[id]/notes/[noteId]\")",
-      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/clients/[id]/activity\")"
+      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/clients/[id]/activity\")",
+      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/document-requests/[id]\")",
+      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/portal/document-requests/[id]\")"
     ]
   },
   "hooks": {
