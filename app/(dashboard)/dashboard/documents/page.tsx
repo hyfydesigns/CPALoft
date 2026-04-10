@@ -88,10 +88,29 @@ function getFileIcon(type: string, size = 5) {
 function PDFPreviewModal({
   doc,
   onClose,
+  isPremium,
 }: {
   doc: Document;
   onClose: () => void;
+  isPremium: boolean;
 }) {
+  const router = useRouter();
+  const [analyzing, setAnalyzing] = useState(false);
+
+  async function analyzeWithAI() {
+    setAnalyzing(true);
+    try {
+      const res = await fetch(`/api/documents/${doc.id}/analyze`, { method: "POST" });
+      if (res.ok) {
+        const { chatId } = await res.json();
+        onClose();
+        router.push(`/dashboard/ai-assistant?chat=${chatId}`);
+      }
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
@@ -106,6 +125,22 @@ function PDFPreviewModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {isPremium && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs border-forest-300 text-forest-700 hover:bg-forest-50"
+                onClick={analyzeWithAI}
+                disabled={analyzing}
+              >
+                {analyzing ? (
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                ) : (
+                  <Brain className="w-3.5 h-3.5 mr-1.5" />
+                )}
+                {analyzing ? "Opening…" : "Analyze with AI"}
+              </Button>
+            )}
             <a
               href={doc.url}
               download={doc.originalName}
