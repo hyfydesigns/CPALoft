@@ -432,10 +432,11 @@ export default function DashboardPage() {
               {data?.recentDocuments?.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 -mx-2 transition-colors"
+                  onClick={() => setPreviewDoc(doc)}
+                  className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 -mx-2 transition-colors cursor-pointer group"
                 >
-                  <div className="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 text-red-600" />
+                  <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
+                    {getFileIcon(doc.type)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-800 truncate">
@@ -453,9 +454,18 @@ export default function DashboardPage() {
                       <span>{formatRelativeDate(doc.createdAt)}</span>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-xs shrink-0">
-                    {doc.type.toUpperCase()}
-                  </Badge>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge variant="outline" className="text-xs">
+                      {doc.type.toUpperCase()}
+                    </Badge>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setPreviewDoc(doc); }}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-forest-50 transition-all"
+                      title="Preview"
+                    >
+                      <Eye className="w-4 h-4 text-forest-600" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
