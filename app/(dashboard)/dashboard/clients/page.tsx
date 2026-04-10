@@ -100,6 +100,16 @@ interface DocumentRequest {
   client?: { name: string; email?: string | null };
 }
 
+interface TaxDeadline {
+  id: string;
+  label: string;
+  dueDate: string;
+  status: string;
+  reminderEnabled: boolean;
+  notes?: string | null;
+  client?: { name: string };
+}
+
 const statusColors: Record<string, string> = {
   active: "success",
   inactive: "secondary",
