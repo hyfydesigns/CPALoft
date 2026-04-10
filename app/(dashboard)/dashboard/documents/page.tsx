@@ -616,6 +616,7 @@ export default function DocumentsPage() {
         <PDFPreviewModal
           doc={previewDoc}
           onClose={() => setPreviewDoc(null)}
+          isPremium={session?.user?.plan === "premium"}
         />
       )}
 
