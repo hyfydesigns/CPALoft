@@ -18,7 +18,17 @@ import {
   Plus,
   Clock,
   Zap,
+  Eye,
+  ImageIcon,
+  FileSpreadsheet,
+  FileArchive,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { formatRelativeDate, formatBytes, PLANS } from "@/lib/utils";
 
 interface DashboardData {
