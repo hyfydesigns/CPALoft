@@ -38,6 +38,86 @@ export default function SettingsPage() {
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Portal Branding state
+  const [branding, setBranding] = useState<{ firmLogo: string | null; portalDisplayName: string | null }>({
+    firmLogo: null,
+    portalDisplayName: null,
+  });
+  const [brandingLoaded, setBrandingLoaded] = useState(false);
+  const [portalDisplayName, setPortalDisplayName] = useState("");
+  const [brandingSaving, setBrandingSaving] = useState(false);
+  const [brandingSaved, setBrandingSaved] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const isPremium = session?.user?.plan === "premium";
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch("/api/settings/branding")
+        .then((r) => r.json())
+        .then((data) => {
+          setBranding(data);
+          setPortalDisplayName(data.portalDisplayName || "");
+          setBrandingLoaded(true);
+        })
+        .catch(() => setBrandingLoaded(true));
+    }
+  }, [session?.user?.id]);
+
+  async function saveBranding(e: React.FormEvent) {
+    e.preventDefault();
+    setBrandingSaving(true);
+    try {
+      const res = await fetch("/api/settings/branding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ portalDisplayName: portalDisplayName || null }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBranding((prev) => ({ ...prev, portalDisplayName: data.portalDisplayName }));
+        setBrandingSaved(true);
+        setTimeout(() => setBrandingSaved(false), 3000);
+      }
+    } finally {
+      setBrandingSaving(false);
+    }
+  }
+
+  async function uploadLogo(file: File) {
+    setLogoUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("logo", file);
+      const res = await fetch("/api/settings/branding", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const { url } = await res.json();
+        // Save the URL to branding
+        await fetch("/api/settings/branding", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firmLogo: url }),
+        });
+        setBranding((prev) => ({ ...prev, firmLogo: url }));
+      }
+    } finally {
+      setLogoUploading(false);
+    }
+  }
+
+  async function removeLogo() {
+    await fetch("/api/settings/branding", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firmLogo: null }),
+    });
+    setBranding((prev) => ({ ...prev, firmLogo: null }));
+  }
+
   async function exportAccount() {
     setExporting(true);
     try {
