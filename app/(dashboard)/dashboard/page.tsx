@@ -202,10 +202,25 @@ const quickActions = [
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [upgradeToast, setUpgradeToast] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<PreviewDoc | null>(null);
+  const [digestSending, setDigestSending] = useState(false);
+
+  async function sendDigest() {
+    setDigestSending(true);
+    try {
+      await fetch("/api/digest", { method: "POST" });
+      setUpgradeToast("📧 Digest sent to your email!");
+      setTimeout(() => setUpgradeToast(null), 6000);
+    } finally {
+      setDigestSending(false);
+    }
+  }
+
+  const isPremium = session?.user?.plan === "premium";
 
   useEffect(() => {
     fetch("/api/dashboard")
