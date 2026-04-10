@@ -852,86 +852,194 @@ export default function ClientsPage() {
 
       {/* View Client Details Modal */}
       {viewClient && (
-        <Dialog open onOpenChange={() => setViewClient(null)}>
-          <DialogContent className="max-w-md">
+        <Dialog open onOpenChange={() => { setViewClient(null); setActiveDetailTab("details"); }}>
+          <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Client Details</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="w-14 h-14">
-                  <AvatarFallback className="bg-forest-600 text-white text-xl font-bold">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback className="bg-forest-600 text-white text-sm font-bold">
                     {getInitials(viewClient.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {viewClient.name}
-                  </h3>
+                  <DialogTitle className="text-base">{viewClient.name}</DialogTitle>
                   <Badge
-                    variant={
-                      (statusColors[viewClient.status] as "success" | "warning" | "secondary") ||
-                      "outline"
-                    }
-                    className="capitalize text-xs mt-1"
+                    variant={(statusColors[viewClient.status] as "success" | "warning" | "secondary") || "outline"}
+                    className="capitalize text-xs mt-0.5"
                   >
                     {viewClient.status}
                   </Badge>
                 </div>
               </div>
+            </DialogHeader>
 
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                {viewClient.company && (
-                  <div className="col-span-2">
-                    <p className="text-xs text-gray-400 mb-0.5">Company</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <Building2 className="w-4 h-4 text-gray-400" />
-                      {viewClient.company}
-                    </p>
-                  </div>
-                )}
-                {viewClient.email && (
-                  <div>
-                    <p className="text-xs text-gray-400 mb-0.5">Email</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      {viewClient.email}
-                    </p>
-                  </div>
-                )}
-                {viewClient.phone && (
-                  <div>
-                    <p className="text-xs text-gray-400 mb-0.5">Phone</p>
-                    <p className="font-medium flex items-center gap-1">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      {viewClient.phone}
-                    </p>
-                  </div>
-                )}
-                {viewClient.taxId && (
-                  <div>
-                    <p className="text-xs text-gray-400 mb-0.5">Tax ID</p>
-                    <p className="font-medium text-mono">{viewClient.taxId}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-xs text-gray-400 mb-0.5">Documents</p>
-                  <p className="font-medium flex items-center gap-1">
-                    <FileText className="w-4 h-4 text-gray-400" />
-                    {viewClient._count.documents} files
-                  </p>
-                </div>
-              </div>
+            <Tabs value={activeDetailTab} onValueChange={(v) => {
+              setActiveDetailTab(v);
+              if (v === "notes" && clientNotes.length === 0 && !notesLoading) loadNotes(viewClient.id);
+              if (v === "activity" && activityLog.length === 0 && !activityLoading) loadActivity(viewClient.id);
+            }}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="notes">Notes</TabsTrigger>
+                <TabsTrigger value="activity">Activity</TabsTrigger>
+              </TabsList>
 
-              {viewClient.notes && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-1">Notes</p>
-                  <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
-                    {viewClient.notes}
-                  </p>
+              {/* Details Tab */}
+              <TabsContent value="details" className="mt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {viewClient.company && (
+                    <div className="col-span-2">
+                      <p className="text-xs text-gray-400 mb-0.5">Company</p>
+                      <p className="font-medium flex items-center gap-1">
+                        <Building2 className="w-4 h-4 text-gray-400" />
+                        {viewClient.company}
+                      </p>
+                    </div>
+                  )}
+                  {viewClient.email && (
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Email</p>
+                      <p className="font-medium flex items-center gap-1 text-xs">
+                        <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        {viewClient.email}
+                      </p>
+                    </div>
+                  )}
+                  {viewClient.phone && (
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Phone</p>
+                      <p className="font-medium flex items-center gap-1">
+                        <Phone className="w-4 h-4 text-gray-400" />
+                        {viewClient.phone}
+                      </p>
+                    </div>
+                  )}
+                  {viewClient.taxId && (
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Tax ID</p>
+                      <p className="font-medium font-mono text-sm">{viewClient.taxId}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-xs text-gray-400 mb-0.5">Documents</p>
+                    <p className="font-medium flex items-center gap-1">
+                      <FileText className="w-4 h-4 text-gray-400" />
+                      {viewClient._count.documents} files
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-0.5">Portal</p>
+                    <p className="font-medium text-sm">
+                      {viewClient.portalUserId ? (
+                        <Badge variant="success" className="text-xs">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Active
+                        </Badge>
+                      ) : viewClient.portalEnabled ? (
+                        <Badge variant="warning" className="text-xs">Invited</Badge>
+                      ) : (
+                        <span className="text-gray-400 text-xs">Not set up</span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
+                {viewClient.notes && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Notes</p>
+                    <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                      {viewClient.notes}
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Notes Tab */}
+              <TabsContent value="notes" className="mt-4">
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Textarea
+                      value={noteInput}
+                      onChange={(e) => setNoteInput(e.target.value)}
+                      placeholder="Add a note about this client..."
+                      rows={2}
+                      className="resize-none text-sm flex-1"
+                    />
+                    <Button
+                      className="bg-forest-600 hover:bg-forest-700 self-end"
+                      size="sm"
+                      onClick={() => addNote(viewClient.id)}
+                      disabled={!noteInput.trim() || addingNote}
+                    >
+                      {addingNote ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+                    </Button>
+                  </div>
+
+                  {notesLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                    </div>
+                  ) : clientNotes.length === 0 ? (
+                    <p className="text-sm text-gray-400 text-center py-6">No notes yet. Add one above.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {clientNotes.map((note) => (
+                        <div key={note.id} className={`p-3 rounded-lg border text-sm ${note.pinned ? "bg-yellow-50 border-yellow-200" : "bg-gray-50 border-gray-100"}`}>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-gray-700 flex-1">{note.content}</p>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                onClick={() => togglePin(viewClient.id, note)}
+                                className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-yellow-500"
+                                title={note.pinned ? "Unpin" : "Pin"}
+                              >
+                                <Star className={`w-3.5 h-3.5 ${note.pinned ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                              </button>
+                              <button
+                                onClick={() => deleteNote(viewClient.id, note.id)}
+                                className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-red-500"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatRelativeDate(note.createdAt)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Activity Tab */}
+              <TabsContent value="activity" className="mt-4">
+                {activityLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                  </div>
+                ) : activityLog.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-8">No activity recorded yet.</p>
+                ) : (
+                  <div className="space-y-3 max-h-72 overflow-y-auto">
+                    {activityLog.map((event) => (
+                      <div key={event.id} className="flex items-start gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${activityColor(event.type)}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-gray-700">{event.label}</p>
+                          <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatRelativeDate(event.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+
             <DialogFooter>
               <Button
                 variant="outline"
@@ -944,7 +1052,7 @@ export default function ClientsPage() {
                 <Edit2 className="w-4 h-4 mr-2" />
                 Edit
               </Button>
-              <Button onClick={() => setViewClient(null)}>Close</Button>
+              <Button onClick={() => { setViewClient(null); setActiveDetailTab("details"); }}>Close</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
