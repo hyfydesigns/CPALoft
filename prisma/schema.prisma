@@ -59,18 +59,22 @@ model User {
   stripePriceId          String?
   stripeCurrentPeriodEnd DateTime?
 
-  accounts         Account[]
-  sessions         Session[]
-  documents        Document[]
-  clients          Client[]
-  chats            Chat[]
-  aiUsage          AiUsage[]
-  clientProfile    Client?           @relation("ClientPortalUser")
-  documentRequests DocumentRequest[]
-  taxDeadlines     TaxDeadline[]
-  clientNotes      ClientNote[]
-  activityLogs     ActivityLog[]
-  savedPrompts     SavedPrompt[]
+  firmLogo          String?
+  portalDisplayName String?
+
+  accounts          Account[]
+  sessions          Session[]
+  documents         Document[]
+  clients           Client[]
+  chats             Chat[]
+  aiUsage           AiUsage[]
+  clientProfile     Client?           @relation("ClientPortalUser")
+  documentRequests  DocumentRequest[]
+  taxDeadlines      TaxDeadline[]
+  clientNotes       ClientNote[]
+  activityLogs      ActivityLog[]
+  savedPrompts      SavedPrompt[]
+  deadlineTemplates DeadlineTemplate[]
 }
 
 model VerificationToken {
