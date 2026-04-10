@@ -4,8 +4,17 @@ import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Brain,
   Send,
@@ -17,6 +26,8 @@ import {
   MessageSquare,
   ChevronRight,
   Sparkles,
+  BookmarkPlus,
+  Bookmark,
 } from "lucide-react";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -33,6 +44,13 @@ interface Chat {
   title: string;
   updatedAt: string;
   messages: Message[];
+}
+
+interface SavedPrompt {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -77,12 +95,20 @@ function AIAssistantContent() {
   const [copied, setCopied] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Saved prompts
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveTitle, setSaveTitle] = useState("");
+  const [saveContent, setSaveContent] = useState("");
+  const [savingPrompt, setSavingPrompt] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     loadChats();
+    loadSavedPrompts();
   }, []);
 
   useEffect(() => {
@@ -102,6 +128,18 @@ function AIAssistantContent() {
       setChats(Array.isArray(data) ? data : []);
     } catch {
       setChats([]);
+    }
+  }
+
+  async function loadSavedPrompts() {
+    try {
+      const res = await fetch("/api/saved-prompts");
+      if (res.ok) {
+        const data = await res.json();
+        setSavedPrompts(Array.isArray(data) ? data : []);
+      }
+    } catch {
+      setSavedPrompts([]);
     }
   }
 
@@ -128,6 +166,38 @@ function AIAssistantContent() {
     if (currentChat?.id === chatId) {
       newChat();
     }
+  }
+
+  async function savePrompt() {
+    if (!saveTitle.trim() || !saveContent.trim()) return;
+    setSavingPrompt(true);
+    try {
+      const res = await fetch("/api/saved-prompts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: saveTitle.trim(), content: saveContent.trim() }),
+      });
+      if (res.ok) {
+        const prompt = await res.json();
+        setSavedPrompts((prev) => [prompt, ...prev]);
+        setShowSaveDialog(false);
+        setSaveTitle("");
+        setSaveContent("");
+      }
+    } finally {
+      setSavingPrompt(false);
+    }
+  }
+
+  async function deletePrompt(id: string) {
+    await fetch(`/api/saved-prompts/${id}`, { method: "DELETE" });
+    setSavedPrompts((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  function openSaveDialog(prefill?: string) {
+    setSaveContent(prefill || input);
+    setSaveTitle("");
+    setShowSaveDialog(true);
   }
 
   async function sendMessage(content?: string) {
@@ -250,9 +320,12 @@ function AIAssistantContent() {
     setTimeout(() => setCopied(null), 2000);
   }
 
+  // suppress unused variable warning
+  void loading;
+
   return (
     <div className="flex h-full bg-gray-50">
-      {/* Chat History Sidebar */}
+      {/* Chat History + Saved Prompts Sidebar */}
       <div
         className={cn(
           "flex flex-col bg-white border-r border-gray-200 transition-all duration-200",
@@ -261,15 +334,26 @@ function AIAssistantContent() {
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <h2 className="font-semibold text-sm text-gray-700">Chat History</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={newChat}
-            className="h-7 px-2 text-xs"
-          >
-            <Plus className="w-3.5 h-3.5 mr-1" />
-            New
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => openSaveDialog()}
+              className="h-7 px-2 text-xs"
+              title="Save a prompt"
+            >
+              <BookmarkPlus className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={newChat}
+              className="h-7 px-2 text-xs"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              New
+            </Button>
+          </div>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
@@ -315,6 +399,38 @@ function AIAssistantContent() {
               ))
             )}
           </div>
+
+          {/* Saved Prompts section */}
+          {savedPrompts.length > 0 && (
+            <div className="px-2 pb-4">
+              <div className="border-t border-gray-100 pt-3 mb-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2 flex items-center gap-1">
+                  <Bookmark className="w-3 h-3" />
+                  Saved Prompts
+                </p>
+                <div className="space-y-1">
+                  {savedPrompts.map((prompt) => (
+                    <div
+                      key={prompt.id}
+                      className="group flex items-center justify-between gap-1 px-2 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer"
+                      onClick={() => setInput(prompt.content)}
+                    >
+                      <span className="text-xs text-gray-600 truncate flex-1">{prompt.title}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deletePrompt(prompt.id);
+                        }}
+                        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-opacity shrink-0"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </ScrollArea>
       </div>
 
@@ -372,6 +488,29 @@ function AIAssistantContent() {
                   procedures, or client-specific scenarios.
                 </p>
               </div>
+
+              {/* Saved prompts as chips above suggested prompts */}
+              {savedPrompts.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-1">
+                    <Bookmark className="w-3.5 h-3.5" />
+                    Your Saved Prompts
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {savedPrompts.slice(0, 4).map((prompt) => (
+                      <button
+                        key={prompt.id}
+                        onClick={() => sendMessage(prompt.content)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-forest-200 bg-forest-50 text-forest-700 text-xs font-medium hover:bg-forest-100 transition-colors"
+                      >
+                        <Bookmark className="w-3 h-3" />
+                        {prompt.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {SUGGESTED_PROMPTS.map((prompt) => (
                   <button
@@ -432,7 +571,16 @@ function AIAssistantContent() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      <div className="relative">
+                        <p className="text-sm leading-relaxed pr-6">{msg.content}</p>
+                        <button
+                          onClick={() => openSaveDialog(msg.content)}
+                          className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-forest-700"
+                          title="Save this prompt"
+                        >
+                          <BookmarkPlus className="w-3.5 h-3.5 text-white/70" />
+                        </button>
+                      </div>
                     )}
                   </div>
                   {msg.role === "user" && (
@@ -481,6 +629,56 @@ function AIAssistantContent() {
           </div>
         </div>
       </div>
+
+      {/* Save Prompt Dialog */}
+      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookmarkPlus className="w-5 h-5 text-forest-600" />
+              Save Prompt
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                value={saveTitle}
+                onChange={(e) => setSaveTitle(e.target.value)}
+                placeholder="e.g. Section 179 Deduction"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Prompt</Label>
+              <Textarea
+                value={saveContent}
+                onChange={(e) => setSaveContent(e.target.value)}
+                placeholder="The prompt text to save..."
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-forest-600 hover:bg-forest-700"
+              onClick={savePrompt}
+              disabled={!saveTitle.trim() || !saveContent.trim() || savingPrompt}
+            >
+              {savingPrompt ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <BookmarkPlus className="w-4 h-4 mr-2" />
+              )}
+              Save Prompt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
