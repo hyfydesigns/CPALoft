@@ -218,7 +218,7 @@ model ActivityLog {
   userId    String
   type      String
   label     String
-  metadata  String?  // JSON string
+  metadata  String?  @db.Text // JSON string
   createdAt DateTime @default(now())
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
