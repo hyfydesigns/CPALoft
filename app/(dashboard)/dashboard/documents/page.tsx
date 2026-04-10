@@ -156,6 +156,7 @@ export default function DocumentsPage() {
   const [uploadClientId, setUploadClientId] = useState("none");
   const [taggingDoc, setTaggingDoc] = useState<Document | null>(null);
   const [tagClientId, setTagClientId] = useState("none");
+  const [tagCategory, setTagCategory] = useState("general");
   const [tagging, setTagging] = useState(false);
 
   useEffect(() => {
