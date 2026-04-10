@@ -365,8 +365,8 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
         <div className="space-y-2">
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Free</strong> — $0/mo. 10 AI messages, 5 documents, 3 clients.</li>
-            <li><strong>Pro</strong> — $49/mo. 500 AI messages, 100 documents, 50 clients, 10 GB storage.</li>
-            <li><strong>Premium</strong> — $149/mo. Unlimited AI messages, documents, and clients. 100 GB storage.</li>
+            <li><strong>Pro</strong> — $49/mo. 500 AI messages, 100 documents, 50 clients, 10 GB storage. Includes Document Requests, Tax Deadline Tracker, Client Notes, Saved AI Prompts, and Bulk Download.</li>
+            <li><strong>Premium</strong> — $149/mo. Unlimited everything, 100 GB storage. All Pro features plus Custom Portal Branding, AI Document Insights, Deadline Templates, Practice Digest Email, and Client Reports.</li>
           </ul>
           <p className="text-gray-500">
             See the{" "}
