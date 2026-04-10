@@ -810,10 +810,12 @@ export default function HelpPage() {
                 </p>
                 <div className="space-y-2 text-sm">
                   {[
-                    { href: "/login",         label: "CPA Sign In",      icon: LogIn },
-                    { href: "/portal/login",  label: "Client Portal",    icon: Link2 },
-                    { href: "/signup",        label: "Create Account",   icon: Zap },
-                    { href: "/#pricing",      label: "View Pricing",     icon: CreditCard },
+                    isLoggedIn
+                      ? { href: "/dashboard", label: "Go to Dashboard", icon: LogIn }
+                      : { href: "/login",     label: "CPA Sign In",     icon: LogIn },
+                    { href: "/portal/login",  label: "Client Portal",   icon: Link2 },
+                    ...(!isLoggedIn ? [{ href: "/signup", label: "Create Account", icon: Zap }] : []),
+                    { href: "/#pricing",      label: "View Pricing",    icon: CreditCard },
                   ].map((link) => (
                     <Link
                       key={link.href}
