@@ -166,6 +166,13 @@ export default function BillingPage() {
         </div>
       )}
 
+      {syncing && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium bg-forest-600 text-white">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Verifying your subscription…
+        </div>
+      )}
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Billing & Plans</h1>
         <p className="text-gray-500 text-sm mt-1">
