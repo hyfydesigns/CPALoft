@@ -7,7 +7,9 @@
       "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Write-Host 'killed'\")",
       "Bash(DATABASE_URL=\"file:./dev.db\" npx prisma db push)",
       "Bash(DATABASE_URL=\"file:./dev.db\" npx prisma generate)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/clients/[id]/notes/[noteId]\")",
+      "Bash(mkdir -p \"C:/Users/Enefiok/Documents/Projects/intelliCPA/app/api/clients/[id]/activity\")"
     ]
   },
   "hooks": {
