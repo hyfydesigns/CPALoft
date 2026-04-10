@@ -444,6 +444,8 @@ export default function ClientsPage() {
               setShowModal(true);
             }}
             className="bg-forest-600 hover:bg-forest-700"
+            disabled={atLimit}
+            title={atLimit ? `Client limit reached (${clientLimit}). Upgrade your plan to add more.` : undefined}
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Client
