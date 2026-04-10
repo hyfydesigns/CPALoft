@@ -946,11 +946,13 @@ export default function ClientsPage() {
               setActiveDetailTab(v);
               if (v === "notes" && clientNotes.length === 0 && !notesLoading) loadNotes(viewClient.id);
               if (v === "activity" && activityLog.length === 0 && !activityLoading) loadActivity(viewClient.id);
+              if (v === "requests" && clientRequests.length === 0 && !requestsLoading) loadClientRequests(viewClient.id);
             }}>
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="notes">Notes</TabsTrigger>
                 <TabsTrigger value="activity">Activity</TabsTrigger>
+                <TabsTrigger value="requests">Requests</TabsTrigger>
               </TabsList>
 
               {/* Details Tab */}
