@@ -294,7 +294,7 @@ export default function BillingPage() {
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                     ) : null}
-                    {isLoading ? "Redirecting…" : `Upgrade to ${plan.name}`}
+                    {isLoading ? "Redirecting…" : isDowngrade ? `Downgrade to ${plan.name}` : `Upgrade to ${plan.name}`}
                     {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
                   </Button>
                 )}
