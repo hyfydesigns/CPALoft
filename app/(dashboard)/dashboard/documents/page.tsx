@@ -538,9 +538,18 @@ export default function DocumentsPage() {
                   </div>
                 </div>
 
-                <div className="truncate text-sm font-medium text-gray-800 mb-1">
-                  {doc.originalName}
-                </div>
+                <TooltipProvider delayDuration={400}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="truncate text-sm font-medium text-gray-800 mb-1 cursor-default">
+                        {doc.originalName}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs break-all text-xs">
+                      {doc.originalName}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
                   <span>{formatBytes(doc.size)}</span>
                   <span>{formatRelativeDate(doc.createdAt)}</span>
