@@ -30,6 +30,7 @@ const navItems = [
   { href: "/dashboard/ai-assistant", icon: Brain, label: "AI Assistant" },
   { href: "/dashboard/documents", icon: FileText, label: "Documents" },
   { href: "/dashboard/clients", icon: Users, label: "Clients" },
+  { href: "/dashboard/deadlines", icon: CalendarClock, label: "Deadlines" },
 ];
 
 const bottomItems = [
