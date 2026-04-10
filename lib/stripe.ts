@@ -19,8 +19,9 @@ export function getStripe(): Stripe {
 
 // Keep a named export for convenience — same lazy behaviour
 export const stripe = new Proxy({} as Stripe, {
-  get(_target, prop) {
-    return (getStripe() as unknown as Record<string | symbol, unknown>)[prop];
+  get(_target, prop: string | symbol) {
+    const client = getStripe() as unknown as Record<string | symbol, unknown>;
+    return client[prop];
   },
 });
 
