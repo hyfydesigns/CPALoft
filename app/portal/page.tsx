@@ -40,6 +40,14 @@ interface UploadedDoc {
   createdAt: string;
 }
 
+interface DocumentRequest {
+  id: string;
+  title: string;
+  description?: string | null;
+  dueDate?: string | null;
+  status: string;
+}
+
 const CATEGORIES = [
   { value: "tax", label: "📋 Tax Return / W-2 / 1099" },
   { value: "financial", label: "📊 Financial Statement" },
