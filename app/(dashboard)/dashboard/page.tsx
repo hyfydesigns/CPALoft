@@ -507,7 +507,7 @@ export default function DashboardPage() {
       </div>
 
       {previewDoc && (
-        <DocPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
+        <DocPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} isPremium={isPremium} />
       )}
 
       {/* Recent Documents */}
