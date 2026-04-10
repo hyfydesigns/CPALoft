@@ -243,6 +243,13 @@ export default function ClientsPage() {
   const [activityLoading, setActivityLoading] = useState(false);
   const [activeDetailTab, setActiveDetailTab] = useState("details");
 
+  // Document requests in client detail
+  const [clientRequests, setClientRequests] = useState<DocumentRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  const [newRequestTitle, setNewRequestTitle] = useState("");
+  const [newRequestDueDate, setNewRequestDueDate] = useState("");
+  const [addingRequest, setAddingRequest] = useState(false);
+
   // Restore
   const [showRestore, setShowRestore] = useState(false);
   const [restoreFile, setRestoreFile] = useState<File | null>(null);
