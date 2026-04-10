@@ -295,13 +295,26 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
       ),
     },
     {
+      q: "What happens after my client registers?",
+      a: (
+        <p>
+          Once they complete registration through the invite link, their status automatically
+          changes from <strong>Pending</strong> to <strong>Active</strong> and they receive a
+          welcome email. They can then log in anytime at{" "}
+          <Link href="/portal/login" className="text-forest-600 hover:underline">/portal/login</Link>{" "}
+          using their email and password — no new invite needed.
+        </p>
+      ),
+    },
+    {
       q: "What if my client loses their invite link or it expires?",
       a: (
         <p>
-          Go to the <strong>Clients</strong> page, click <strong>⋯</strong> on the client row,
-          and select <strong>Invite to Client Portal</strong> again. A fresh 7-day link is
-          generated instantly. If they already registered, clicking the link will inform them
-          to log in instead.
+          Go to the <strong>Clients</strong> page and click <strong>Resend Invite</strong> on
+          their client card. A fresh 7-day invite link is generated and emailed to them
+          instantly. If they already registered, they should use{" "}
+          <Link href="/portal/login" className="text-forest-600 hover:underline">/portal/login</Link>{" "}
+          to sign in directly.
         </p>
       ),
     },
