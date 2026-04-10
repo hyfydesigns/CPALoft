@@ -1184,6 +1184,74 @@ export default function ClientsPage() {
                   </div>
                 )}
               </TabsContent>
+              {/* Deadlines Tab */}
+              <TabsContent value="deadlines" className="mt-4">
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={newDeadlineLabel}
+                      onChange={(e) => setNewDeadlineLabel(e.target.value)}
+                      placeholder="Label (e.g. Form 1040)"
+                      className="text-sm flex-1"
+                    />
+                    <input
+                      type="date"
+                      value={newDeadlineDueDate}
+                      onChange={(e) => setNewDeadlineDueDate(e.target.value)}
+                      className="border border-gray-200 rounded-md px-2 text-sm text-gray-600 w-32"
+                    />
+                    <Button
+                      className="bg-forest-600 hover:bg-forest-700 shrink-0"
+                      size="sm"
+                      onClick={() => addClientDeadline(viewClient.id)}
+                      disabled={!newDeadlineLabel.trim() || !newDeadlineDueDate || addingDeadline}
+                    >
+                      {addingDeadline ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                    </Button>
+                  </div>
+
+                  {deadlinesLoading ? (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                    </div>
+                  ) : clientDeadlines.length === 0 ? (
+                    <p className="text-sm text-gray-400 text-center py-6 flex flex-col items-center gap-2">
+                      <CalendarClock className="w-8 h-8 opacity-30" />
+                      No deadlines yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {clientDeadlines.map((d) => (
+                        <div key={d.id} className={`flex items-center justify-between gap-2 p-2.5 rounded-lg border ${d.status === "overdue" ? "border-red-200 bg-red-50" : d.status === "completed" ? "border-gray-100 bg-gray-50 opacity-70" : "border-gray-100 bg-white"}`}>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800">{d.label}</p>
+                            <p className={`text-xs mt-0.5 ${d.status === "overdue" ? "text-red-600 font-medium" : "text-gray-400"}`}>
+                              {new Date(d.dueDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Badge
+                            variant={d.status === "completed" ? "success" : d.status === "overdue" ? "destructive" : "warning"}
+                            className="text-xs capitalize shrink-0"
+                          >
+                            {d.status}
+                          </Badge>
+                          {d.status !== "completed" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => markDeadlineComplete(d.id)}
+                              className="text-xs h-6 px-1.5"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
               {/* Requests Tab */}
               <TabsContent value="requests" className="mt-4">
                 <div className="space-y-3">
