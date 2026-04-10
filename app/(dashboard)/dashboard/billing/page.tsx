@@ -71,7 +71,7 @@ const planDetails = [
 ];
 
 export default function BillingPage() {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentPlan = session?.user?.plan || "free";
