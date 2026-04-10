@@ -80,7 +80,7 @@ export default function BillingPage() {
   const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  // On Stripe success redirect: sync subscription from Stripe, then refresh session
+  // On Stripe success redirect: sync plan from Stripe → update JWT cookie → redirect to dashboard
   useEffect(() => {
     if (searchParams.get("success") === "1") {
       setSyncing(true);
@@ -88,16 +88,19 @@ export default function BillingPage() {
         .then((r) => r.json())
         .then(async (data) => {
           if (data.plan) {
-            await updateSession(); // refresh NextAuth session so plan updates everywhere
-            setToast({ type: "success", message: `🎉 You're now on the ${data.plan.charAt(0).toUpperCase() + data.plan.slice(1)} plan!` });
+            // Update JWT cookie with fresh plan from DB, then hard-navigate so the
+            // new cookie is sent with the next request and dashboard sees the right plan
+            await updateSession();
+            window.location.href = "/dashboard?upgraded=" + data.plan;
+          } else {
+            setSyncing(false);
+            setToast({ type: "error", message: data.error || "Could not verify subscription. Please refresh." });
+            router.replace("/dashboard/billing");
           }
         })
         .catch(() => {
-          setToast({ type: "error", message: "Could not verify subscription. Please refresh." });
-        })
-        .finally(() => {
           setSyncing(false);
-          // Clean up URL params without reload
+          setToast({ type: "error", message: "Network error verifying subscription. Please refresh." });
           router.replace("/dashboard/billing");
         });
     } else if (searchParams.get("canceled") === "1") {
