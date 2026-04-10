@@ -50,7 +50,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Email verification / password reset
-  verifyToken    String?   @unique
+  verifyToken    String?   @unique @db.Text
   verifyExpiry   DateTime?
 
   // Stripe billing
