@@ -234,6 +234,15 @@ export default function ClientsPage() {
   const [deleting, setDeleting] = useState(false);
   const [backupDownloaded, setBackupDownloaded] = useState(false);
 
+  // Notes & Activity
+  const [clientNotes, setClientNotes] = useState<ClientNote[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [noteInput, setNoteInput] = useState("");
+  const [addingNote, setAddingNote] = useState(false);
+  const [activityLog, setActivityLog] = useState<ActivityLog[]>([]);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activeDetailTab, setActiveDetailTab] = useState("details");
+
   // Restore
   const [showRestore, setShowRestore] = useState(false);
   const [restoreFile, setRestoreFile] = useState<File | null>(null);
