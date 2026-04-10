@@ -114,6 +114,11 @@ export default function ClientPortalPage() {
         .then((data) => setDocRequests(Array.isArray(data) ? data : []))
         .catch(() => setDocRequests([]))
         .finally(() => setRequestsLoading(false));
+
+      fetch("/api/portal/branding")
+        .then((r) => r.json())
+        .then((data) => setBranding(data))
+        .catch(() => {});
     }
   }, [status, session]);
 
