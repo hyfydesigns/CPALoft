@@ -42,7 +42,7 @@ async function extractWithPdfjs(buffer: Buffer): Promise<ExtractResult> {
     process.cwd(),
     "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"
   );
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerAbs.replace(/\\/g, "/")}``;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerAbs.replace(/\\/g, "/")}`;
 
   const loadingTask = pdfjsLib.getDocument({
     data: new Uint8Array(buffer),
