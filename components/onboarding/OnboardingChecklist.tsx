@@ -52,7 +52,7 @@ export const ONBOARDING_STEPS = [
   },
 ];
 
-const STORAGE_KEY = "intellicpa_onboarding_steps";
+const STORAGE_KEY = "cpaloft_onboarding_steps";
 
 function loadSteps(): Set<string> {
   if (typeof window === "undefined") return new Set();
