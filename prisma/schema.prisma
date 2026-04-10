@@ -61,6 +61,7 @@ model User {
 
   firmLogo          String?
   portalDisplayName String?
+  onboardingCompleted Boolean @default(false)
 
   accounts          Account[]
   sessions          Session[]
