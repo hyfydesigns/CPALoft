@@ -2,112 +2,128 @@
  * PDF text extraction with OCR fallback.
  *
  * Strategy:
- *  1. pdf-parse  — fast, zero dependencies, works on text-layer PDFs
- *  2. pdfjs-dist + canvas + tesseract.js — renders each page to PNG then OCRs it;
- *     used only when pdf-parse returns no usable text (scanned / image-based PDFs)
+ *  1. pdfjs-dist getTextContent() — extracts text from digital/text-layer PDFs
+ *  2. If a page yields no text, render it to a canvas and OCR with tesseract.js
  *
- * Max pages OCR'd: MAX_OCR_PAGES (prevents very slow processing on large docs)
- * Max chars returned: MAX_CHARS (keeps AI token cost reasonable)
+ * This handles mixed PDFs (some digital pages, some scanned) page by page.
+ *
+ * Max pages processed: MAX_PAGES
+ * Max chars returned:  MAX_CHARS
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse");
-
-const MAX_OCR_PAGES = 10;
+const MAX_PAGES = 10;
 const MAX_CHARS = 15000;
 
 export type ExtractResult = {
   text: string;
-  method: "text-layer" | "ocr" | "none";
+  method: "text-layer" | "ocr" | "mixed" | "none";
   pages?: number;
 };
 
-/**
- * Extract text from a PDF buffer.
- * Returns the text and which method succeeded.
- */
 export async function extractPdfText(buffer: Buffer): Promise<ExtractResult> {
-  // ── Step 1: try text-layer extraction ──────────────────────────────────────
   try {
-    const parsed = await pdfParse(buffer);
-    const raw: string = (parsed.text ?? "").trim();
-    if (raw.length > 50) {
-      // Enough real text — not a scanned doc
-      return {
-        text: raw.length > MAX_CHARS ? raw.slice(0, MAX_CHARS) + "\n\n[... truncated ...]" : raw,
-        method: "text-layer",
-        pages: parsed.numpages,
-      };
-    }
-  } catch {
-    // pdf-parse failed — fall through to OCR
-  }
-
-  // ── Step 2: OCR via pdfjs-dist + canvas + tesseract.js ────────────────────
-  try {
-    const text = await ocrPdf(buffer);
-    if (text.trim().length > 0) {
-      return {
-        text: text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + "\n\n[... truncated ...]" : text,
-        method: "ocr",
-      };
-    }
+    return await extractWithPdfjs(buffer);
   } catch (err) {
-    console.warn("OCR failed:", err);
+    console.error("PDF extraction error:", err);
+    return { text: "", method: "none" };
   }
-
-  return { text: "", method: "none" };
 }
 
-async function ocrPdf(buffer: Buffer): Promise<string> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createCanvas } = require("canvas") as typeof import("canvas");
-
-  // pdfjs-dist v5 — legacy build is ESM (.mjs), use dynamic import
+async function extractWithPdfjs(buffer: Buffer): Promise<ExtractResult> {
+  // Dynamic import — avoids bundling issues and only loads when needed
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-
-  // Disable the worker in Node.js — run in-process
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (pdfjsLib as any).GlobalWorkerOptions.workerSrc = "";
 
-  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
-  const pdf = await loadingTask.promise;
-
-  const numPages = Math.min(pdf.numPages, MAX_OCR_PAGES);
-  const pageTexts: string[] = [];
-
-  // Tesseract.js createWorker — lazy import
-  const { createWorker } = await import("tesseract.js");
-  const worker = await createWorker("eng", 1, {
-    // Silence tesseract's verbose logging in production
-    logger: () => {},
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(buffer),
+    // Suppress pdfjs console warnings
+    verbosity: 0,
   });
+  const pdf = await loadingTask.promise;
+  const totalPages = pdf.numPages;
+  const pagesToProcess = Math.min(totalPages, MAX_PAGES);
 
-  for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+  const pageResults: Array<{ text: string; method: "text-layer" | "ocr" }> = [];
+  let textLayerCount = 0;
+  let ocrCount = 0;
+
+  // Lazy-load Tesseract worker only if we find image pages
+  let tesseractWorker: Awaited<ReturnType<typeof import("tesseract.js")["createWorker"]>> | null = null;
+
+  for (let pageNum = 1; pageNum <= pagesToProcess; pageNum++) {
     const page = await pdf.getPage(pageNum);
 
-    // Render at 2× scale for better OCR accuracy
-    const viewport = page.getViewport({ scale: 2.0 });
-    const canvas = createCanvas(viewport.width, viewport.height);
-    // pdfjs expects a browser-like canvas context — cast is required
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const context = canvas.getContext("2d") as any;
+    // ── Try text layer first ──────────────────────────────────────────────────
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((item: any) => ("str" in item ? item.str : ""))
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
+    if (pageText.length > 20) {
+      pageResults.push({ text: `--- Page ${pageNum} ---\n${pageText}`, method: "text-layer" });
+      textLayerCount++;
+      continue;
+    }
 
-    const imageBuffer = canvas.toBuffer("image/png");
-    const { data } = await worker.recognize(imageBuffer);
-    if (data.text.trim()) {
-      pageTexts.push(`--- Page ${pageNum} ---\n${data.text.trim()}`);
+    // ── No text — OCR the rendered page ──────────────────────────────────────
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { createCanvas } = require("canvas") as typeof import("canvas");
+
+      if (!tesseractWorker) {
+        const { createWorker } = await import("tesseract.js");
+        tesseractWorker = await createWorker("eng", 1, { logger: () => {} });
+      }
+
+      const viewport = page.getViewport({ scale: 2.0 });
+      const canvas = createCanvas(viewport.width, viewport.height);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const context = canvas.getContext("2d") as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await page.render({ canvasContext: context, viewport, canvas: canvas as any }).promise;
+
+      const imageBuffer = canvas.toBuffer("image/png");
+      const { data } = await tesseractWorker.recognize(imageBuffer);
+      const ocrText = data.text.trim();
+
+      if (ocrText.length > 0) {
+        pageResults.push({ text: `--- Page ${pageNum} (OCR) ---\n${ocrText}`, method: "ocr" });
+        ocrCount++;
+      }
+    } catch (ocrErr) {
+      console.warn(`OCR failed for page ${pageNum}:`, ocrErr);
     }
   }
 
-  await worker.terminate();
-
-  if (pdf.numPages > MAX_OCR_PAGES) {
-    pageTexts.push(`\n[Note: Only the first ${MAX_OCR_PAGES} of ${pdf.numPages} pages were processed]`);
+  if (tesseractWorker) {
+    await tesseractWorker.terminate();
   }
 
-  return pageTexts.join("\n\n");
+  if (pageResults.length === 0) {
+    return { text: "", method: "none", pages: totalPages };
+  }
+
+  const combined = pageResults.map((r) => r.text).join("\n\n");
+  const truncated = combined.length > MAX_CHARS
+    ? combined.slice(0, MAX_CHARS) + "\n\n[... document truncated ...]"
+    : combined;
+
+  if (totalPages > MAX_PAGES) {
+    const note = `\n\n[Note: Only the first ${MAX_PAGES} of ${totalPages} pages were processed]`;
+    return {
+      text: truncated + note,
+      method: ocrCount === 0 ? "text-layer" : textLayerCount === 0 ? "ocr" : "mixed",
+      pages: totalPages,
+    };
+  }
+
+  return {
+    text: truncated,
+    method: ocrCount === 0 ? "text-layer" : textLayerCount === 0 ? "ocr" : "mixed",
+    pages: totalPages,
+  };
 }
