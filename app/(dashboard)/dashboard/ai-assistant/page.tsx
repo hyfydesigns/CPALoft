@@ -539,9 +539,9 @@ function AIAssistantContent() {
                         <div
                           className="prose-chat"
                           dangerouslySetInnerHTML={{
-                            __html:
-                              msg.content ||
-                              '<span class="animate-pulse">●</span>',
+                            __html: msg.content
+                              ? parseMarkdown(msg.content)
+                              : '<span class="animate-pulse">●</span>',
                           }}
                         />
                         {msg.content && (
