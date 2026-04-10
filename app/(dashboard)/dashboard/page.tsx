@@ -58,6 +58,75 @@ interface DashboardData {
   }>;
 }
 
+type PreviewDoc = {
+  id: string;
+  originalName: string;
+  type: string;
+  size: number;
+  url: string;
+  createdAt: string;
+};
+
+function getFileIcon(type: string) {
+  if (type === "pdf") return <FileText className="w-5 h-5 text-red-500" />;
+  if (type === "image") return <ImageIcon className="w-5 h-5 text-purple-500" />;
+  if (type === "spreadsheet") return <FileSpreadsheet className="w-5 h-5 text-green-500" />;
+  return <FileArchive className="w-5 h-5 text-gray-500" />;
+}
+
+function DocPreviewModal({ doc, onClose }: { doc: PreviewDoc; onClose: () => void }) {
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b flex-row items-center justify-between space-y-0">
+          <div className="flex items-center gap-3 min-w-0">
+            {getFileIcon(doc.type)}
+            <div className="min-w-0">
+              <DialogTitle className="text-base truncate">{doc.originalName}</DialogTitle>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {formatBytes(doc.size)} · {formatRelativeDate(doc.createdAt)}
+              </p>
+            </div>
+          </div>
+          <a
+            href={doc.url}
+            download={doc.originalName}
+            className="text-sm text-forest-600 hover:underline flex items-center gap-1 shrink-0 ml-4"
+          >
+            Download
+          </a>
+        </DialogHeader>
+        <div className="flex-1 overflow-hidden bg-gray-100">
+          {doc.type === "pdf" ? (
+            <iframe
+              src={`${doc.url}#toolbar=1&navpanes=1`}
+              className="w-full h-full"
+              title={doc.originalName}
+            />
+          ) : doc.type === "image" ? (
+            <div className="flex items-center justify-center h-full p-8">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={doc.url}
+                alt={doc.originalName}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+              {getFileIcon(doc.type)}
+              <p className="text-gray-600">Preview not available for this file type</p>
+              <a href={doc.url} download={doc.originalName}>
+                <Button>Download File</Button>
+              </a>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const quickActions = [
   {
     href: "/dashboard/ai-assistant",
