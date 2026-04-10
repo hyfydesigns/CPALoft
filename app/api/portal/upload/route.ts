@@ -61,16 +61,14 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Save under the CPA's upload folder (client uploads live alongside CPA uploads)
-    const uploadDir = path.join(process.cwd(), "public", "uploads", client.userId);
-    await mkdir(uploadDir, { recursive: true });
-
-    const ext = path.extname(file.name);
+    const ext = file.name.slice(file.name.lastIndexOf("."));
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/${client.userId}/${filename}`;
+    const { url } = await uploadFile(
+      `uploads/${client.userId}`,
+      filename,
+      buffer,
+      file.type
+    );
 
     let type = "other";
     if (file.type === "application/pdf") type = "pdf";
