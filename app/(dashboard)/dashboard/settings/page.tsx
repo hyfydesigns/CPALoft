@@ -173,6 +173,133 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      {/* Portal Branding */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Building2 className="w-4 h-4" />
+            Portal Branding
+            <Badge variant="outline" className="ml-auto text-xs border-amber-300 text-amber-700 bg-amber-50">
+              Premium
+            </Badge>
+          </CardTitle>
+          <CardDescription>
+            Customize how your firm appears in your clients&apos; portal
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!isPremium ? (
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 border border-gray-200">
+              <Lock className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-gray-700">Premium feature</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Upgrade to Premium to show your firm&apos;s logo and custom name in the client portal.
+                </p>
+                <Button
+                  size="sm"
+                  className="mt-3 bg-amber-600 hover:bg-amber-700 text-white"
+                  onClick={() => router.push("/dashboard/billing")}
+                >
+                  Upgrade to Premium
+                </Button>
+              </div>
+            </div>
+          ) : !brandingLoaded ? (
+            <div className="flex items-center gap-2 text-gray-400 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" /> Loading branding settings…
+            </div>
+          ) : (
+            <form onSubmit={saveBranding} className="space-y-5">
+              {/* Firm Display Name */}
+              <div className="space-y-2">
+                <Label>Firm Display Name</Label>
+                <Input
+                  value={portalDisplayName}
+                  onChange={(e) => setPortalDisplayName(e.target.value)}
+                  placeholder="e.g. Johnson & Associates CPA"
+                  maxLength={80}
+                />
+                <p className="text-xs text-gray-400">
+                  This name will appear in your clients&apos; portal instead of &quot;CPA Loft&quot;
+                </p>
+              </div>
+
+              <Separator />
+
+              {/* Firm Logo */}
+              <div className="space-y-3">
+                <Label>Firm Logo</Label>
+                {branding.firmLogo ? (
+                  <div className="flex items-center gap-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={branding.firmLogo}
+                      alt="Firm logo"
+                      className="h-14 object-contain rounded-lg border border-gray-200 bg-gray-50 p-2"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                      onClick={removeLogo}
+                    >
+                      <X className="w-3.5 h-3.5 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-400">No logo uploaded</div>
+                )}
+                <div>
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) uploadLogo(file);
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={logoUploading}
+                    onClick={() => logoInputRef.current?.click()}
+                  >
+                    {logoUploading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : null}
+                    {logoUploading ? "Uploading…" : branding.firmLogo ? "Change Logo" : "Upload Logo"}
+                  </Button>
+                  <p className="text-xs text-gray-400 mt-1">JPG, PNG or GIF · Max 2MB</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500 italic">
+                This name and logo will appear in your clients&apos; portal
+              </p>
+
+              <Button
+                type="submit"
+                className="bg-forest-600 hover:bg-forest-700"
+                disabled={brandingSaving}
+              >
+                {brandingSaving ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : brandingSaved ? (
+                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-400" />
+                ) : null}
+                {brandingSaved ? "Saved!" : "Save Branding"}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Profile */}
       <Card className="mb-6">
         <CardHeader>
