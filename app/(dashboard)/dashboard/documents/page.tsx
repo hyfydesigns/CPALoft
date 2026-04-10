@@ -512,11 +512,12 @@ export default function DocumentsPage() {
                         e.stopPropagation();
                         setTaggingDoc(doc);
                         setTagClientId(doc.client?.id ?? "none");
+                        setTagCategory(doc.category || "general");
                       }}
                       className="w-9 h-9 bg-white rounded-lg flex items-center justify-center hover:bg-forest-50 transition-colors"
-                      title="Tag to client"
+                      title="Edit document"
                     >
-                      <Tag className="w-4 h-4 text-forest-600" />
+                      <Pencil className="w-4 h-4 text-forest-600" />
                     </button>
                     <button
                       onClick={(e) => {
