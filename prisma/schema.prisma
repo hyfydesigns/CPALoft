@@ -203,7 +203,7 @@ model ClientNote {
   id        String   @id @default(cuid())
   clientId  String
   userId    String
-  content   String
+  content   String   @db.Text
   pinned    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
