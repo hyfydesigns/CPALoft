@@ -428,6 +428,244 @@ export default function DeadlinesPage() {
         </div>
       )}
 
+      {/* Templates Modal */}
+      <Dialog open={showTemplates} onOpenChange={(o) => { setShowTemplates(o); if (!o) { setApplyingTemplate(null); setApplySuccess(null); } }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <LayoutTemplate className="w-5 h-5 text-forest-600" />
+              Deadline Templates
+            </DialogTitle>
+          </DialogHeader>
+
+          {applyingTemplate ? (
+            /* Apply view */
+            <div className="space-y-4 py-2">
+              <button
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                onClick={() => { setApplyingTemplate(null); setApplyClientIds([]); setApplySuccess(null); }}
+              >
+                ← Back to templates
+              </button>
+              <div className="p-3 rounded-lg bg-forest-50 border border-forest-100">
+                <p className="text-sm font-semibold text-forest-800">{applyingTemplate.name}</p>
+                <p className="text-xs text-forest-600 mt-0.5">{applyingTemplate.items.length} deadlines per client</p>
+              </div>
+
+              {applySuccess ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50 border border-green-100 text-green-700">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span className="text-sm font-medium">{applySuccess}</span>
+                </div>
+              ) : null}
+
+              <div className="space-y-2">
+                <Label>Target Year</Label>
+                <Input
+                  type="number"
+                  value={applyYear}
+                  onChange={(e) => setApplyYear(parseInt(e.target.value) || new Date().getFullYear())}
+                  min={2020}
+                  max={2035}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Select Clients</Label>
+                <div className="max-h-48 overflow-y-auto border rounded-lg divide-y">
+                  {clients.length === 0 ? (
+                    <p className="text-sm text-gray-400 p-3">No clients found</p>
+                  ) : clients.map((c) => (
+                    <label key={c.id} className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={applyClientIds.includes(c.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setApplyClientIds((prev) => [...prev, c.id]);
+                          } else {
+                            setApplyClientIds((prev) => prev.filter((id) => id !== c.id));
+                          }
+                        }}
+                        className="w-4 h-4 rounded border-gray-300 text-forest-600"
+                      />
+                      <span className="text-sm text-gray-700">{c.name}</span>
+                    </label>
+                  ))}
+                </div>
+                {clients.length > 0 && (
+                  <button
+                    className="text-xs text-forest-600 hover:underline"
+                    onClick={() => setApplyClientIds(applyClientIds.length === clients.length ? [] : clients.map((c) => c.id))}
+                  >
+                    {applyClientIds.length === clients.length ? "Deselect all" : "Select all"}
+                  </button>
+                )}
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => { setApplyingTemplate(null); setApplyClientIds([]); }}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-forest-600 hover:bg-forest-700"
+                  disabled={applyClientIds.length === 0 || applying}
+                  onClick={applyTemplate}
+                >
+                  {applying ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CalendarClock className="w-4 h-4 mr-2" />}
+                  Create Deadlines
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            /* Tabs view */
+            <Tabs value={templatesTab} onValueChange={(v) => setTemplatesTab(v as "list" | "create")}>
+              <TabsList className="w-full">
+                <TabsTrigger value="list" className="flex-1">My Templates</TabsTrigger>
+                <TabsTrigger value="create" className="flex-1">Create Template</TabsTrigger>
+              </TabsList>
+
+              {/* My Templates tab */}
+              <div className={templatesTab === "list" ? "pt-4" : "hidden"}>
+                {templatesLoading ? (
+                  <div className="flex items-center gap-2 text-gray-400 text-sm py-4">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Loading templates…
+                  </div>
+                ) : templates.length === 0 ? (
+                  <div className="py-8 text-center text-gray-400">
+                    <LayoutTemplate className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                    <p className="text-sm">No templates yet. Create one to get started!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {templates.map((t) => (
+                      <div key={t.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-forest-200 bg-white">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{t.name}</p>
+                          <p className="text-xs text-gray-500">{t.items.length} deadline{t.items.length !== 1 ? "s" : ""}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="bg-forest-600 hover:bg-forest-700 text-xs h-7 px-3"
+                          onClick={() => { setApplyingTemplate(t); setApplyClientIds([]); }}
+                        >
+                          Apply
+                          <ChevronRight className="w-3 h-3 ml-1" />
+                        </Button>
+                        <button
+                          className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                          onClick={() => deleteTemplate(t.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Create Template tab */}
+              <div className={templatesTab === "create" ? "pt-4 space-y-4" : "hidden"}>
+                {templateError && (
+                  <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm">
+                    {templateError}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label>Template Name *</Label>
+                  <Input
+                    value={newTemplateName}
+                    onChange={(e) => setNewTemplateName(e.target.value)}
+                    placeholder="e.g. Individual Tax Season"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Deadlines</Label>
+                  {newTemplateItems.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg border border-gray-200 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-gray-500">Item {idx + 1}</span>
+                        {newTemplateItems.length > 1 && (
+                          <button
+                            onClick={() => setNewTemplateItems((prev) => prev.filter((_, i) => i !== idx))}
+                            className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <Input
+                        value={item.label}
+                        onChange={(e) => setNewTemplateItems((prev) => prev.map((it, i) => i === idx ? { ...it, label: e.target.value } : it))}
+                        placeholder="e.g. Form 1040"
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Month</Label>
+                          <Select
+                            value={String(item.month)}
+                            onValueChange={(v) => setNewTemplateItems((prev) => prev.map((it, i) => i === idx ? { ...it, month: parseInt(v) } : it))}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, mi) => (
+                                <SelectItem key={mi + 1} value={String(mi + 1)}>{m}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Day</Label>
+                          <Input
+                            type="number"
+                            value={item.day}
+                            onChange={(e) => setNewTemplateItems((prev) => prev.map((it, i) => i === idx ? { ...it, day: parseInt(e.target.value) || 1 } : it))}
+                            min={1}
+                            max={31}
+                            className="h-8"
+                          />
+                        </div>
+                      </div>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={item.reminderEnabled}
+                          onChange={(e) => setNewTemplateItems((prev) => prev.map((it, i) => i === idx ? { ...it, reminderEnabled: e.target.checked } : it))}
+                          className="w-4 h-4 rounded border-gray-300 text-forest-600"
+                        />
+                        <span className="text-xs text-gray-600">Enable reminder</span>
+                      </label>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewTemplateItems((prev) => [...prev, { label: "", month: 4, day: 15, reminderEnabled: false }])}
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" /> Add Item
+                  </Button>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    className="bg-forest-600 hover:bg-forest-700"
+                    disabled={savingTemplate}
+                    onClick={saveTemplate}
+                  >
+                    {savingTemplate ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                    Save Template
+                  </Button>
+                </DialogFooter>
+              </div>
+            </Tabs>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Add Deadline Dialog */}
       <Dialog open={showAddDialog} onOpenChange={(o) => { setShowAddDialog(o); if (!o) resetForm(); }}>
         <DialogContent className="max-w-md">
