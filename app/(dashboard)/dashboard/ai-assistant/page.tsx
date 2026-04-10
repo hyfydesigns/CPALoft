@@ -112,8 +112,9 @@ function AIAssistantContent() {
 
   useEffect(() => {
     if (initialChatId) {
-      loadChat(initialChatId);
+      loadChatAndMaybeAutoSend(initialChatId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialChatId]);
 
   useEffect(() => {
