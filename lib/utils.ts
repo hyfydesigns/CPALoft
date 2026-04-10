@@ -84,3 +84,20 @@ export const PLANS = {
 } as const;
 
 export type PlanType = keyof typeof PLANS;
+
+/** Returns an error string if the user is over their plan limit, or null if OK. */
+export function checkPlanLimit(
+  resource: "clients" | "documents",
+  plan: string,
+  currentCount: number
+): string | null {
+  const limits = PLANS[plan as PlanType] ?? PLANS.free;
+  const limit = limits[resource] as number;
+  if (limit === -1) return null; // unlimited
+  if (currentCount >= limit) {
+    const planName = limits.name;
+    const limitLabel = resource === "clients" ? "clients" : "documents";
+    return `You've reached the ${planName} plan limit of ${limit} ${limitLabel}. Upgrade your plan to add more.`;
+  }
+  return null;
+}
