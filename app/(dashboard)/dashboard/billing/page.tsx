@@ -80,17 +80,15 @@ export default function BillingPage() {
   const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  // On Stripe success redirect: sync plan from Stripe → update JWT cookie → redirect to dashboard
+  // On Stripe success redirect: sync plan from Stripe → hard-navigate to dashboard
+  // The jwt callback always re-reads plan from DB, so the fresh plan shows on next load
   useEffect(() => {
     if (searchParams.get("success") === "1") {
       setSyncing(true);
       fetch("/api/billing/sync", { method: "POST" })
         .then((r) => r.json())
-        .then(async (data) => {
+        .then((data) => {
           if (data.plan) {
-            // Update JWT cookie with fresh plan from DB, then hard-navigate so the
-            // new cookie is sent with the next request and dashboard sees the right plan
-            await updateSession();
             window.location.href = "/dashboard?upgraded=" + data.plan;
           } else {
             setSyncing(false);
