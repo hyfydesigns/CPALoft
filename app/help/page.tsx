@@ -32,6 +32,10 @@ import {
   BookmarkCheck,
   Star,
   Pencil,
+  Sparkles,
+  Palette,
+  LayoutTemplate,
+  ClipboardCheck,
 } from "lucide-react";
 import { Logo, LogoMark } from "@/components/ui/logo";
 
