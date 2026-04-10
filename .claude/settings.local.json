@@ -34,7 +34,14 @@
       "Bash(node -e ':*)",
       "Bash(npm uninstall:*)",
       "Bash(node --experimental-vm-modules -e ':*)",
-      "Bash(node --input-type=module)"
+      "Bash(node --input-type=module)",
+      "Bash(node -e \"const path=require\\('path'\\); const w=path.join\\(process.cwd\\(\\),'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'\\); console.log\\('exists:', require\\('fs'\\).existsSync\\(w\\)\\); console.log\\('url: file://'+w.split\\('\\\\\\\\\\\\\\\\'\\).join\\('/'\\)\\);\")",
+      "Bash(node -e \"const p=require\\('path'\\); const w=p.join\\(process.cwd\\(\\),'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'\\); console.log\\('exists:', require\\('fs'\\).existsSync\\(w\\)\\); console.log\\('path:', w\\);\")",
+      "Bash(node -e \"const p = require\\('path'\\); const workerAbs = p.join\\(process.cwd\\(\\), 'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'\\); console.log\\('cwd:', process.cwd\\(\\)\\); console.log\\('workerAbs:', workerAbs\\); const fs = require\\('fs'\\); console.log\\('exists:', fs.existsSync\\(workerAbs\\)\\);\")",
+      "Bash(dir public:*)",
+      "Bash(findstr \".pdf\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path public -Recurse -Filter '*.pdf' | Select-Object FullName\")",
+      "Bash(node -e \"const path = require\\('path'\\); console.log\\(path.join\\('C:\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\Enefiok\\\\\\\\\\\\\\\\Documents\\\\\\\\\\\\\\\\Projects\\\\\\\\\\\\\\\\intelliCPA', 'public', '/uploads/cmnsfngdr0001utowg68qdki7/1775817729201-7tmylgwn6ne.pdf'\\)\\);\")"
     ]
   },
   "hooks": {
