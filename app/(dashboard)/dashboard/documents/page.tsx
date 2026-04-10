@@ -137,6 +137,7 @@ function PDFPreviewModal({
 }
 
 export default function DocumentsPage() {
+  const { data: session } = useSession();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [clients, setClients] = useState<ClientOption[]>([]);
   const [loading, setLoading] = useState(true);
