@@ -213,9 +213,21 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
           <p>Yes, in two ways:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>At upload</strong> — select the client from the <strong>Tag upload to</strong> dropdown above the dropzone before uploading.</li>
-            <li><strong>After upload</strong> — hover over any document card and click the <strong>Tag</strong> button to assign or reassign it to a client at any time.</li>
+            <li><strong>After upload</strong> — hover over any document card and click the <strong>pencil (edit) icon</strong> to open the Edit Document dialog, where you can change both the assigned client and the document type/category.</li>
           </ul>
-          <p className="text-gray-500">When you tag a document to a client, they automatically receive an email notification letting them know a new document is available in their portal. Documents uploaded by clients via the portal are automatically linked to their record.</p>
+          <p className="text-gray-500">When you assign a document to a client for the first time (or reassign it), they automatically receive an email notification. Documents uploaded by clients via the portal are automatically linked to their record.</p>
+        </div>
+      ),
+    },
+    {
+      q: "Can I change the document type or category after uploading?",
+      a: (
+        <div className="space-y-2">
+          <p>Yes. Both CPAs and clients can change a document&apos;s category after upload:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>CPA side</strong> — hover over any document card on the Documents page and click the <strong>pencil icon</strong>. The Edit Document dialog lets you update both the document type (Tax Returns, Financial Statements, Payroll, etc.) and the assigned client in one step.</li>
+            <li><strong>Client side</strong> — in the Client Portal, each uploaded document has a small <strong>pencil icon</strong> next to its category badge. Click it to reveal an inline dropdown — select the new type and click the checkmark to save.</li>
+          </ul>
         </div>
       ),
     },
