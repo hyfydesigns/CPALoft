@@ -281,7 +281,9 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
           <ul className="list-disc pl-5 space-y-1">
             <li>Upload documents (PDF, Excel, Word, images — up to 10 MB each)</li>
             <li>Choose a document category (Tax Return, Financial Statement, Payroll, etc.)</li>
+            <li>Change the document type/category on any previously uploaded file</li>
             <li>Add a short note for context</li>
+            <li>View and action pending Document Requests from their CPA (Pro plan)</li>
             <li>View the list of files they&apos;ve previously uploaded</li>
           </ul>
           <p className="text-gray-500">
