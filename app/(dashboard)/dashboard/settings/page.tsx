@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, CheckCircle2, User, Shield, Bell, Download, Trash2, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle2, User, Shield, Bell, Download, Trash2, AlertTriangle, Building2, Lock, X } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 
 export default function SettingsPage() {

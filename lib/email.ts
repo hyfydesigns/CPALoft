@@ -984,3 +984,71 @@ export async function sendDeadlineReminderEmail(
 
   return { messageId: info.messageId };
 }
+
+export async function sendPracticeDigestEmail(
+  to: string,
+  name: string,
+  data: {
+    deadlines: Array<{ label: string; dueDate: string; client?: { name: string } | null }>;
+    requests: Array<{ title: string; client?: { name?: string } | null }>;
+    uploads: Array<{ originalName: string; client?: { name: string } | null; createdAt: string }>;
+  }
+) {
+  const { host, port, user, pass, from } = getSmtpConfig();
+
+  if (!host || !user || !pass) {
+    console.warn("⚠️  SMTP not configured — skipping practice digest email.");
+    return;
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  const deadlineRows = data.deadlines.length > 0
+    ? data.deadlines.map(d => `<li><strong>${d.label}</strong>${d.client ? ` — ${d.client.name}` : ''} — due ${new Date(d.dueDate).toLocaleDateString()}</li>`).join("")
+    : "<li>No upcoming deadlines in the next 14 days.</li>";
+
+  const requestRows = data.requests.length > 0
+    ? data.requests.map(r => `<li>${r.title}${r.client?.name ? ` — ${r.client.name}` : ''}</li>`).join("")
+    : "<li>No pending document requests.</li>";
+
+  const uploadRows = data.uploads.length > 0
+    ? data.uploads.map(u => `<li>${u.originalName}${u.client ? ` — ${u.client.name}` : ''}</li>`).join("")
+    : "<li>No recent uploads in the last 7 days.</li>";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#111">
+      <div style="background:#1a3c34;padding:24px 32px;border-radius:12px 12px 0 0">
+        <h1 style="color:#fff;margin:0;font-size:22px">Practice Digest</h1>
+        <p style="color:#a7c4bc;margin:4px 0 0">Hi ${name} — here's your practice summary</p>
+      </div>
+      <div style="background:#f9fafb;padding:24px 32px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb;border-top:none">
+        <h2 style="font-size:16px;color:#1a3c34;margin-top:0">📅 Upcoming Deadlines (next 14 days)</h2>
+        <ul style="padding-left:20px;line-height:1.8">${deadlineRows}</ul>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
+        <h2 style="font-size:16px;color:#1a3c34;margin-top:0">📋 Pending Document Requests</h2>
+        <ul style="padding-left:20px;line-height:1.8">${requestRows}</ul>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
+        <h2 style="font-size:16px;color:#1a3c34;margin-top:0">📁 Recent Uploads (last 7 days)</h2>
+        <ul style="padding-left:20px;line-height:1.8">${uploadRows}</ul>
+        <div style="margin-top:24px">
+          <a href="${appUrl}/dashboard" style="background:#2d6a4f;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px">Open Dashboard →</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+  });
+
+  await transporter.sendMail({
+    from,
+    to,
+    subject: `Your CPA Loft Practice Digest — ${new Date().toLocaleDateString()}`,
+    html,
+    text: `Hi ${name},\n\nHere's your practice summary:\n\nUpcoming Deadlines:\n${data.deadlines.map(d => `- ${d.label}${d.client ? ` (${d.client.name})` : ''} — due ${new Date(d.dueDate).toLocaleDateString()}`).join('\n') || 'None'}\n\nPending Document Requests:\n${data.requests.map(r => `- ${r.title}${r.client?.name ? ` (${r.client.name})` : ''}`).join('\n') || 'None'}\n\nRecent Uploads:\n${data.uploads.map(u => `- ${u.originalName}${u.client ? ` (${u.client.name})` : ''}`).join('\n') || 'None'}\n\nView your dashboard: ${appUrl}/dashboard`,
+  });
+}
