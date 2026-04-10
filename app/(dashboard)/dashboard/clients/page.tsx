@@ -46,6 +46,8 @@ import {
   Upload,
   RotateCcw,
   AlertTriangle,
+  Star,
+  Clock,
 } from "lucide-react";
 import {
   DropdownMenu,
