@@ -270,12 +270,17 @@ export default function DocumentsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId: tagClientId === "none" ? null : tagClientId,
+          category: tagCategory,
         }),
       });
       if (res.ok) {
         const updated = await res.json();
         setDocuments((prev) =>
-          prev.map((d) => (d.id === taggingDoc.id ? { ...d, client: updated.client } : d))
+          prev.map((d) =>
+            d.id === taggingDoc.id
+              ? { ...d, client: updated.client, category: updated.category }
+              : d
+          )
         );
         setTaggingDoc(null);
       }
