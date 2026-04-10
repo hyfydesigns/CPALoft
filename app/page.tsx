@@ -432,6 +432,47 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pro Features */}
+<section className="py-20 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+    <div className="text-center mb-16">
+      <Badge variant="info" className="mb-4 bg-amber-50 text-amber-700 border-amber-100">
+        <Zap className="w-3.5 h-3.5 mr-1.5 text-amber-500" />
+        Pro Plan
+      </Badge>
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Built for serious practices
+      </h2>
+      <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        Pro and Premium subscribers unlock a full suite of practice management tools
+        designed to eliminate client follow-up and missed deadlines.
+      </p>
+    </div>
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {proFeatures.map((feature) => (
+        <div
+          key={feature.title}
+          className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-amber-100 transition-all"
+        >
+          <div className={`w-12 h-12 ${feature.bg} rounded-xl flex items-center justify-center mb-4`}>
+            <feature.icon className={`w-6 h-6 ${feature.color}`} />
+          </div>
+          <h3 className="font-semibold text-gray-900 mb-2 text-lg">{feature.title}</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+        </div>
+      ))}
+    </div>
+    <div className="text-center mt-10">
+      <Link href="/signup?plan=pro">
+        <Button className="bg-forest-600 hover:bg-forest-700 h-11 px-8">
+          Unlock Pro Features
+          <ArrowRight className="ml-2 w-4 h-4" />
+        </Button>
+      </Link>
+    </div>
+  </div>
+</section>
+
       {/* How it works */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
