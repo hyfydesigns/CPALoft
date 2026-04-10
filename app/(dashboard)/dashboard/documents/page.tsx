@@ -46,6 +46,7 @@ import {
   Brain,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface Document {
   id: string;
