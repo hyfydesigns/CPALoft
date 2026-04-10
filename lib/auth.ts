@@ -55,22 +55,20 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = ((user as unknown) as { role: string }).role;
         token.plan = ((user as unknown) as { plan: string }).plan;
       }
-      // On explicit session refresh, re-fetch plan from DB so billing changes are reflected immediately
-      if (trigger === "update" && token.id) {
+      // Always re-read plan from DB so billing changes are reflected on next page load
+      // without requiring a sign-out/sign-in cycle
+      if (token.id) {
         const fresh = await db.user.findUnique({
           where: { id: token.id as string },
-          select: { plan: true, name: true },
+          select: { plan: true },
         });
-        if (fresh) {
-          token.plan = fresh.plan;
-          if (fresh.name) token.name = fresh.name;
-        }
+        if (fresh) token.plan = fresh.plan;
       }
       return token;
     },
