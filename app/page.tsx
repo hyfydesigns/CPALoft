@@ -18,6 +18,11 @@ import {
   TrendingUp,
   Lock,
   ExternalLink,
+  CalendarClock,
+  ClipboardList,
+  BookmarkCheck,
+  Archive,
+  StickyNote,
 } from "lucide-react";
 
 const features = [
