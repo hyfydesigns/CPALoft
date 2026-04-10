@@ -24,7 +24,10 @@
       "Bash(npx prisma:*)",
       "Bash(node -e \"require\\('pdf-parse'\\); console.log\\('pdf-parse OK'\\)\")",
       "Bash(node -e \"require\\('pdfjs-dist'\\); console.log\\('pdfjs-dist OK'\\)\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(node -e \"require\\('canvas'\\); console.log\\('canvas OK'\\)\")",
+      "Bash(node -e \"require\\('tesseract.js'\\); console.log\\('tesseract OK'\\)\")",
+      "Bash(node -e \"require\\('pdfjs-dist'\\); console.log\\('pdfjs OK'\\)\")"
     ]
   },
   "hooks": {
