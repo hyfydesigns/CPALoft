@@ -397,6 +397,10 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {previewDoc && (
+        <DocPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
+      )}
+
       {/* Recent Documents */}
       <Card>
         <CardHeader className="pb-3">
