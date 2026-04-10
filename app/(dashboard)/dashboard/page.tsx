@@ -232,6 +232,20 @@ export default function DashboardPage() {
       .then(setData)
       .finally(() => setLoading(false));
 
+    // Check onboarding status
+    fetch("/api/onboarding")
+      .then((r) => r.json())
+      .then(({ onboardingCompleted }) => {
+        if (!onboardingCompleted) {
+          const seenWelcome = sessionStorage.getItem("intellicpa_welcome_seen");
+          if (!seenWelcome) {
+            setShowWelcome(true);
+            sessionStorage.setItem("intellicpa_welcome_seen", "1");
+          }
+          setShowChecklist(true);
+        }
+      });
+
     // Show success toast if redirected here after a plan upgrade
     const params = new URLSearchParams(window.location.search);
     const upgraded = params.get("upgraded");
