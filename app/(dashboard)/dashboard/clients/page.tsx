@@ -192,9 +192,11 @@ function ClientForm({
 }
 
 export default function ClientsPage() {
+  const { data: session } = useSession();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [errorToast, setErrorToast] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editClient, setEditClient] = useState<Client | null>(null);
   const [viewClient, setViewClient] = useState<Client | null>(null);
