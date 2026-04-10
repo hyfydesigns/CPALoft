@@ -76,6 +76,44 @@ const features = [
   },
 ];
 
+const proFeatures = [
+  {
+    icon: ClipboardList,
+    title: "Document Requests",
+    description: "Request specific documents from clients. They see a checklist in their portal and can mark items complete as they upload.",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+  {
+    icon: CalendarClock,
+    title: "Tax Deadline Tracker",
+    description: "Track every filing deadline by client — Form 1040, 1120S, extensions, and more. Get alerted before anything goes overdue.",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  {
+    icon: StickyNote,
+    title: "Client Notes & Activity",
+    description: "Pin important notes to any client and view a full activity timeline — every upload, document request, and status change logged automatically.",
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+  },
+  {
+    icon: BookmarkCheck,
+    title: "Saved AI Prompts",
+    description: "Save your best AI prompts and reuse them instantly. Build a personal library of tax research templates and client scenarios.",
+    color: "text-forest-600",
+    bg: "bg-forest-50",
+  },
+  {
+    icon: Archive,
+    title: "Bulk Document Download",
+    description: "Export all documents for any client as a single ZIP file — complete with metadata. Perfect for handoffs and record-keeping.",
+    color: "text-slate-600",
+    bg: "bg-slate-50",
+  },
+];
+
 const pricingPlans = [
   {
     name: "Free",
