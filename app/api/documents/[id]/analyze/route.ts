@@ -5,13 +5,7 @@ import { db } from "@/lib/db";
 import { requirePremium } from "@/lib/plan-gate";
 import { readFile } from "fs/promises";
 import path from "path";
-
-// pdf-parse doesn't have great ESM support — require() is safer in Next.js
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse");
-
-// Max characters of PDF text to send to the AI (keeps token cost reasonable)
-const MAX_TEXT_CHARS = 12000;
+import { extractPdfText } from "@/lib/pdf-extract";
 
 export async function POST(
   req: NextRequest,
@@ -42,68 +36,80 @@ export async function POST(
       month: "long", day: "numeric", year: "numeric",
     });
 
-    // --- Attempt to extract text from PDF ---
-    let extractedText: string | null = null;
-    if (doc.type === "pdf") {
-      try {
-        const filePath = path.join(process.cwd(), "public", doc.url);
-        const fileBuffer = await readFile(filePath);
-        const parsed = await pdfParse(fileBuffer);
-        const rawText = (parsed.text as string).trim();
-        if (rawText.length > 0) {
-          // Truncate if very long, add ellipsis so AI knows it was cut
-          extractedText = rawText.length > MAX_TEXT_CHARS
-            ? rawText.slice(0, MAX_TEXT_CHARS) + "\n\n[... document truncated for length ...]"
-            : rawText;
-        }
-      } catch (pdfErr) {
-        console.warn("PDF text extraction failed, falling back to metadata only:", pdfErr);
-      }
-    }
-
-    // --- Build the AI prompt ---
+    // ── Extract text ─────────────────────────────────────────────────────────
     let initialMessage: string;
 
-    if (extractedText) {
-      initialMessage = `Please analyze the following document for me:
+    if (doc.type === "pdf") {
+      const filePath = path.join(process.cwd(), "public", doc.url);
+      const buffer = await readFile(filePath);
+      const { text, method, pages } = await extractPdfText(buffer);
 
-**File:** ${doc.originalName}
-**Type:** ${doc.type} (${doc.category})
+      if (text.length > 0) {
+        const methodNote =
+          method === "ocr"
+            ? " *(extracted via OCR — scanned document)*"
+            : pages
+            ? ` *(${pages}-page text-layer PDF)*`
+            : "";
+
+        initialMessage = `Please analyze the following document for me:
+
+**File:** ${doc.originalName}${methodNote}
+**Category:** ${doc.category}
 **Client:** ${clientName}
 **Uploaded:** ${uploadedDate}
 
-Here is the extracted text content from the document:
+Here is the extracted text content:
 
 ---
-${extractedText}
+${text}
 ---
 
 Based on the actual content above, please:
 1. Summarize what this document contains
-2. Highlight any key financial figures, tax items, or important dates
-3. Identify any action items, deadlines, or follow-ups I should consider
+2. Highlight key financial figures, tax items, or important dates
+3. Identify action items, deadlines, or follow-ups I should consider
 4. Flag anything unusual or that warrants closer review`;
+      } else {
+        // Both text-layer and OCR returned nothing (e.g. encrypted/corrupt PDF)
+        initialMessage = `Please analyze this document for me:
+
+**File:** ${doc.originalName}
+**Type:** PDF (${doc.category})
+**Client:** ${clientName}
+**Uploaded:** ${uploadedDate}
+
+⚠️ Text could not be extracted from this PDF. It may be encrypted, corrupted, or a heavily stylized document.
+
+Based on the file name and category, please:
+1. Describe what this document likely contains
+2. List the key financial or tax items I should look for when reviewing it manually
+3. Suggest any action items or follow-ups based on the document type and category`;
+      }
     } else {
-      // Fallback for non-PDF files or PDFs where text extraction failed
-      const noTextReason = doc.type !== "pdf"
-        ? `(This is a ${doc.type} file — direct text extraction is not supported for this format.)`
-        : "(Text could not be extracted from this PDF — it may be scanned/image-based.)";
+      // Non-PDF: Word, Excel, images — no extraction available
+      const typeLabel =
+        doc.type === "image" ? "image file"
+        : doc.type === "spreadsheet" ? "spreadsheet"
+        : doc.type === "document" ? "Word document"
+        : doc.type;
 
       initialMessage = `Please analyze this document for me:
 
 **File:** ${doc.originalName}
-**Type:** ${doc.type} (${doc.category})
+**Type:** ${typeLabel} (${doc.category})
 **Client:** ${clientName}
 **Uploaded:** ${uploadedDate}
 
-${noTextReason}
+*(Direct text extraction is not available for ${typeLabel}s — analysis is based on file name and category.)*
 
-Based on the file name, type, and category, please:
+Based on the file name and category, please:
 1. Describe what this document likely contains
 2. List the key financial or tax information I should look for when reviewing it
 3. Suggest any action items or follow-ups based on the document type and category`;
     }
 
+    // ── Create the chat with the pre-seeded user message ─────────────────────
     const chat = await db.chat.create({
       data: {
         title: `Analysis: ${doc.originalName}`,
