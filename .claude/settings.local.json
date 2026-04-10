@@ -19,7 +19,9 @@
       "Bash(echo \"EXIT_CODE:$?\")",
       "Bash(node -e \"require\\('jszip'\\); console.log\\('jszip OK'\\)\")",
       "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]/apply\")",
-      "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]\")"
+      "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]\")",
+      "Bash(powershell -Command \"Get-Process node | Stop-Process -Force\")",
+      "Bash(npx prisma:*)"
     ]
   },
   "hooks": {

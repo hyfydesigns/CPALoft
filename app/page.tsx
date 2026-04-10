@@ -23,6 +23,11 @@ import {
   BookmarkCheck,
   Archive,
   StickyNote,
+  Palette,
+  Sparkles,
+  LayoutTemplate,
+  Mail,
+  ClipboardCheck,
 } from "lucide-react";
 
 const features = [
