@@ -87,6 +87,17 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Log activity
+    try {
+      await logActivity({
+        clientId: client.id,
+        userId: session.user.id,
+        type: "client_created",
+        label: "Client added",
+        metadata: { name: client.name },
+      });
+    } catch {}
+
     // Send invite email if client has an email address
     if (hasEmail && inviteToken) {
       const cpaUser = await db.user.findUnique({
