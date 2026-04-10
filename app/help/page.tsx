@@ -203,12 +203,14 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
     {
       q: "Can I link a document to a specific client?",
       a: (
-        <p>
-          Yes. When uploading, select the client from the <strong>Client</strong> dropdown in
-          the upload form. You can also filter the Documents page by client using the filter
-          controls. Documents uploaded by clients via the portal are automatically linked to
-          their record.
-        </p>
+        <div className="space-y-2">
+          <p>Yes, in two ways:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>At upload</strong> — select the client from the <strong>Tag upload to</strong> dropdown above the dropzone before uploading.</li>
+            <li><strong>After upload</strong> — hover over any document card and click the <strong>Tag</strong> button to assign or reassign it to a client at any time.</li>
+          </ul>
+          <p className="text-gray-500">When you tag a document to a client, they automatically receive an email notification letting them know a new document is available in their portal. Documents uploaded by clients via the portal are automatically linked to their record.</p>
+        </div>
       ),
     },
     {
