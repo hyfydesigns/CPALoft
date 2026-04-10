@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { sendDocumentTaggedEmail } from "@/lib/email";
+import { logActivity } from "@/lib/activity";
 
 async function notifyClientOfDocument(
   clientId: string,
