@@ -463,24 +463,76 @@ export default function ClientPortalPage() {
                 {docs.map((doc) => (
                   <div
                     key={doc.id}
-                    className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                    className="py-3 first:pt-0 last:pb-0"
                   >
-                    <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
-                      {getFileIcon(doc.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">
-                        {doc.originalName}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-400">
-                        <span>{formatBytes(doc.size)}</span>
-                        <span>·</span>
-                        <span>{formatRelativeDate(doc.createdAt)}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
+                        {getFileIcon(doc.type)}
                       </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">
+                          {doc.originalName}
+                        </p>
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-400">
+                          <span>{formatBytes(doc.size)}</span>
+                          <span>·</span>
+                          <span>{formatRelativeDate(doc.createdAt)}</span>
+                        </div>
+                      </div>
+                      {editingDocId === doc.id ? null : (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Badge variant="outline" className="text-xs capitalize">
+                            {CATEGORIES.find((c) => c.value === doc.category)?.label.split(" ").slice(1).join(" ") || doc.category}
+                          </Badge>
+                          <button
+                            onClick={() => {
+                              setEditingDocId(doc.id);
+                              setEditingCategory(doc.category);
+                            }}
+                            className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                            title="Change document type"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <Badge variant="outline" className="text-xs shrink-0 capitalize">
-                      {CATEGORIES.find((c) => c.value === doc.category)?.label.split(" ").slice(1).join(" ") || doc.category}
-                    </Badge>
+                    {/* Inline category editor */}
+                    {editingDocId === doc.id && (
+                      <div className="mt-2 ml-12 flex items-center gap-2">
+                        <Select value={editingCategory} onValueChange={setEditingCategory}>
+                          <SelectTrigger className="h-8 text-xs flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CATEGORIES.map((c) => (
+                              <SelectItem key={c.value} value={c.value} className="text-xs">
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <button
+                          onClick={() => saveCategory(doc.id)}
+                          disabled={savingCategory}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-forest-600 hover:bg-forest-700 text-white transition-colors shrink-0 disabled:opacity-50"
+                          title="Save"
+                        >
+                          {savingCategory ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Check className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setEditingDocId(null)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 transition-colors shrink-0"
+                          title="Cancel"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
