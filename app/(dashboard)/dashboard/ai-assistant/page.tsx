@@ -319,9 +319,6 @@ function AIAssistantContent() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  // suppress unused variable warning
-  void loading;
-
   return (
     <div className="flex h-full bg-gray-50">
       {/* Chat History + Saved Prompts Sidebar */}
