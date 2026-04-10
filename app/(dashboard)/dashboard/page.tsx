@@ -210,6 +210,8 @@ export default function DashboardPage() {
   const [upgradeToast, setUpgradeToast] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<PreviewDoc | null>(null);
   const [digestSending, setDigestSending] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(false);
 
   async function sendDigest() {
     setDigestSending(true);
