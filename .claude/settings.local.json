@@ -21,7 +21,10 @@
       "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]/apply\")",
       "Bash(mkdir -p \"/c/Users/Enefiok/Documents/Projects/intelliCPA/app/api/deadline-templates/[id]\")",
       "Bash(powershell -Command \"Get-Process node | Stop-Process -Force\")",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(node -e \"require\\('pdf-parse'\\); console.log\\('pdf-parse OK'\\)\")",
+      "Bash(node -e \"require\\('pdfjs-dist'\\); console.log\\('pdfjs-dist OK'\\)\")",
+      "Bash(npm install:*)"
     ]
   },
   "hooks": {
