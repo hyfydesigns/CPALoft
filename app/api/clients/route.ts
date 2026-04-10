@@ -53,6 +53,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Client name is required" }, { status: 400 });
     }
 
+    // Enforce plan limits
+    const { checkPlanLimit } = await import("@/lib/utils");
+    const clientCount = await db.client.count({ where: { userId: session.user.id } });
+    const limitError = checkPlanLimit("clients", session.user.plan || "free", clientCount);
+    if (limitError) {
+      return NextResponse.json({ error: limitError }, { status: 403 });
+    }
+
     // Generate invite token upfront if client has an email
     const hasEmail = Boolean(email);
     const inviteToken = hasEmail ? crypto.randomBytes(24).toString("hex") : null;
