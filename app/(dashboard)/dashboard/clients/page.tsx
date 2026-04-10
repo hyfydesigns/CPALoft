@@ -50,6 +50,7 @@ import {
   Clock,
   X,
   CalendarClock,
+  ClipboardList,
 } from "lucide-react";
 import {
   DropdownMenu,
