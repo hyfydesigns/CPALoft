@@ -284,6 +284,17 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* Onboarding */}
+      {showWelcome && session?.user?.name && (
+        <WelcomeModal
+          userName={session.user.name}
+          onDismiss={() => setShowWelcome(false)}
+        />
+      )}
+      {showChecklist && (
+        <OnboardingChecklist onComplete={() => setShowChecklist(false)} />
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
