@@ -319,7 +319,7 @@ export default function ClientsPage() {
   }
 
   async function exportAndDownload(client: Client) {
-    setExporting(true);
+    setExportingId(client.id);
     try {
       const res = await fetch("/api/clients/export", {
         method: "POST",
@@ -336,7 +336,7 @@ export default function ClientsPage() {
       URL.revokeObjectURL(url);
       setBackupDownloaded(true);
     } finally {
-      setExporting(false);
+      setExportingId(null);
     }
   }
 
