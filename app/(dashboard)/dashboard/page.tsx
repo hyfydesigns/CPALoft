@@ -237,10 +237,10 @@ export default function DashboardPage() {
       .then((r) => r.json())
       .then(({ onboardingCompleted }) => {
         if (!onboardingCompleted) {
-          const seenWelcome = sessionStorage.getItem("intellicpa_welcome_seen");
+          const seenWelcome = sessionStorage.getItem("cpaloft_welcome_seen");
           if (!seenWelcome) {
             setShowWelcome(true);
-            sessionStorage.setItem("intellicpa_welcome_seen", "1");
+            sessionStorage.setItem("cpaloft_welcome_seen", "1");
           }
           setShowChecklist(true);
         }
