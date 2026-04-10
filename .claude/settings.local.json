@@ -44,7 +44,8 @@
       "Bash(node -e \"const path = require\\('path'\\); console.log\\(path.join\\('C:\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\Enefiok\\\\\\\\\\\\\\\\Documents\\\\\\\\\\\\\\\\Projects\\\\\\\\\\\\\\\\intelliCPA', 'public', '/uploads/cmnsfngdr0001utowg68qdki7/1775817729201-7tmylgwn6ne.pdf'\\)\\);\")",
       "Bash(set DATABASE_URL=file:./dev.db)",
       "Bash(DATABASE_URL=\"file:./dev.db\" npx prisma migrate dev --name add_onboarding)",
-      "Bash(node -e \"require\\('@radix-ui/react-visually-hidden'\\); console.log\\('ok'\\)\")"
+      "Bash(node -e \"require\\('@radix-ui/react-visually-hidden'\\); console.log\\('ok'\\)\")",
+      "Bash(node -e \"require\\('@vercel/blob'\\); console.log\\('ok'\\)\")"
     ]
   },
   "hooks": {
