@@ -881,12 +881,6 @@ export default function HelpPage() {
                       Email Support
                     </Button>
                   </a>
-                  <a href="mailto:support@cpaloft.com?subject=Live%20Chat%20Request">
-                    <Button variant="outline" className="gap-2">
-                      <MessageSquare className="w-4 h-4" />
-                      Live Chat
-                    </Button>
-                  </a>
                 </div>
               </div>
             </main>
