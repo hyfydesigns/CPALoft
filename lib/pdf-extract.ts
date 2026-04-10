@@ -44,7 +44,9 @@ async function extractWithPdfjs(buffer: Buffer): Promise<ExtractResult> {
     process.cwd(),
     "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"
   );
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerAbs.replace(/\\/g, "/")}`;
+  // file:/// needs three slashes on all platforms (drive letter on Windows counts as authority)
+  const workerUrl = "file:///" + workerAbs.replace(/\\/g, "/").replace(/^\//, "");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
   const loadingTask = pdfjsLib.getDocument({
     data: new Uint8Array(buffer),
