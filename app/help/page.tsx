@@ -245,13 +245,13 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
       q: "How do I invite a client to the portal?",
       a: (
         <div className="space-y-2">
+          <p>Invites are sent automatically — no manual step required:</p>
           <ol className="list-decimal pl-5 space-y-1">
-            <li>Go to the <strong>Clients</strong> page in your dashboard.</li>
-            <li>Click the <strong>⋯</strong> menu on any client row.</li>
-            <li>Select <strong>Invite to Client Portal</strong>.</li>
-            <li>Copy the generated link and send it to your client via email or text.</li>
+            <li>Go to <strong>Clients</strong> and click <strong>Add Client</strong>.</li>
+            <li>Enter the client&apos;s name and email address and save.</li>
+            <li>An invite email is sent to them immediately with a sign-up link. Their status is set to <strong>Pending</strong> until they register.</li>
           </ol>
-          <p className="text-gray-500">The link expires after 7 days. You can generate a new one at any time.</p>
+          <p className="text-gray-500">The invite link expires after 7 days. If it expires or the client didn&apos;t receive it, click <strong>Resend Invite</strong> on their client card to generate and send a fresh link instantly.</p>
         </div>
       ),
     },
