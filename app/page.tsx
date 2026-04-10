@@ -519,6 +519,47 @@ export default function LandingPage() {
   </div>
 </section>
 
+      {/* Premium Features */}
+      <section className="py-20 bg-gradient-to-b from-violet-50/40 to-white px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <Badge variant="info" className="mb-4 bg-violet-50 text-violet-700 border-violet-100">
+              <Star className="w-3.5 h-3.5 mr-1.5 text-violet-500" />
+              Premium Plan
+            </Badge>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Your firm, your brand
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Premium unlocks advanced automation, AI-powered document analysis, and white-label
+              client experiences — everything a high-volume firm needs.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {premiumFeatures.map((feature) => (
+              <div
+                key={feature.title}
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-violet-100 transition-all"
+              >
+                <div className={`w-12 h-12 ${feature.bg} rounded-xl flex items-center justify-center mb-4`}>
+                  <feature.icon className={`w-6 h-6 ${feature.color}`} />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2 text-lg">{feature.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-10">
+            <Link href="/signup?plan=premium">
+              <Button className="bg-violet-600 hover:bg-violet-700 h-11 px-8">
+                Unlock Premium Features
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
