@@ -224,7 +224,10 @@ export default function BillingPage() {
       {/* Plan Cards */}
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {planDetails.map((plan) => {
+          const planRank = { free: 0, pro: 1, premium: 2 };
           const isCurrent = plan.key === currentPlan;
+          const isDowngrade = !isCurrent && plan.price > 0 &&
+            (planRank[plan.key as keyof typeof planRank] ?? 0) < (planRank[currentPlan as keyof typeof planRank] ?? 0);
           const isLoading = loadingPlan === plan.key;
           return (
             <Card
