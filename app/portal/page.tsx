@@ -238,6 +238,70 @@ export default function ClientPortalPage() {
           </p>
         </div>
 
+        {/* Document Requests Card */}
+        {(requestsLoading || docRequests.length > 0) && (
+          <Card className="mb-6 shadow-sm border-orange-100">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-orange-500" />
+                Document Requests from Your CPA
+                {docRequests.filter((r) => r.status === "pending").length > 0 && (
+                  <Badge className="bg-orange-100 text-orange-700 border-orange-200 text-xs font-normal ml-auto">
+                    {docRequests.filter((r) => r.status === "pending").length} pending
+                  </Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {requestsLoading ? (
+                <div className="space-y-2">
+                  {[1, 2].map((i) => (
+                    <div key={i} className="h-12 shimmer rounded-lg" />
+                  ))}
+                </div>
+              ) : docRequests.filter((r) => r.status === "pending").length === 0 ? (
+                <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  No pending requests — you&apos;re all caught up!
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {docRequests.filter((r) => r.status === "pending").map((request) => (
+                    <div key={request.id} className="flex items-start justify-between gap-3 p-3 rounded-lg bg-orange-50 border border-orange-100">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800">{request.title}</p>
+                        {request.description && (
+                          <p className="text-xs text-gray-500 mt-0.5">{request.description}</p>
+                        )}
+                        {request.dueDate && (
+                          <Badge variant="outline" className="text-xs mt-1 border-orange-200 text-orange-600">
+                            Due: {new Date(request.dueDate).toLocaleDateString()}
+                          </Badge>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-forest-600 hover:bg-forest-700 shrink-0 text-xs"
+                        disabled={fulfillingId === request.id}
+                        onClick={() => markRequestDone(request.id)}
+                      >
+                        {fulfillingId === request.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Mark Done
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Upload Card */}
         <Card className="mb-6 shadow-sm">
           <CardHeader className="pb-4">
