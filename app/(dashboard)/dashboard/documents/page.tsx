@@ -36,6 +36,7 @@ import {
   FileArchive,
   User,
   Tag,
+  Pencil,
 } from "lucide-react";
 import { cn, formatBytes, formatRelativeDate } from "@/lib/utils";
 
