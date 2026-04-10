@@ -415,6 +415,87 @@ export default function ClientsPage() {
     }
   }
 
+  async function loadNotes(clientId: string) {
+    setNotesLoading(true);
+    try {
+      const res = await fetch(`/api/clients/${clientId}/notes`);
+      if (res.ok) {
+        const data = await res.json();
+        setClientNotes(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setNotesLoading(false);
+    }
+  }
+
+  async function loadActivity(clientId: string) {
+    setActivityLoading(true);
+    try {
+      const res = await fetch(`/api/clients/${clientId}/activity`);
+      if (res.ok) {
+        const data = await res.json();
+        setActivityLog(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setActivityLoading(false);
+    }
+  }
+
+  async function addNote(clientId: string) {
+    if (!noteInput.trim()) return;
+    setAddingNote(true);
+    try {
+      const res = await fetch(`/api/clients/${clientId}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: noteInput.trim() }),
+      });
+      if (res.ok) {
+        const note = await res.json();
+        setClientNotes((prev) => [note, ...prev]);
+        setNoteInput("");
+      }
+    } finally {
+      setAddingNote(false);
+    }
+  }
+
+  async function togglePin(clientId: string, note: ClientNote) {
+    const res = await fetch(`/api/clients/${clientId}/notes/${note.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pinned: !note.pinned }),
+    });
+    if (res.ok) {
+      setClientNotes((prev) =>
+        prev.map((n) => n.id === note.id ? { ...n, pinned: !n.pinned } : n)
+          .sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          })
+      );
+    }
+  }
+
+  async function deleteNote(clientId: string, noteId: string) {
+    await fetch(`/api/clients/${clientId}/notes/${noteId}`, { method: "DELETE" });
+    setClientNotes((prev) => prev.filter((n) => n.id !== noteId));
+  }
+
+  function activityColor(type: string) {
+    const map: Record<string, string> = {
+      document_uploaded: "bg-blue-500",
+      status_changed: "bg-yellow-500",
+      client_created: "bg-green-500",
+      note_added: "bg-purple-500",
+      invite_sent: "bg-indigo-500",
+      request_sent: "bg-orange-500",
+      request_fulfilled: "bg-green-500",
+    };
+    return map[type] || "bg-gray-400";
+  }
+
   const filtered = clients.filter(
     (c) =>
       !search ||
