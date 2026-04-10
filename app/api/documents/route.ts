@@ -131,19 +131,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save file to public/uploads
+    // Upload file (Vercel Blob in production, local fallback in dev)
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", session.user.id);
-    await mkdir(uploadDir, { recursive: true });
-
-    const ext = path.extname(file.name);
+    const ext = file.name.slice(file.name.lastIndexOf("."));
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/${session.user.id}/${filename}`;
+    const { url } = await uploadFile(
+      `uploads/${session.user.id}`,
+      filename,
+      buffer,
+      file.type
+    );
 
     // Determine type
     let type = "other";
