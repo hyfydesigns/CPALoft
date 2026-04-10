@@ -76,6 +76,10 @@ export default function ClientPortalPage() {
   const [uploadSuccess, setUploadSuccess] = useState<string[]>([]);
   const [category, setCategory] = useState("general");
   const [note, setNote] = useState("");
+  const [branding, setBranding] = useState<{ firmLogo: string | null; portalDisplayName: string | null }>({
+    firmLogo: null,
+    portalDisplayName: null,
+  });
 
   // Document requests
   const [docRequests, setDocRequests] = useState<DocumentRequest[]>([]);
