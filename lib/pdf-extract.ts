@@ -33,12 +33,16 @@ async function extractWithPdfjs(buffer: Buffer): Promise<ExtractResult> {
   // Dynamic import — avoids bundling issues and only loads when needed
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
-  // Point the worker at the bundled worker file so pdfjs can spawn it in Node.js
-  const workerPath = new URL(
-    "../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",
-    import.meta.url
+  // Point the worker at the bundled worker file.
+  // Use process.cwd() (always the project root in Next.js) rather than
+  // import.meta.url, which resolves relative to the compiled output path.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const nodePath = require("path");
+  const workerAbs = nodePath.join(
+    process.cwd(),
+    "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs"
   );
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath.href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerAbs.replace(/\\/g, "/")}``;
 
   const loadingTask = pdfjsLib.getDocument({
     data: new Uint8Array(buffer),
