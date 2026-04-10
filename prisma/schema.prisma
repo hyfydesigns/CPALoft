@@ -234,3 +234,14 @@ model SavedPrompt {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model DeadlineTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  items     String   // JSON: [{label, month, day, reminderEnabled}]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
