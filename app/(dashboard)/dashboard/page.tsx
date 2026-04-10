@@ -172,6 +172,7 @@ const quickActions = [
     label: "Ask AI",
     description: "Get instant tax answers",
     color: "bg-forest-600",
+    premium: false,
   },
   {
     href: "/dashboard/documents",
@@ -179,6 +180,7 @@ const quickActions = [
     label: "Upload Doc",
     description: "Add new document",
     color: "bg-purple-600",
+    premium: false,
   },
   {
     href: "/dashboard/clients",
@@ -186,6 +188,15 @@ const quickActions = [
     label: "Add Client",
     description: "New client profile",
     color: "bg-green-600",
+    premium: false,
+  },
+  {
+    href: "#",
+    icon: Mail,
+    label: "Practice Digest",
+    description: "Email practice summary",
+    color: "bg-teal-600",
+    premium: true,
   },
 ];
 
