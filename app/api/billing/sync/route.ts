@@ -11,6 +11,27 @@ function getPlanFromPriceId(priceId: string): string {
   return "free";
 }
 
+function getPlanFromSub(sub: { items: { data: Array<{ price: { id: string } }> }; metadata?: Record<string, string> }): string {
+  // Try matching by price ID first
+  const priceId = sub.items.data[0]?.price?.id;
+  if (priceId) {
+    const byPrice = getPlanFromPriceId(priceId);
+    if (byPrice !== "free") return byPrice;
+  }
+  // Fall back to metadata (set at checkout time)
+  const meta = sub.metadata?.plan;
+  if (meta === "pro" || meta === "premium") return meta;
+  // Any active subscription defaults to pro if we can't determine
+  return "pro";
+}
+
+function getPeriodEnd(sub: { items: { data: Array<unknown> } }): Date | null {
+  const item = sub.items.data[0] as Record<string, unknown>;
+  if (!item) return null;
+  const ts = item.current_period_end as number | undefined;
+  return ts ? new Date(ts * 1000) : null;
+}
+
 export async function POST() {
   try {
     const session = await getServerSession(authOptions);
@@ -19,54 +40,38 @@ export async function POST() {
     }
 
     const user = await db.user.findUnique({ where: { id: session.user.id } });
-    if (!user?.stripeCustomerId) {
-      return NextResponse.json({ plan: user?.plan || "free" });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Fetch active subscriptions from Stripe
-    const subscriptions = await stripe.subscriptions.list({
-      customer: user.stripeCustomerId,
-      status: "active",
-      limit: 1,
-    });
+    // If no Stripe customer yet, nothing to sync
+    if (!user.stripeCustomerId) {
+      console.log("[sync] No stripeCustomerId for user", user.id);
+      return NextResponse.json({ plan: user.plan || "free" });
+    }
 
-    if (subscriptions.data.length === 0) {
-      // No active subscription — check trialing too
-      const trialing = await stripe.subscriptions.list({
-        customer: user.stripeCustomerId,
-        status: "trialing",
-        limit: 1,
-      });
+    // Fetch subscriptions from Stripe (active + trialing)
+    const [activeList, trialingList] = await Promise.all([
+      stripe.subscriptions.list({ customer: user.stripeCustomerId, status: "active", limit: 1 }),
+      stripe.subscriptions.list({ customer: user.stripeCustomerId, status: "trialing", limit: 1 }),
+    ]);
 
-      if (trialing.data.length === 0) {
-        await db.user.update({
-          where: { id: user.id },
-          data: { plan: "free", stripeSubscriptionId: null, stripePriceId: null, stripeCurrentPeriodEnd: null },
-        });
-        return NextResponse.json({ plan: "free" });
-      }
+    const sub = activeList.data[0] ?? trialingList.data[0];
 
-      const sub = trialing.data[0];
-      const priceId = sub.items.data[0].price.id;
-      const plan = getPlanFromPriceId(priceId);
-      const periodEnd = (sub.items.data[0] as unknown as { current_period_end: number }).current_period_end;
-
+    if (!sub) {
+      console.log("[sync] No active subscription found for customer", user.stripeCustomerId);
       await db.user.update({
         where: { id: user.id },
-        data: {
-          plan,
-          stripeSubscriptionId: sub.id,
-          stripePriceId: priceId,
-          stripeCurrentPeriodEnd: new Date(periodEnd * 1000),
-        },
+        data: { plan: "free", stripeSubscriptionId: null, stripePriceId: null, stripeCurrentPeriodEnd: null },
       });
-      return NextResponse.json({ plan });
+      return NextResponse.json({ plan: "free" });
     }
 
-    const sub = subscriptions.data[0];
-    const priceId = sub.items.data[0].price.id;
-    const plan = getPlanFromPriceId(priceId);
-    const periodEnd = (sub.items.data[0] as unknown as { current_period_end: number }).current_period_end;
+    const plan = getPlanFromSub(sub);
+    const priceId = sub.items.data[0]?.price?.id ?? null;
+    const periodEnd = getPeriodEnd(sub);
+
+    console.log("[sync] Updating user", user.id, "→ plan:", plan, "sub:", sub.id);
 
     await db.user.update({
       where: { id: user.id },
@@ -74,13 +79,13 @@ export async function POST() {
         plan,
         stripeSubscriptionId: sub.id,
         stripePriceId: priceId,
-        stripeCurrentPeriodEnd: new Date(periodEnd * 1000),
+        stripeCurrentPeriodEnd: periodEnd,
       },
     });
 
     return NextResponse.json({ plan });
   } catch (error) {
-    console.error("Sync error:", error);
+    console.error("[sync] Error:", error);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
 }
