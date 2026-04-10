@@ -92,6 +92,25 @@ export default function DeadlinesPage() {
   const [adding, setAdding] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Templates state
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [templatesTab, setTemplatesTab] = useState<"list" | "create">("list");
+  const [applyingTemplate, setApplyingTemplate] = useState<Template | null>(null);
+  const [applyYear, setApplyYear] = useState(new Date().getFullYear());
+  const [applyClientIds, setApplyClientIds] = useState<string[]>([]);
+  const [applying, setApplying] = useState(false);
+  const [applySuccess, setApplySuccess] = useState<string | null>(null);
+
+  // Create template form
+  const [newTemplateName, setNewTemplateName] = useState("");
+  const [newTemplateItems, setNewTemplateItems] = useState<TemplateItem[]>([
+    { label: "", month: 4, day: 15, reminderEnabled: false },
+  ]);
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [templateError, setTemplateError] = useState("");
+
   const plan = session?.user?.plan || "free";
 
   useEffect(() => {
