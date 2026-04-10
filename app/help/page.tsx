@@ -657,6 +657,8 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
 };
 
 export default function HelpPage() {
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("getting-started");
 
