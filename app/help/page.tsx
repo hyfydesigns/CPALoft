@@ -20,7 +20,7 @@ import {
   CreditCard,
   Shield,
   Mail,
-  MessageSquare,
+
   BookOpen,
   ArrowRight,
   Upload,
