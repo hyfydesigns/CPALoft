@@ -41,6 +41,7 @@ const categories = [
   { id: "documents",       label: "Documents",       icon: FileText, color: "bg-red-50 text-red-600" },
   { id: "client-portal",   label: "Client Portal",   icon: Users,  color: "bg-green-50 text-green-600" },
   { id: "billing",         label: "Billing & Plans", icon: CreditCard, color: "bg-orange-50 text-orange-600" },
+  { id: "pro-features",   label: "Pro Features",    icon: Star, color: "bg-amber-50 text-amber-600" },
   { id: "security",        label: "Security",        icon: Shield, color: "bg-slate-50 text-slate-600" },
 ];
 
