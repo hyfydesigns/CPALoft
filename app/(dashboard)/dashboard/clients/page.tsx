@@ -74,6 +74,21 @@ interface Client {
   _count: { documents: number };
 }
 
+interface ClientNote {
+  id: string;
+  content: string;
+  pinned: boolean;
+  createdAt: string;
+}
+
+interface ActivityLog {
+  id: string;
+  type: string;
+  label: string;
+  createdAt: string;
+  metadata?: string | null;
+}
+
 const statusColors: Record<string, string> = {
   active: "success",
   inactive: "secondary",
