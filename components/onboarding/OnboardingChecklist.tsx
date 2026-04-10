@@ -182,10 +182,10 @@ export default function OnboardingChecklist({ onComplete }: OnboardingChecklistP
           {/* Footer */}
           <div className="px-5 py-3 bg-gray-50 flex items-center justify-between gap-3">
             <p className="text-xs text-gray-400">
-              You can always access this from{" "}
+              You can always find this under{" "}
               <Link href="/dashboard/getting-started" className="text-forest-600 hover:underline">
                 Getting Started
-              </Link>
+              </Link>{" "}in the sidebar
             </p>
             <Button
               size="sm"
