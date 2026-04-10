@@ -12,7 +12,7 @@ export default function TeamGuidePage() {
       {/* Print button */}
       <div className="print:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div>
-          <h1 className="text-sm font-semibold text-gray-900">IntelliCPA — Team &amp; Staff Training Guide</h1>
+          <h1 className="text-sm font-semibold text-gray-900">CPA Loft — Team &amp; Staff Training Guide</h1>
           <p className="text-xs text-gray-400">Use your browser&apos;s Print dialog to save as PDF</p>
         </div>
         <Button
@@ -37,13 +37,13 @@ export default function TeamGuidePage() {
               <span className="text-white font-bold text-lg">i</span>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">IntelliCPA</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">CPA Loft</p>
               <p className="text-xs text-gray-400">Practice Management Platform</p>
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Team &amp; Staff Training Guide</h1>
           <p className="text-gray-500">
-            For CPA firms onboarding multiple team members. Covers role responsibilities, day-to-day workflows, and best practices for using IntelliCPA as a team.
+            For CPA firms onboarding multiple team members. Covers role responsibilities, day-to-day workflows, and best practices for using CPA Loft as a team.
           </p>
           <p className="text-xs text-gray-400 mt-3">Version 1.0 · April 2026</p>
         </div>
@@ -70,7 +70,7 @@ export default function TeamGuidePage() {
 
         {/* 1 */}
         <Section num={1} title="Platform Overview for New Staff">
-          <p>IntelliCPA is your firm&apos;s practice management platform. Everything related to your clients — documents, deadlines, notes, communications — lives here. As a staff member, you will use it daily to:</p>
+          <p>CPA Loft is your firm&apos;s practice management platform. Everything related to your clients — documents, deadlines, notes, communications — lives here. As a staff member, you will use it daily to:</p>
           <ul>
             <li>Look up client records and history</li>
             <li>Upload and manage documents</li>
@@ -79,7 +79,7 @@ export default function TeamGuidePage() {
             <li>Use the AI Assistant for research and drafting</li>
           </ul>
           <SubSection title="Logging In">
-            <p>You will receive a login invitation from your firm administrator. Click the link in the email, set your password, and bookmark your firm&apos;s IntelliCPA URL. Use your work email and password each time you sign in. If you are locked out, use <strong>Forgot Password</strong> on the sign-in page.</p>
+            <p>You will receive a login invitation from your firm administrator. Click the link in the email, set your password, and bookmark your firm&apos;s CPA Loft URL. Use your work email and password each time you sign in. If you are locked out, use <strong>Forgot Password</strong> on the sign-in page.</p>
           </SubSection>
           <SubSection title="Navigating the Platform">
             <p>The left sidebar contains your main navigation:</p>
@@ -98,7 +98,7 @@ export default function TeamGuidePage() {
         <Section num={2} title="Roles & Responsibilities">
           <SubSection title="Firm Administrator (Lead CPA)">
             <ul>
-              <li>Owns the IntelliCPA account and billing</li>
+              <li>Owns the CPA Loft account and billing</li>
               <li>Configures firm branding and settings</li>
               <li>Invites clients to the portal</li>
               <li>Reviews AI-generated document analyses</li>
@@ -174,7 +174,7 @@ export default function TeamGuidePage() {
         {/* 5 */}
         <Section num={5} title="Document Handling Standards">
           <SubSection title="Naming Conventions">
-            <p>Use the <strong>category field</strong> in IntelliCPA rather than encoding information in filenames. The original filename is preserved, so you can always refer to it. Assign the correct category on upload:</p>
+            <p>Use the <strong>category field</strong> in CPA Loft rather than encoding information in filenames. The original filename is preserved, so you can always refer to it. Assign the correct category on upload:</p>
             <table>
               <thead>
                 <tr>
@@ -206,7 +206,7 @@ export default function TeamGuidePage() {
               <li>Never share your login credentials with another person.</li>
               <li>Do not download client documents to personal devices.</li>
               <li>Do not send client documents via personal email — always use the portal or document requests.</li>
-              <li>If a client sends documents to your personal email, upload them to IntelliCPA and delete the email copy.</li>
+              <li>If a client sends documents to your personal email, upload them to CPA Loft and delete the email copy.</li>
             </ul>
           </SubSection>
         </Section>
@@ -285,7 +285,7 @@ export default function TeamGuidePage() {
             <li><strong>Report any suspected unauthorised access</strong> to your firm administrator immediately.</li>
             <li>All data is encrypted in transit (HTTPS) and at rest.</li>
             <li>Client portal links expire after 7 days if unused. If a client says their invite expired, ask your administrator to resend it.</li>
-            <li>When a staff member leaves the firm, the administrator should immediately update or remove their access by contacting IntelliCPA support.</li>
+            <li>When a staff member leaves the firm, the administrator should immediately update or remove their access by contacting CPA Loft support.</li>
           </ul>
         </Section>
 
@@ -319,7 +319,7 @@ export default function TeamGuidePage() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-400 flex justify-between">
-          <span>IntelliCPA · Team &amp; Staff Training Guide · v1.0</span>
+          <span>CPA Loft · Team &amp; Staff Training Guide · v1.0</span>
           <span>For support, visit the Help Centre in your dashboard</span>
         </div>
       </div>
