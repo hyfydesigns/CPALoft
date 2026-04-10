@@ -16,7 +16,8 @@
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(echo \"EXIT_CODE:$?\")"
+      "Bash(echo \"EXIT_CODE:$?\")",
+      "Bash(node -e \"require\\('jszip'\\); console.log\\('jszip OK'\\)\")"
     ]
   },
   "hooks": {
