@@ -211,7 +211,7 @@ export default function ClientsPage() {
 
   // Delete / export
   const [deleteTarget, setDeleteTarget] = useState<Client | null>(null);
-  const [exporting, setExporting] = useState(false);
+  const [exportingId, setExportingId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [backupDownloaded, setBackupDownloaded] = useState(false);
 
