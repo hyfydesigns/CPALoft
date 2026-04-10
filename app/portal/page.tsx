@@ -131,6 +131,25 @@ export default function ClientPortalPage() {
     }
   }
 
+  async function saveCategory(docId: string) {
+    setSavingCategory(true);
+    try {
+      const res = await fetch(`/api/portal/upload/${docId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: editingCategory }),
+      });
+      if (res.ok) {
+        setDocs((prev) =>
+          prev.map((d) => (d.id === docId ? { ...d, category: editingCategory } : d))
+        );
+        setEditingDocId(null);
+      }
+    } finally {
+      setSavingCategory(false);
+    }
+  }
+
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (!acceptedFiles.length) return;
