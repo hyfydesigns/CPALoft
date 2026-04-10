@@ -236,7 +236,8 @@ export default function DocumentsPage() {
   }, [category]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+    onDrop: atLimit ? () => setUploadError(`Document limit reached (${docLimit}). Upgrade your plan to upload more.`) : onDrop,
+    disabled: atLimit,
     accept: {
       "application/pdf": [".pdf"],
       "image/*": [".jpg", ".jpeg", ".png", ".gif"],
