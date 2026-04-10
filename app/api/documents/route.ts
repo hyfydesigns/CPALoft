@@ -172,6 +172,16 @@ export async function POST(req: NextRequest) {
     // Notify client if document is tagged to one
     if (clientId) {
       notifyClientOfDocument(clientId, session.user.id, file.name);
+      // Log activity
+      try {
+        await logActivity({
+          clientId,
+          userId: session.user.id,
+          type: "document_uploaded",
+          label: `Document uploaded: ${file.name}`,
+          metadata: { filename: file.name },
+        });
+      } catch {}
     }
 
     return NextResponse.json(doc);
