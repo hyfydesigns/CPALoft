@@ -593,11 +593,20 @@ export default function DocumentsPage() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+              <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3 min-w-0">
                 {getFileIcon(taggingDoc.type, 5)}
-                <span className="text-sm font-medium text-gray-800 truncate">
-                  {taggingDoc.originalName}
-                </span>
+                <TooltipProvider delayDuration={400}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-sm font-medium text-gray-800 truncate cursor-default min-w-0">
+                        {taggingDoc.originalName}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs break-all text-xs">
+                      {taggingDoc.originalName}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Document type</label>
