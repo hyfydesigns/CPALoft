@@ -60,16 +60,13 @@ export async function extractPdfText(buffer: Buffer): Promise<ExtractResult> {
 }
 
 async function ocrPdf(buffer: Buffer): Promise<string> {
-  // These are require()'d inside the function so they're only loaded when needed
-  // and to avoid ESM/CJS issues with Next.js bundling.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { createCanvas } = require("canvas") as typeof import("canvas");
 
-  // pdfjs-dist legacy build is the CJS-compatible version
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js") as typeof import("pdfjs-dist");
+  // pdfjs-dist v5 — legacy build is ESM (.mjs), use dynamic import
+  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
-  // Disable the worker in Node.js — we run synchronously
+  // Disable the worker in Node.js — run in-process
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (pdfjsLib as any).GlobalWorkerOptions.workerSrc = "";
 
