@@ -147,7 +147,7 @@ model Chat {
 model Message {
   id        String   @id @default(cuid())
   role      String
-  content   String
+  content   String   @db.Text
   chatId    String
   createdAt DateTime @default(now())
 
