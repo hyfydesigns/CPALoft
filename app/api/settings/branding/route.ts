@@ -90,15 +90,14 @@ export async function POST(req: NextRequest) {
     const bytes = await logo.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", session.user.id);
-    await mkdir(uploadDir, { recursive: true });
-
-    const ext = path.extname(logo.name);
+    const ext = logo.name.slice(logo.name.lastIndexOf("."));
     const filename = `logo-${Date.now()}${ext}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/${session.user.id}/${filename}`;
+    const { url } = await uploadFile(
+      `logos/${session.user.id}`,
+      filename,
+      buffer,
+      logo.type
+    );
 
     return NextResponse.json({ url });
   } catch (error) {
