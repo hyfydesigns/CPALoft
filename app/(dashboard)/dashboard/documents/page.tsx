@@ -539,14 +539,19 @@ export default function DocumentsPage() {
                   <span>{formatBytes(doc.size)}</span>
                   <span>{formatRelativeDate(doc.createdAt)}</span>
                 </div>
-                <div className={cn(
-                  "flex items-center gap-1.5 text-xs rounded-md px-2 py-1",
-                  doc.client
-                    ? "bg-forest-50 text-forest-700"
-                    : "bg-gray-100 text-gray-400"
-                )}>
-                  <User className="w-3 h-3 shrink-0" />
-                  <span className="truncate">{doc.client ? doc.client.name : "No client"}</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <div className={cn(
+                    "flex items-center gap-1.5 text-xs rounded-md px-2 py-1 flex-1 min-w-0",
+                    doc.client
+                      ? "bg-forest-50 text-forest-700"
+                      : "bg-gray-100 text-gray-400"
+                  )}>
+                    <User className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{doc.client ? doc.client.name : "No client"}</span>
+                  </div>
+                  <span className="text-xs bg-blue-50 text-blue-600 rounded-md px-2 py-1 capitalize shrink-0">
+                    {EDIT_CATEGORIES.find((c) => c.value === doc.category)?.label ?? doc.category}
+                  </span>
                 </div>
               </CardContent>
             </Card>
