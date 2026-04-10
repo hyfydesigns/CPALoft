@@ -32,6 +32,7 @@ const navItems = [
   { href: "/dashboard/documents", icon: FileText, label: "Documents" },
   { href: "/dashboard/clients", icon: Users, label: "Clients" },
   { href: "/dashboard/deadlines", icon: CalendarClock, label: "Deadlines" },
+  { href: "/dashboard/getting-started", icon: Sparkles, label: "Getting Started" },
 ];
 
 const bottomItems = [
