@@ -95,6 +95,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // Enforce plan limits
+    const { checkPlanLimit } = await import("@/lib/utils");
+    const docCount = await db.document.count({ where: { userId: session.user.id } });
+    const limitError = checkPlanLimit("documents", session.user.plan || "free", docCount);
+    if (limitError) {
+      return NextResponse.json({ error: limitError }, { status: 403 });
+    }
+
     // Check file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
