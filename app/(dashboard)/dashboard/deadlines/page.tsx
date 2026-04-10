@@ -297,15 +297,31 @@ export default function DeadlinesPage() {
             Track and manage tax deadlines for all your clients
           </p>
         </div>
-        <Button
-          className="bg-forest-600 hover:bg-forest-700"
-          onClick={() => { resetForm(); setShowAddDialog(true); }}
-          disabled={plan === "free"}
-          title={plan === "free" ? "Upgrade to Pro to use Tax Deadlines" : undefined}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Deadline
-        </Button>
+        <div className="flex items-center gap-2">
+          {plan === "premium" && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowTemplates(true);
+                setTemplatesTab("list");
+                setApplyingTemplate(null);
+                loadTemplates();
+              }}
+            >
+              <LayoutTemplate className="w-4 h-4 mr-2" />
+              Templates
+            </Button>
+          )}
+          <Button
+            className="bg-forest-600 hover:bg-forest-700"
+            onClick={() => { resetForm(); setShowAddDialog(true); }}
+            disabled={plan === "free"}
+            title={plan === "free" ? "Upgrade to Pro to use Tax Deadlines" : undefined}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Deadline
+          </Button>
+        </div>
       </div>
 
       {plan === "free" && (
