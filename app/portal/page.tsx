@@ -75,6 +75,11 @@ export default function ClientPortalPage() {
   const [category, setCategory] = useState("general");
   const [note, setNote] = useState("");
 
+  // Document requests
+  const [docRequests, setDocRequests] = useState<DocumentRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(true);
+  const [fulfillingId, setFulfillingId] = useState<string | null>(null);
+
   // Redirect if not a client
   useEffect(() => {
     if (status === "unauthenticated") {
