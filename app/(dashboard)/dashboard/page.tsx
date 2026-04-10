@@ -77,7 +77,24 @@ function getFileIcon(type: string) {
   return <FileArchive className="w-5 h-5 text-gray-500" />;
 }
 
-function DocPreviewModal({ doc, onClose }: { doc: PreviewDoc; onClose: () => void }) {
+function DocPreviewModal({ doc, onClose, isPremium }: { doc: PreviewDoc; onClose: () => void; isPremium: boolean }) {
+  const router = useRouter();
+  const [analyzing, setAnalyzing] = useState(false);
+
+  async function analyzeWithAI() {
+    setAnalyzing(true);
+    try {
+      const res = await fetch(`/api/documents/${doc.id}/analyze`, { method: "POST" });
+      if (res.ok) {
+        const { chatId } = await res.json();
+        onClose();
+        router.push(`/dashboard/ai-assistant?chat=${chatId}`);
+      }
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
@@ -91,13 +108,31 @@ function DocPreviewModal({ doc, onClose }: { doc: PreviewDoc; onClose: () => voi
               </p>
             </div>
           </div>
-          <a
-            href={doc.url}
-            download={doc.originalName}
-            className="text-sm text-forest-600 hover:underline flex items-center gap-1 shrink-0 ml-4"
-          >
-            Download
-          </a>
+          <div className="flex items-center gap-2 shrink-0 ml-4">
+            {isPremium && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs border-forest-300 text-forest-700 hover:bg-forest-50"
+                onClick={analyzeWithAI}
+                disabled={analyzing}
+              >
+                {analyzing ? (
+                  <Brain className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                ) : (
+                  <Brain className="w-3.5 h-3.5 mr-1.5" />
+                )}
+                {analyzing ? "Opening…" : "Analyze with AI"}
+              </Button>
+            )}
+            <a
+              href={doc.url}
+              download={doc.originalName}
+              className="text-sm text-forest-600 hover:underline flex items-center gap-1"
+            >
+              Download
+            </a>
+          </div>
         </DialogHeader>
         <div className="flex-1 overflow-hidden bg-gray-100">
           {doc.type === "pdf" ? (
