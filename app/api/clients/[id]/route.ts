@@ -50,10 +50,28 @@ export async function PATCH(
 
     const data = await req.json();
 
+    // Get current client for status comparison
+    const existing = await db.client.findFirst({
+      where: { id, userId: session.user.id },
+    });
+
     const client = await db.client.updateMany({
       where: { id, userId: session.user.id },
       data,
     });
+
+    // Log status change if applicable
+    if (existing && data.status && data.status !== existing.status) {
+      try {
+        await logActivity({
+          clientId: id,
+          userId: session.user.id,
+          type: "status_changed",
+          label: `Status changed to ${data.status}`,
+          metadata: { from: existing.status, to: data.status },
+        });
+      } catch {}
+    }
 
     return NextResponse.json(client);
   } catch (error) {
