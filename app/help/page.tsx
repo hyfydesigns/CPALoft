@@ -427,6 +427,88 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
       ),
     },
   ],
+  "pro-features": [
+    {
+      q: "What features are exclusive to Pro and Premium plans?",
+      a: (
+        <div className="space-y-2">
+          <p>Pro and Premium plans unlock these practice management tools:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Document Requests</strong> — Request specific documents from clients with due dates</li>
+            <li><strong>Tax Deadline Tracker</strong> — Track every filing deadline across all clients</li>
+            <li><strong>Client Notes & Activity Timeline</strong> — Pin notes and view a full audit trail per client</li>
+            <li><strong>Saved AI Prompts</strong> — Save and reuse your best AI research prompts</li>
+            <li><strong>Bulk Document Download</strong> — Export all documents for a client as a ZIP</li>
+          </ul>
+          <p className="text-gray-500">All features are available on both Pro and Premium. Premium adds unlimited usage, higher storage, and team seats.</p>
+        </div>
+      ),
+    },
+    {
+      q: "How do Document Requests work?",
+      a: (
+        <div className="space-y-2">
+          <p>Document Requests let you tell clients exactly what you need, without back-and-forth emails:</p>
+          <ol className="list-decimal pl-5 space-y-1">
+            <li>Open a client&apos;s detail panel on the <strong>Clients</strong> page and click the <strong>Requests</strong> tab.</li>
+            <li>Click <strong>New Request</strong>, enter a title, optional description, and due date.</li>
+            <li>The client sees a checklist of all pending requests at the top of their portal the next time they log in.</li>
+            <li>They upload the document and click <strong>Mark Done</strong> — the request status updates to <strong>Fulfilled</strong> on your end.</li>
+          </ol>
+          <p className="text-gray-500">You can track all pending and fulfilled requests directly in the client&apos;s Requests tab.</p>
+        </div>
+      ),
+    },
+    {
+      q: "How does the Tax Deadline Tracker work?",
+      a: (
+        <div className="space-y-2">
+          <p>The <strong>Deadlines</strong> page (accessible from the sidebar) gives you a centralized view of all filing deadlines across every client.</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Add a deadline by clicking <strong>Add Deadline</strong> — select a client, choose a form type (quick-fill buttons for 1040, 1120S, 1065, extensions), and set a due date.</li>
+            <li>Deadlines are color-coded: upcoming (blue), overdue (red), completed (green).</li>
+            <li>Enable the <strong>Reminder</strong> toggle to receive an email reminder before the deadline.</li>
+            <li>Filter by status using the tabs at the top of the page.</li>
+            <li>You can also manage deadlines for a specific client in the <strong>Deadlines</strong> tab of their detail panel.</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      q: "How do Client Notes and the Activity Timeline work?",
+      a: (
+        <div className="space-y-2">
+          <p>Open any client&apos;s detail panel on the <strong>Clients</strong> page to access two tabs:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Notes tab</strong> — Write and save notes about the client. Pin important notes to the top. Notes are private to your account.</li>
+            <li><strong>Activity tab</strong> — An automatic audit trail that logs key events: when the client was added, every document uploaded (by you or the client), document requests created, and more. Timestamps and metadata are recorded automatically.</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      q: "How do I save and reuse AI prompts?",
+      a: (
+        <div className="space-y-2">
+          <p>In the <strong>AI Assistant</strong>, you can build a personal library of prompts:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Save a prompt</strong> — hover over any of your messages and click the bookmark icon. Give it a title and save.</li>
+            <li><strong>Reuse a prompt</strong> — saved prompts appear in the left sidebar under <strong>Saved Prompts</strong>. Click one to instantly paste it into the message box.</li>
+            <li><strong>Delete a prompt</strong> — hover over a saved prompt in the sidebar and click the trash icon.</li>
+          </ul>
+          <p className="text-gray-500">Great for tax research templates, standard client scenario formats, or any prompt you use regularly.</p>
+        </div>
+      ),
+    },
+    {
+      q: "How do I download all documents for a client?",
+      a: (
+        <p>
+          On the <strong>Clients</strong> page, click the <strong>three-dot menu (⋯)</strong> on any client row and select <strong>Download All Documents</strong>. A ZIP file is generated and downloaded containing all active documents for that client, plus a <strong>client.json</strong> metadata file with document details and client info. This is also available as <strong>Download Backup ZIP</strong> when you go to delete a client, giving you a chance to save records before removing them.
+        </p>
+      ),
+    },
+  ],
   "security": [
     {
       q: "How is my data stored and protected?",
