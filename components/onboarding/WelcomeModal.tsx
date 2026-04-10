@@ -74,7 +74,7 @@ export default function WelcomeModal({ userName, onDismiss }: WelcomeModalProps)
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-5 h-5 text-yellow-300" />
             <span className="text-xs font-semibold uppercase tracking-widest text-forest-200">
-              Welcome to IntelliCPA
+              Welcome to CPA Loft
             </span>
           </div>
           <h2 className="text-2xl font-bold leading-tight">
