@@ -286,8 +286,24 @@ export default function DocumentsPage() {
       d.originalName.toLowerCase().includes(search.toLowerCase())
   );
 
+  const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
+  const docLimit = plan.documents as number;
+  const isOverLimit = docLimit !== -1 && documents.length > docLimit;
+  const atLimit = docLimit !== -1 && documents.length >= docLimit;
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Over-limit warning banner */}
+      {isOverLimit && (
+        <div className="mb-6 flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          <span className="text-lg leading-none">⚠️</span>
+          <div>
+            <p className="font-semibold">You&apos;re over your {plan.name} plan limit ({docLimit} documents)</p>
+            <p className="mt-0.5 text-amber-700">Your existing {documents.length} documents are safe and untouched. You won&apos;t be able to upload new documents until you&apos;re under the limit — upgrade your plan or delete some documents.</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
