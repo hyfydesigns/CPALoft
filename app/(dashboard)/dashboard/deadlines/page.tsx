@@ -198,6 +198,81 @@ export default function DeadlinesPage() {
     setDeadlines((prev) => prev.filter((d) => d.id !== id));
   }
 
+  async function loadTemplates() {
+    setTemplatesLoading(true);
+    try {
+      const res = await fetch("/api/deadline-templates");
+      if (res.ok) {
+        const data = await res.json();
+        setTemplates(Array.isArray(data) ? data : []);
+      }
+    } finally {
+      setTemplatesLoading(false);
+    }
+  }
+
+  async function deleteTemplate(id: string) {
+    await fetch(`/api/deadline-templates/${id}`, { method: "DELETE" });
+    setTemplates((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  async function saveTemplate() {
+    setTemplateError("");
+    if (!newTemplateName.trim()) {
+      setTemplateError("Template name is required");
+      return;
+    }
+    const validItems = newTemplateItems.filter((i) => i.label.trim());
+    if (validItems.length === 0) {
+      setTemplateError("At least one item with a label is required");
+      return;
+    }
+    setSavingTemplate(true);
+    try {
+      const res = await fetch("/api/deadline-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newTemplateName, items: validItems }),
+      });
+      if (res.ok) {
+        await loadTemplates();
+        setNewTemplateName("");
+        setNewTemplateItems([{ label: "", month: 4, day: 15, reminderEnabled: false }]);
+        setTemplatesTab("list");
+      } else {
+        const err = await res.json();
+        setTemplateError(err.error || "Failed to save template");
+      }
+    } finally {
+      setSavingTemplate(false);
+    }
+  }
+
+  async function applyTemplate() {
+    if (!applyingTemplate) return;
+    setApplying(true);
+    setApplySuccess(null);
+    try {
+      const res = await fetch(`/api/deadline-templates/${applyingTemplate.id}/apply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientIds: applyClientIds, year: applyYear }),
+      });
+      if (res.ok) {
+        const { created } = await res.json();
+        setApplySuccess(`Created ${created} deadline${created !== 1 ? "s" : ""}!`);
+        await loadDeadlines();
+        setTimeout(() => {
+          setApplySuccess(null);
+          setApplyingTemplate(null);
+          setApplyClientIds([]);
+        }, 3000);
+      }
+    } finally {
+      setApplying(false);
+    }
+  }
+
   const filtered = deadlines.filter((d) =>
     statusFilter === "all" || d.status === statusFilter
   );
