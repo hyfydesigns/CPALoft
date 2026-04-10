@@ -27,6 +27,11 @@ import {
   Zap,
   Link2,
   ChevronRight,
+  CalendarClock,
+  ClipboardList,
+  BookmarkCheck,
+  Star,
+  Pencil,
 } from "lucide-react";
 import { Logo, LogoMark } from "@/components/ui/logo";
 
