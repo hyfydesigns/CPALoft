@@ -1109,6 +1109,75 @@ export default function ClientsPage() {
                   </div>
                 )}
               </TabsContent>
+              {/* Requests Tab */}
+              <TabsContent value="requests" className="mt-4">
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input
+                      value={newRequestTitle}
+                      onChange={(e) => setNewRequestTitle(e.target.value)}
+                      placeholder="Request title (e.g. 2023 W-2)"
+                      className="text-sm flex-1"
+                    />
+                    <input
+                      type="date"
+                      value={newRequestDueDate}
+                      onChange={(e) => setNewRequestDueDate(e.target.value)}
+                      className="border border-gray-200 rounded-md px-2 text-sm text-gray-600 w-32"
+                    />
+                    <Button
+                      className="bg-forest-600 hover:bg-forest-700 shrink-0"
+                      size="sm"
+                      onClick={() => addClientRequest(viewClient.id)}
+                      disabled={!newRequestTitle.trim() || addingRequest}
+                    >
+                      {addingRequest ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                    </Button>
+                  </div>
+
+                  {requestsLoading ? (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                    </div>
+                  ) : clientRequests.length === 0 ? (
+                    <p className="text-sm text-gray-400 text-center py-6">No document requests yet.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {clientRequests.map((req) => (
+                        <div key={req.id} className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-gray-100 bg-gray-50">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{req.title}</p>
+                            {req.dueDate && (
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                Due: {new Date(req.dueDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <Badge
+                            variant={
+                              req.status === "fulfilled" ? "success" :
+                              req.status === "cancelled" ? "secondary" :
+                              "warning"
+                            }
+                            className="text-xs capitalize shrink-0"
+                          >
+                            {req.status}
+                          </Badge>
+                          {req.status === "pending" && (
+                            <button
+                              onClick={() => updateRequestStatus(req.id, "cancelled")}
+                              className="text-gray-400 hover:text-red-500"
+                              title="Cancel"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
             </Tabs>
 
             <DialogFooter>
