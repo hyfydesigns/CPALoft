@@ -3,8 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requirePremium } from "@/lib/plan-gate";
-import { readFile } from "fs/promises";
-import path from "path";
 import { extractPdfText } from "@/lib/pdf-extract";
 
 export async function POST(
