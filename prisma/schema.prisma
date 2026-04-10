@@ -240,7 +240,7 @@ model DeadlineTemplate {
   id        String   @id @default(cuid())
   userId    String
   name      String
-  items     String   // JSON: [{label, month, day, reminderEnabled}]
+  items     String   @db.Text // JSON: [{label, month, day, reminderEnabled}]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
