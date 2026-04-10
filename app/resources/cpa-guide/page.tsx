@@ -16,7 +16,7 @@ export default function CPAGuidePage() {
       {/* Print button — hidden when printing */}
       <div className="print:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div>
-          <h1 className="text-sm font-semibold text-gray-900">IntelliCPA — Solo CPA User Guide</h1>
+          <h1 className="text-sm font-semibold text-gray-900">CPA Loft — Solo CPA User Guide</h1>
           <p className="text-xs text-gray-400">Use your browser&apos;s Print dialog to save as PDF</p>
         </div>
         <Button size="sm" onClick={handlePrint} className="gap-1.5 bg-forest-700 hover:bg-forest-800 text-white">
@@ -37,7 +37,7 @@ export default function CPAGuidePage() {
               <span className="text-white font-bold text-lg">i</span>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">IntelliCPA</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-forest-700">CPA Loft</p>
               <p className="text-xs text-gray-400">Practice Management Platform</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function CPAGuidePage() {
         {/* 1 */}
         <Section num={1} title="Getting Started & Account Setup">
           <SubSection title="Logging In">
-            <p>Navigate to your IntelliCPA URL and sign in with your registered email address and password. If you forget your password, use <strong>Forgot Password</strong> on the sign-in page to receive a reset link.</p>
+            <p>Navigate to your CPA Loft URL and sign in with your registered email address and password. If you forget your password, use <strong>Forgot Password</strong> on the sign-in page to receive a reset link.</p>
           </SubSection>
           <SubSection title="Completing Your Profile">
             <p>Go to <strong>Settings</strong> (bottom-left sidebar) and fill in:</p>
@@ -183,7 +183,7 @@ export default function CPAGuidePage() {
             </ul>
           </SubSection>
           <SubSection title="Custom Portal Branding (Premium)">
-            <p>Go to <strong>Settings → Branding</strong> to upload your firm logo and set a display name. These appear in the portal header, replacing the default IntelliCPA branding.</p>
+            <p>Go to <strong>Settings → Branding</strong> to upload your firm logo and set a display name. These appear in the portal header, replacing the default CPA Loft branding.</p>
           </SubSection>
         </Section>
 
@@ -278,7 +278,7 @@ export default function CPAGuidePage() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-gray-200 text-xs text-gray-400 flex justify-between">
-          <span>IntelliCPA · Solo CPA User Guide · v1.0</span>
+          <span>CPA Loft · Solo CPA User Guide · v1.0</span>
           <span>For support, visit the Help Centre in your dashboard</span>
         </div>
       </div>
