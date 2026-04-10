@@ -71,6 +71,9 @@ export default function WelcomeModal({ userName, onDismiss }: WelcomeModalProps)
   return (
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="max-w-lg p-0 overflow-hidden">
+        <VisuallyHidden>
+          <DialogTitle>Welcome to CPA Loft</DialogTitle>
+        </VisuallyHidden>
         {/* Header */}
         <div className="bg-gradient-to-br from-forest-700 to-forest-900 px-8 py-7 text-white">
           <div className="flex items-center gap-2 mb-3">
