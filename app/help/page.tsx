@@ -678,12 +678,22 @@ export default function HelpPage() {
             <Logo markSize={32} wordmarkSize="md" />
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">CPA Sign In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="bg-forest-600 hover:bg-forest-700">Get Started Free</Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/dashboard">
+                <Button size="sm" className="bg-forest-600 hover:bg-forest-700 gap-1.5">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">CPA Sign In</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button size="sm" className="bg-forest-600 hover:bg-forest-700">Get Started Free</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
