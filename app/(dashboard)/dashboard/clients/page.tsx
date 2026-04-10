@@ -397,8 +397,31 @@ export default function ClientsPage() {
 
   const activeCount = clients.filter((c) => c.status === "active").length;
 
+  const plan = PLANS[(session?.user?.plan as keyof typeof PLANS) || "free"];
+  const clientLimit = plan.clients as number;
+  const isOverLimit = clientLimit !== -1 && clients.length > clientLimit;
+  const atLimit = clientLimit !== -1 && clients.length >= clientLimit;
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Error toast */}
+      {errorToast && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium bg-red-600 text-white max-w-sm">
+          {errorToast}
+        </div>
+      )}
+
+      {/* Over-limit warning banner */}
+      {isOverLimit && (
+        <div className="mb-6 flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          <span className="text-lg leading-none">⚠️</span>
+          <div>
+            <p className="font-semibold">You&apos;re over your {plan.name} plan limit ({clientLimit} clients)</p>
+            <p className="mt-0.5 text-amber-700">Your existing {clients.length} clients are safe and untouched. You won&apos;t be able to add new clients until you&apos;re under the limit — upgrade your plan or remove some clients.</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
