@@ -338,11 +338,11 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
         <div className="space-y-2">
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Free</strong> — $0/mo. 10 AI messages, 5 documents, 3 clients.</li>
-            <li><strong>Pro</strong> — $49/mo. 500 AI messages, 100 documents, 50 clients.</li>
-            <li><strong>Premium</strong> — $149/mo. Unlimited everything + team seats.</li>
+            <li><strong>Pro</strong> — $49/mo. 500 AI messages, 100 documents, 50 clients, 10 GB storage.</li>
+            <li><strong>Premium</strong> — $149/mo. Unlimited AI messages, documents, and clients. 100 GB storage.</li>
           </ul>
           <p className="text-gray-500">
-            All paid plans include a 14-day free trial. See the{" "}
+            See the{" "}
             <Link href="/#pricing" className="text-forest-600 hover:underline">pricing section</Link>{" "}
             for the full feature breakdown.
           </p>
@@ -352,20 +352,44 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
     {
       q: "How do I upgrade my plan?",
       a: (
-        <p>
-          Go to <strong>Dashboard → Billing & Plans</strong> and click the upgrade button for
-          the plan you want. You&apos;ll be taken to a secure Stripe checkout. Your new plan
-          takes effect immediately.
-        </p>
+        <div className="space-y-2">
+          <p>
+            Go to <strong>Dashboard → Billing & Plans</strong> and click the upgrade button for
+            the plan you want.
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>New subscribers</strong> are taken to a secure Stripe checkout to enter payment details.</li>
+            <li><strong>Existing subscribers</strong> upgrading or downgrading between paid plans are switched in place — no checkout page. The prorated difference is charged or credited immediately.</li>
+          </ul>
+          <p className="text-gray-500">Your new plan takes effect immediately in both cases.</p>
+        </div>
       ),
     },
     {
-      q: "Can I downgrade or cancel at any time?",
+      q: "What happens to my data if I downgrade?",
+      a: (
+        <div className="space-y-2">
+          <p>
+            <strong>Nothing is deleted.</strong> All your existing clients and documents are
+            kept exactly as they are.
+          </p>
+          <p>
+            If you&apos;re over the lower plan&apos;s limits, you&apos;ll see a warning banner
+            on the affected pages and won&apos;t be able to add new clients or upload new
+            documents until you&apos;re back under the limit — either by upgrading again or
+            removing some records.
+          </p>
+          <p className="text-gray-500">We will never delete your data due to a plan change.</p>
+        </div>
+      ),
+    },
+    {
+      q: "Can I cancel at any time?",
       a: (
         <p>
-          Yes. There are no long-term contracts. You can downgrade or cancel from the Billing
-          page at any time. If you cancel, you retain access until the end of your current
-          billing period.
+          Yes. There are no long-term contracts. Click <strong>Manage Subscription</strong> on
+          the Billing page to cancel via the Stripe portal. You retain full access until the
+          end of your current billing period, then your account switches to the Free plan.
         </p>
       ),
     },
