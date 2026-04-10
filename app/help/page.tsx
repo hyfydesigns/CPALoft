@@ -95,6 +95,20 @@ const faqs: Record<string, { q: string; a: React.ReactNode }[]> = {
         </p>
       ),
     },
+    {
+      q: "Can I back up and restore my account?",
+      a: (
+        <div className="space-y-2">
+          <p>Yes. CPA Loft supports full account backup and restore:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Go to <strong>Dashboard → Settings → Danger Zone</strong> to download a ZIP backup of your entire account — all clients and their documents included.</li>
+            <li>To restore, click <strong>Restore a deleted account from backup</strong> on the login page and upload your ZIP file. A preview shows exactly what will be restored before you confirm.</li>
+            <li>Your original password is preserved in the backup so you can sign in immediately after restoring.</li>
+          </ul>
+          <p className="text-gray-500">Individual client backups work the same way — download a client ZIP before deleting, and restore it from the Clients page at any time.</p>
+        </div>
+      ),
+    },
   ],
   "ai-assistant": [
     {
