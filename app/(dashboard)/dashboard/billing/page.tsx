@@ -71,23 +71,41 @@ const planDetails = [
 ];
 
 export default function BillingPage() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const currentPlan = session?.user?.plan || "free";
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-  // Handle Stripe redirect back
+  // On Stripe success redirect: sync subscription from Stripe, then refresh session
   useEffect(() => {
     if (searchParams.get("success") === "1") {
-      setToast({ type: "success", message: "🎉 Subscription activated! Your plan has been upgraded." });
+      setSyncing(true);
+      fetch("/api/billing/sync", { method: "POST" })
+        .then((r) => r.json())
+        .then(async (data) => {
+          if (data.plan) {
+            await updateSession(); // refresh NextAuth session so plan updates everywhere
+            setToast({ type: "success", message: `🎉 You're now on the ${data.plan.charAt(0).toUpperCase() + data.plan.slice(1)} plan!` });
+          }
+        })
+        .catch(() => {
+          setToast({ type: "error", message: "Could not verify subscription. Please refresh." });
+        })
+        .finally(() => {
+          setSyncing(false);
+          // Clean up URL params without reload
+          router.replace("/dashboard/billing");
+        });
     } else if (searchParams.get("canceled") === "1") {
       setToast({ type: "error", message: "Checkout was canceled. No changes were made." });
+      router.replace("/dashboard/billing");
     }
-    const timer = setTimeout(() => setToast(null), 6000);
-    return () => clearTimeout(timer);
-  }, [searchParams]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleUpgrade(plan: string) {
     if (plan === "free") return;
