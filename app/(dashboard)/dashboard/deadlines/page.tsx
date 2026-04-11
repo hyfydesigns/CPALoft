@@ -575,6 +575,13 @@ export default function DeadlinesPage() {
                           <ChevronRight className="w-3 h-3 ml-1" />
                         </Button>
                         <button
+                          className="p-1.5 rounded-lg hover:bg-forest-50 text-gray-400 hover:text-forest-600 transition-colors"
+                          title="Edit template"
+                          onClick={() => startEditTemplate(t)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
                           className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
                           onClick={() => deleteTemplate(t.id)}
                         >
