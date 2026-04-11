@@ -686,13 +686,18 @@ export default function DeadlinesPage() {
                 </div>
 
                 <DialogFooter>
+                  {editingTemplateId && (
+                    <Button variant="outline" onClick={cancelEditTemplate}>
+                      Cancel
+                    </Button>
+                  )}
                   <Button
                     className="bg-forest-600 hover:bg-forest-700"
                     disabled={savingTemplate}
                     onClick={saveTemplate}
                   >
                     {savingTemplate ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                    Save Template
+                    {editingTemplateId ? "Update Template" : "Save Template"}
                   </Button>
                 </DialogFooter>
               </div>
