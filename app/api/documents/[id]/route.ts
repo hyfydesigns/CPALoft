@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { unlink } from "fs/promises";
 import path from "path";
 import { sendDocumentTaggedEmail } from "@/lib/email";
+import { getAppUrl } from "@/lib/utils";
 
 export async function DELETE(
   req: NextRequest,
