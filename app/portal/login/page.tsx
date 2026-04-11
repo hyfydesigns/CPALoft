@@ -33,8 +33,23 @@ function LoginForm() {
       if (result?.error) {
         setError("Invalid email or password");
       } else {
-        router.push(callbackUrl);
-        router.refresh();
+        // Check role from the session before navigating — ensures clients always
+        // land in the portal even if a CPA session cookie was previously set.
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = await sessionRes.json();
+        const role = sessionData?.user?.role;
+        if (role === "client") {
+          // Only honour callbackUrl if it's a portal path
+          const destination =
+            callbackUrl && callbackUrl.startsWith("/portal")
+              ? callbackUrl
+              : "/portal";
+          router.push(destination);
+          router.refresh();
+        } else {
+          // Signed in with a non-client account — reject and inform
+          setError("This portal is for clients only. Please use the CPA sign-in page.");
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
