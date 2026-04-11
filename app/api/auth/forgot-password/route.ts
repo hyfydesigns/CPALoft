@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/lib/db";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { getAppUrl } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   try {
