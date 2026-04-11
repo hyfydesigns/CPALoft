@@ -1,32 +1,13 @@
 import nodemailer from "nodemailer";
-import fs from "fs";
-import path from "path";
 
 function getSmtpConfig() {
-  // Try process.env first, fallback to reading .env.local directly
-  let host = process.env.SMTP_HOST;
-  let port = process.env.SMTP_PORT;
-  let user = process.env.SMTP_USER;
-  let pass = process.env.SMTP_PASS;
-  let from = process.env.SMTP_FROM;
+  const host = process.env.SMTP_HOST;
+  const port = parseInt(process.env.SMTP_PORT || "587");
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const from = process.env.SMTP_FROM || `CPA Loft <${user}>`;
 
-  if (!host || !user || !pass) {
-    try {
-      const envFile = path.join(process.cwd(), ".env.local");
-      const content = fs.readFileSync(envFile, "utf-8");
-      const get = (key: string) => {
-        const match = content.match(new RegExp(`^${key}\\s*=\\s*["']?([^"'\\r\\n]+)["']?`, "m"));
-        return match?.[1]?.trim() ?? "";
-      };
-      host = host || get("SMTP_HOST");
-      port = port || get("SMTP_PORT");
-      user = user || get("SMTP_USER");
-      pass = pass || get("SMTP_PASS");
-      from = from || get("SMTP_FROM");
-    } catch {}
-  }
-
-  return { host, port: parseInt(port || "587"), user, pass, from: from || `CPA Loft <${user}>` };
+  return { host, port, user, pass, from };
 }
 
 export async function sendVerificationEmail(

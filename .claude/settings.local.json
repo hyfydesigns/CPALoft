@@ -45,7 +45,9 @@
       "Bash(set DATABASE_URL=file:./dev.db)",
       "Bash(DATABASE_URL=\"file:./dev.db\" npx prisma migrate dev --name add_onboarding)",
       "Bash(node -e \"require\\('@radix-ui/react-visually-hidden'\\); console.log\\('ok'\\)\")",
-      "Bash(node -e \"require\\('@vercel/blob'\\); console.log\\('ok'\\)\")"
+      "Bash(node -e \"require\\('@vercel/blob'\\); console.log\\('ok'\\)\")",
+      "Bash(npm show:*)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")"
     ]
   },
   "hooks": {
