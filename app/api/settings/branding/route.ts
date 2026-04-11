@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requirePremium } from "@/lib/plan-gate";
-import { uploadFile } from "@/lib/blob";
+import { uploadFile, fetchBlobContent } from "@/lib/blob";
 
 export async function GET() {
   try {
