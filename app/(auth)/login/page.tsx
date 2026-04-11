@@ -42,7 +42,15 @@ function LoginForm() {
           setError("Invalid email or password");
         }
       } else {
-        router.push(callbackUrl);
+        // Refresh the session so we can read the role
+        await update();
+        const fresh = await fetch("/api/auth/session").then((r) => r.json());
+        const role = fresh?.user?.role;
+        if (role === "client") {
+          router.push("/portal");
+        } else {
+          router.push(callbackUrl);
+        }
         router.refresh();
       }
     } catch {
