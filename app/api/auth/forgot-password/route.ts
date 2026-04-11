@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       data: { verifyToken: token, verifyExpiry: expiry },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
     const resetUrl = `${appUrl}/reset-password?token=${token}`;
 
     try {
