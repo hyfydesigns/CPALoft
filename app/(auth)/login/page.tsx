@@ -79,15 +79,6 @@ function LoginForm() {
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          {/* Demo banner */}
-          <div className="bg-forest-50 border border-forest-100 rounded-lg p-3 mb-6 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-forest-600 shrink-0 mt-0.5" />
-            <div className="text-xs text-forest-700">
-              <strong>Demo credentials pre-filled.</strong> Click Sign In to
-              explore the app instantly.
-            </div>
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
