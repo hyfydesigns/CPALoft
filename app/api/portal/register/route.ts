@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
     // Send welcome email
     if (portalUser.email) {
       const cpaName = updatedClient.user?.name || "Your accountant";
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const appUrl = getAppUrl();
       const portalLoginUrl = `${appUrl}/portal/login`;
       try {
         await sendClientWelcomeEmail(portalUser.email, portalUser.name ?? name, cpaName, portalLoginUrl);
