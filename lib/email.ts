@@ -983,7 +983,7 @@ export async function sendPracticeDigestEmail(
     return;
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
 
   const deadlineRows = data.deadlines.length > 0
     ? data.deadlines.map(d => `<li><strong>${d.label}</strong>${d.client ? ` — ${d.client.name}` : ''} — due ${new Date(d.dueDate).toLocaleDateString()}</li>`).join("")
