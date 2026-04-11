@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
           select: { name: true },
         });
         const cpaName = cpaUser?.name || "Your accountant";
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const appUrl = getAppUrl();
         const portalUrl = `${appUrl}/portal`;
         await sendDocumentRequestEmail(
           client.email,
