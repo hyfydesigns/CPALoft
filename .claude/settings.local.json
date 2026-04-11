@@ -47,7 +47,8 @@
       "Bash(node -e \"require\\('@radix-ui/react-visually-hidden'\\); console.log\\('ok'\\)\")",
       "Bash(node -e \"require\\('@vercel/blob'\\); console.log\\('ok'\\)\")",
       "Bash(npm show:*)",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(echo \"Exit code: $?\")"
     ]
   },
   "hooks": {

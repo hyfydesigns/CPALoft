@@ -1,41 +1,40 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
-export default withAuth(
-  function middleware(req) {
-    const { pathname } = req.nextUrl;
-    const token = req.nextauth.token;
-    const role = token?.role as string | undefined;
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-    // ── Unauthenticated users ─────────────────────────────────────────────────
-    // Send portal visitors to the portal login, not the CPA login
-    if (!token && pathname.startsWith("/portal")) {
-      const portalLogin = new URL("/portal/login", req.url);
-      portalLogin.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(portalLogin);
-    }
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const role = token?.role as string | undefined;
 
-    // ── Role mismatch guards ──────────────────────────────────────────────────
-    // Clients trying to access the CPA dashboard → send to portal
-    if (pathname.startsWith("/dashboard") && role === "client") {
-      return NextResponse.redirect(new URL("/portal", req.url));
-    }
-
-    // CPAs trying to access the client portal → send to dashboard
-    if (pathname.startsWith("/portal") && role === "cpa") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      // Always run the middleware function above; handle auth logic there
-      authorized: () => true,
-    },
+  // ── Unauthenticated users hitting the portal ──────────────────────────────
+  // Send them to the portal login (not the CPA login page)
+  if (!token && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
+    const portalLogin = new URL("/portal/login", req.url);
+    portalLogin.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(portalLogin);
   }
-);
+
+  // ── Unauthenticated users hitting the CPA dashboard ───────────────────────
+  if (!token && (pathname === "/dashboard" || pathname.startsWith("/dashboard/"))) {
+    const login = new URL("/login", req.url);
+    login.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(login);
+  }
+
+  // ── Client trying to access CPA dashboard → portal ───────────────────────
+  if (role === "client" && (pathname === "/dashboard" || pathname.startsWith("/dashboard/"))) {
+    return NextResponse.redirect(new URL("/portal", req.url));
+  }
+
+  // ── CPA trying to access client portal → dashboard ────────────────────────
+  if (role === "cpa" && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/portal/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/portal", "/portal/:path*"],
 };
