@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe, PLANS } from "@/lib/stripe";
 import { db } from "@/lib/db";
+import { getAppUrl } from "@/lib/utils";
 
 export async function POST(req: Request) {
   try {
