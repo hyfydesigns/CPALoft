@@ -13,6 +13,11 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // Clients belong in the portal, not the CPA dashboard
+  if (session.user.role === "client") {
+    redirect("/portal");
+  }
+
   return (
     <DashboardShell user={session.user}>
       {children}
