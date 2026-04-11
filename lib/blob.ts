@@ -1,9 +1,11 @@
 /**
  * Shared file upload helper.
  *
- * Production  (BLOB_READ_WRITE_TOKEN set): uploads to Vercel Blob CDN.
+ * Production  (BLOB_READ_WRITE_TOKEN set): uploads to Vercel Blob CDN (private).
  * Development (no token):                 writes to public/uploads locally.
  * Serverless  (no token, read-only FS):   writes to /tmp as a last resort.
+ *
+ * Private blobs must be served via /api/documents/[id]/download (proxied with token).
  */
 
 import { put } from "@vercel/blob";
@@ -27,7 +29,7 @@ export async function uploadFile(
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const blob = await put(pathname, buffer, {
-        access: "public",
+        access: "private",
         contentType,
       });
       return { url: blob.url, pathname };
