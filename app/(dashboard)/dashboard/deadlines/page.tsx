@@ -541,7 +541,7 @@ export default function DeadlinesPage() {
             </div>
           ) : (
             /* Tabs view */
-            <Tabs value={templatesTab} onValueChange={(v) => setTemplatesTab(v as "list" | "create")}>
+            <Tabs value={templatesTab} onValueChange={(v) => { setTemplatesTab(v as "list" | "create"); if (v === "list") cancelEditTemplate(); }}>
               <TabsList className="w-full">
                 <TabsTrigger value="list" className="flex-1">My Templates</TabsTrigger>
                 <TabsTrigger value="create" className="flex-1">Create Template</TabsTrigger>
