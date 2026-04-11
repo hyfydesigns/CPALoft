@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getAppUrl } from "@/lib/utils";
 
 function getSmtpConfig() {
   const host = process.env.SMTP_HOST;
