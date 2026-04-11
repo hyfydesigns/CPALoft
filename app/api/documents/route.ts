@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/blob";
 import { sendDocumentTaggedEmail } from "@/lib/email";
 import { logActivity } from "@/lib/activity";
+import { getAppUrl } from "@/lib/utils";
 
 async function notifyClientOfDocument(
   clientId: string,
