@@ -31,7 +31,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // ── CPA trying to access client portal → dashboard ────────────────────────
-  if (role === "cpa" && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
+  // Allow CPAs to visit public portal pages (e.g. to preview what clients see)
+  if (role === "cpa" && !isPortalPublic && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
