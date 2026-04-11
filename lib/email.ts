@@ -18,7 +18,7 @@ export async function sendVerificationEmail(
   const { host, port, user, pass, from } = getSmtpConfig();
 
   if (!host || !user || !pass) {
-    console.warn("⚠️  SMTP not configured — skipping verification email. Set SMTP_HOST, SMTP_USER, SMTP_PASS in .env.local");
+    console.warn("⚠️  SMTP not configured — skipping verification email. Set SMTP_HOST, SMTP_USER, SMTP_PASS in your environment variables (Vercel dashboard or .env.local for dev).");
     // In development, log the verify URL so you can test without SMTP
     console.log("🔗 Verify URL (dev only):", verifyUrl);
     return { previewUrl: verifyUrl };
