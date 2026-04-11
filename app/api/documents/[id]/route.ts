@@ -83,7 +83,7 @@ export async function PATCH(
             select: { name: true },
           });
           const cpaName = cpa?.name || "Your accountant";
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const appUrl = getAppUrl();
           const toEmail = client.portalUser?.email ?? client.email;
           const toName = client.portalUser?.name ?? client.name;
           await sendDocumentTaggedEmail(toEmail, toName, cpaName, existing.originalName, `${appUrl}/portal`);
