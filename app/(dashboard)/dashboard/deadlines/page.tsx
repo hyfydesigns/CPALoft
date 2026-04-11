@@ -111,6 +111,7 @@ export default function DeadlinesPage() {
   ]);
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [templateError, setTemplateError] = useState("");
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
 
   const plan = session?.user?.plan || "free";
 
