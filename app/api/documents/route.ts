@@ -24,7 +24,7 @@ async function notifyClientOfDocument(
       select: { name: true },
     });
     const cpaName = cpa?.name || "Your accountant";
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
     const portalUrl = `${appUrl}/portal`;
 
     // Send to portal user email if available, otherwise client email
