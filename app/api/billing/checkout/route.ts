@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     const selectedPlan = PLANS[plan as keyof typeof PLANS];
-    const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
 
     // Get or create Stripe customer
     let customerId = user.stripeCustomerId;
