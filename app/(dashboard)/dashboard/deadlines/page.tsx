@@ -34,6 +34,7 @@ import {
   LayoutTemplate,
   X,
   ChevronRight,
+  Pencil,
 } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils";
 
