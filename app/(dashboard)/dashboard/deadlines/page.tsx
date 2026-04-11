@@ -218,6 +218,21 @@ export default function DeadlinesPage() {
     setTemplates((prev) => prev.filter((t) => t.id !== id));
   }
 
+  function startEditTemplate(t: Template) {
+    setEditingTemplateId(t.id);
+    setNewTemplateName(t.name);
+    setNewTemplateItems(t.items.length ? t.items : [{ label: "", month: 4, day: 15, reminderEnabled: false }]);
+    setTemplateError("");
+    setTemplatesTab("create");
+  }
+
+  function cancelEditTemplate() {
+    setEditingTemplateId(null);
+    setNewTemplateName("");
+    setNewTemplateItems([{ label: "", month: 4, day: 15, reminderEnabled: false }]);
+    setTemplateError("");
+  }
+
   async function saveTemplate() {
     setTemplateError("");
     if (!newTemplateName.trim()) {
@@ -231,8 +246,12 @@ export default function DeadlinesPage() {
     }
     setSavingTemplate(true);
     try {
-      const res = await fetch("/api/deadline-templates", {
-        method: "POST",
+      const url = editingTemplateId
+        ? `/api/deadline-templates/${editingTemplateId}`
+        : "/api/deadline-templates";
+      const method = editingTemplateId ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newTemplateName, items: validItems }),
       });
@@ -240,6 +259,7 @@ export default function DeadlinesPage() {
         await loadTemplates();
         setNewTemplateName("");
         setNewTemplateItems([{ label: "", month: 4, day: 15, reminderEnabled: false }]);
+        setEditingTemplateId(null);
         setTemplatesTab("list");
       } else {
         const err = await res.json();
