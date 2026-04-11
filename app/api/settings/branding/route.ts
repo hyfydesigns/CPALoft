@@ -17,8 +17,18 @@ export async function GET() {
       select: { firmLogo: true, portalDisplayName: true },
     });
 
+    let firmLogo = user?.firmLogo ?? null;
+
+    // Convert private blob URL to a data URL so the <img> tag can load it
+    if (firmLogo && firmLogo.startsWith("https://")) {
+      const result = await fetchBlobContent(firmLogo);
+      if (result) {
+        firmLogo = `data:${result.contentType};base64,${result.body.toString("base64")}`;
+      }
+    }
+
     return NextResponse.json({
-      firmLogo: user?.firmLogo ?? null,
+      firmLogo,
       portalDisplayName: user?.portalDisplayName ?? null,
     });
   } catch (error) {
