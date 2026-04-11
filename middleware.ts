@@ -8,8 +8,11 @@ export async function middleware(req: NextRequest) {
   const role = token?.role as string | undefined;
 
   // ── Unauthenticated users hitting the portal ──────────────────────────────
-  // Send them to the portal login (not the CPA login page)
-  if (!token && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
+  // Send them to the portal login — but skip auth pages to avoid redirect loops
+  const portalPublicPaths = ["/portal/login", "/portal/register", "/portal/forgot-password"];
+  const isPortalPublic = portalPublicPaths.some((p) => pathname === p || pathname.startsWith(p + "?"));
+
+  if (!token && !isPortalPublic && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
     const portalLogin = new URL("/portal/login", req.url);
     portalLogin.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(portalLogin);
