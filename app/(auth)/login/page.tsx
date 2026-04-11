@@ -138,9 +138,33 @@ function LoginForm() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-100 rounded-lg p-3">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                {error}
+              <div className="text-sm bg-red-50 border border-red-100 rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {error}
+                </div>
+                {showResend && (
+                  resendState === "sent" ? (
+                    <div className="flex items-center gap-2 text-forest-700 bg-forest-50 border border-forest-100 rounded-md px-3 py-2">
+                      <MailCheck className="w-4 h-4 shrink-0" />
+                      <span>Verification email sent — check your inbox.</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={resendState === "sending"}
+                      className="flex items-center gap-1.5 text-forest-700 hover:text-forest-900 font-medium underline underline-offset-2 disabled:opacity-50"
+                    >
+                      {resendState === "sending" ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <MailCheck className="w-3.5 h-3.5" />
+                      )}
+                      {resendState === "sending" ? "Sending…" : "Resend verification email"}
+                    </button>
+                  )
+                )}
               </div>
             )}
 
