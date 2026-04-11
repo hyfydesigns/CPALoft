@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
     const inviteUrl = `${appUrl}/portal/register?token=${token}`;
 
     // Send invite email if the client has an email address
