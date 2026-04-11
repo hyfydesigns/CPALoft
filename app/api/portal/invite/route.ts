@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 import { sendClientInviteEmail } from "@/lib/email";
+import { getAppUrl } from "@/lib/utils";
 
 // POST /api/portal/invite — CPA generates an invite link for a client
 export async function POST(req: NextRequest) {
