@@ -138,12 +138,21 @@ export async function POST(req: NextRequest) {
 
     const ext = file.name.slice(file.name.lastIndexOf("."));
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    const { url } = await uploadFile(
-      `uploads/${session.user.id}`,
-      filename,
-      buffer,
-      file.type
-    );
+
+    let url: string;
+    try {
+      const result = await uploadFile(
+        `uploads/${session.user.id}`,
+        filename,
+        buffer,
+        file.type
+      );
+      url = result.url;
+    } catch (blobErr) {
+      const msg = blobErr instanceof Error ? blobErr.message : String(blobErr);
+      console.error("[documents/upload] blob upload failed:", msg, blobErr);
+      return NextResponse.json({ error: "Upload failed", detail: `[blob] ${msg}` }, { status: 500 });
+    }
 
     // Determine type
     let type = "other";
@@ -152,21 +161,28 @@ export async function POST(req: NextRequest) {
     else if (file.type.includes("excel") || file.type.includes("spreadsheet") || file.type === "text/csv") type = "spreadsheet";
     else if (file.type.includes("word") || file.type.includes("document")) type = "document";
 
-    const doc = await db.document.create({
-      data: {
-        name: file.name.replace(/\.[^/.]+$/, ""),
-        originalName: file.name,
-        type,
-        size: file.size,
-        url,
-        category,
-        userId: session.user.id,
-        ...(clientId && { clientId }),
-      },
-      include: {
-        client: { select: { id: true, name: true } },
-      },
-    });
+    let doc;
+    try {
+      doc = await db.document.create({
+        data: {
+          name: file.name.replace(/\.[^/.]+$/, ""),
+          originalName: file.name,
+          type,
+          size: file.size,
+          url,
+          category,
+          userId: session.user.id,
+          ...(clientId && { clientId }),
+        },
+        include: {
+          client: { select: { id: true, name: true } },
+        },
+      });
+    } catch (dbErr) {
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      console.error("[documents/upload] db.document.create failed:", msg, dbErr);
+      return NextResponse.json({ error: "Upload failed", detail: `[db] ${msg}` }, { status: 500 });
+    }
 
     // Notify client if document is tagged to one
     if (clientId) {
