@@ -65,3 +65,38 @@ export async function uploadFile(
   await writeFile(path.join(localDir, filename), buffer);
   return { url: `/${folder}/${filename}`, pathname };
 }
+
+/**
+ * Fetch a blob's content server-side.
+ * For Vercel Blob (private store): authenticates with BLOB_READ_WRITE_TOKEN.
+ * For local dev URLs (starting with /): reads from the filesystem.
+ * Returns { body: ReadableStream | Buffer, contentType: string }.
+ */
+export async function fetchBlobContent(
+  blobUrl: string
+): Promise<{ body: Buffer; contentType: string } | null> {
+  // Local dev: read from filesystem
+  if (!blobUrl.startsWith("https://")) {
+    try {
+      const { readFile } = await import("fs/promises");
+      const localPath = path.join(process.cwd(), "public", blobUrl);
+      const body = await readFile(localPath);
+      return { body, contentType: "application/octet-stream" };
+    } catch {
+      return null;
+    }
+  }
+
+  // Vercel Blob (private): fetch with token
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return null;
+
+  const res = await fetch(blobUrl, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+
+  const contentType = res.headers.get("content-type") || "application/octet-stream";
+  const arrayBuffer = await res.arrayBuffer();
+  return { body: Buffer.from(arrayBuffer), contentType };
+}
