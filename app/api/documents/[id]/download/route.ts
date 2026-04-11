@@ -47,7 +47,7 @@ export async function GET(
       ? `attachment; filename="${doc.originalName}"`
       : `inline; filename="${doc.originalName}"`;
 
-    return new NextResponse(result.body, {
+    return new NextResponse(new Uint8Array(result.body), {
       headers: {
         "Content-Type": result.contentType,
         "Content-Disposition": disposition,
