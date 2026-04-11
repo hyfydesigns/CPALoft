@@ -30,10 +30,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/portal", req.url));
   }
 
-  // ── CPA trying to access client portal → dashboard ────────────────────────
-  // Allow CPAs to visit public portal pages (e.g. to preview what clients see)
+  // ── CPA trying to access client portal → portal login ────────────────────
+  // The CPA may have a tab open while a client clicks an email link in the same
+  // browser. Send them to the portal login page (not the dashboard) so the
+  // client can sign in with their own credentials.
   if (role === "cpa" && !isPortalPublic && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    const portalLogin = new URL("/portal/login", req.url);
+    portalLogin.searchParams.set("notice", "cpa");
+    portalLogin.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(portalLogin);
   }
 
   return NextResponse.next();
