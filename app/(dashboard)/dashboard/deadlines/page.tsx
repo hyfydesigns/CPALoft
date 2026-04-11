@@ -593,8 +593,14 @@ export default function DeadlinesPage() {
                 )}
               </div>
 
-              {/* Create Template tab */}
+              {/* Create / Edit Template tab */}
               <div className={templatesTab === "create" ? "pt-4 space-y-4" : "hidden"}>
+                {editingTemplateId && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-forest-50 border border-forest-100 text-sm text-forest-700">
+                    <Pencil className="w-3.5 h-3.5 shrink-0" />
+                    Editing template — make your changes and click <strong className="ml-1">Update Template</strong>
+                  </div>
+                )}
                 {templateError && (
                   <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-700 text-sm">
                     {templateError}
