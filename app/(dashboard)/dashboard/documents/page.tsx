@@ -518,7 +518,7 @@ export default function DocumentsPage() {
                   {doc.type === "image" ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={doc.url}
+                      src={`/api/documents/${doc.id}/download`}
                       alt={doc.name}
                       className="w-full h-full object-cover rounded-lg"
                     />
