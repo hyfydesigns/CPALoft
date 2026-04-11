@@ -72,6 +72,15 @@ function LoginForm() {
           </p>
         </div>
 
+        {noticeCpa && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-sm text-amber-800">
+            <Info className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+            <span>
+              A CPA account is currently signed in on this browser. Please sign in with your <strong>client</strong> credentials to access the portal.
+            </span>
+          </div>
+        )}
+
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
