@@ -142,8 +142,7 @@ function PDFPreviewModal({
               </Button>
             )}
             <a
-              href={doc.url}
-              download={doc.originalName}
+              href={`/api/documents/${doc.id}/download?download=1`}
               className="text-sm text-forest-600 hover:underline flex items-center gap-1"
             >
               Download
@@ -153,7 +152,7 @@ function PDFPreviewModal({
         <div className="flex-1 overflow-hidden bg-gray-100">
           {doc.type === "pdf" ? (
             <iframe
-              src={`${doc.url}#toolbar=1&navpanes=1`}
+              src={`/api/documents/${doc.id}/download#toolbar=1&navpanes=1`}
               className="w-full h-full"
               title={doc.originalName}
             />
@@ -161,7 +160,7 @@ function PDFPreviewModal({
             <div className="flex items-center justify-center h-full p-8">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={doc.url}
+                src={`/api/documents/${doc.id}/download`}
                 alt={doc.originalName}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
               />
@@ -172,7 +171,7 @@ function PDFPreviewModal({
               <p className="text-gray-600">
                 Preview not available for this file type
               </p>
-              <a href={doc.url} download={doc.originalName}>
+              <a href={`/api/documents/${doc.id}/download?download=1`}>
                 <Button>Download File</Button>
               </a>
             </div>
