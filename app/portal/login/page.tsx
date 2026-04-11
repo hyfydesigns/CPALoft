@@ -33,7 +33,7 @@ function LoginForm() {
       if (result?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/portal");
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch {
