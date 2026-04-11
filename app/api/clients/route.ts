@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import crypto from "crypto";
 import { sendClientInviteEmail } from "@/lib/email";
 import { logActivity } from "@/lib/activity";
+import { getAppUrl } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   try {
