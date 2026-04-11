@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       data: { verifyToken, verifyExpiry },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
     const verifyUrl = `${appUrl}/api/auth/verify-email?token=${verifyToken}`;
 
     await sendVerificationEmail(email, user.name || email, verifyUrl);
