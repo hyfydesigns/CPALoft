@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { sendCpaWelcomeBackEmail } from "@/lib/email";
+import { getAppUrl } from "@/lib/utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const JSZip = require("jszip");
 
