@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       data: { inviteToken: token, inviteExpiry: expiry, portalEnabled: true },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl();
     const inviteUrl = `${appUrl}/portal/register?token=${token}`;
 
     const cpaUser = await db.user.findUnique({
