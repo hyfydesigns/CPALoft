@@ -63,12 +63,21 @@ export async function POST(req: NextRequest) {
 
     const ext = file.name.slice(file.name.lastIndexOf("."));
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    const { url } = await uploadFile(
-      `uploads/${client.userId}`,
-      filename,
-      buffer,
-      file.type
-    );
+
+    let url: string;
+    try {
+      const result = await uploadFile(
+        `uploads/${client.userId}`,
+        filename,
+        buffer,
+        file.type
+      );
+      url = result.url;
+    } catch (blobErr) {
+      const msg = blobErr instanceof Error ? blobErr.message : String(blobErr);
+      console.error("[portal/upload] blob upload failed:", msg, blobErr);
+      return NextResponse.json({ error: "Upload failed", detail: `[blob] ${msg}` }, { status: 500 });
+    }
 
     let type = "other";
     if (file.type === "application/pdf") type = "pdf";
@@ -77,20 +86,27 @@ export async function POST(req: NextRequest) {
     else if (file.type.includes("word") || file.type.includes("document")) type = "document";
 
     // Create document record linked to the CPA as owner
-    const doc = await db.document.create({
-      data: {
-        name: file.name.replace(/\.[^/.]+$/, ""),
-        originalName: file.name,
-        type,
-        size: file.size,
-        url,
-        category,
-        uploadedBy: "client",
-        userId: client.userId,   // CPA owns it
-        clientId: client.id,
-        tags: note ? JSON.stringify([note]) : null,
-      },
-    });
+    let doc;
+    try {
+      doc = await db.document.create({
+        data: {
+          name: file.name.replace(/\.[^/.]+$/, ""),
+          originalName: file.name,
+          type,
+          size: file.size,
+          url,
+          category,
+          uploadedBy: "client",
+          userId: client.userId,   // CPA owns it
+          clientId: client.id,
+          tags: note ? JSON.stringify([note]) : null,
+        },
+      });
+    } catch (dbErr) {
+      const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      console.error("[portal/upload] db.document.create failed:", msg, dbErr);
+      return NextResponse.json({ error: "Upload failed", detail: `[db] ${msg}` }, { status: 500 });
+    }
 
     return NextResponse.json(doc);
   } catch (error) {
