@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { sendClientWelcomeEmail } from "@/lib/email";
+import { getAppUrl } from "@/lib/utils";
 
 // GET /api/portal/register?token=xxx — validate the invite token
 export async function GET(req: NextRequest) {
