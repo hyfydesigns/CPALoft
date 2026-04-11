@@ -51,6 +51,20 @@ function LoginForm() {
     }
   }
 
+  async function handleResend() {
+    setResendState("sending");
+    try {
+      await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      setResendState("sent");
+    } catch {
+      setResendState("idle");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-cloud via-mist to-forest-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
