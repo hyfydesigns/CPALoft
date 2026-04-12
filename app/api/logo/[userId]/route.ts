@@ -25,7 +25,7 @@ export async function GET(
       return new NextResponse(null, { status: 404 });
     }
 
-    return new NextResponse(result.body, {
+    return new NextResponse(result.body as unknown as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": result.contentType,
