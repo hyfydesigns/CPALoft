@@ -88,23 +88,37 @@ export default function SettingsPage() {
 
   async function uploadLogo(file: File) {
     setLogoUploading(true);
+    setLogoError("");
     try {
+      // Step 1: upload file to storage
       const formData = new FormData();
       formData.append("logo", file);
-      const res = await fetch("/api/settings/branding", {
+      const uploadRes = await fetch("/api/settings/branding", {
         method: "POST",
         body: formData,
       });
-      if (res.ok) {
-        const { url } = await res.json();
-        // Save the URL to branding
-        await fetch("/api/settings/branding", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ firmLogo: url }),
-        });
-        setBranding((prev) => ({ ...prev, firmLogo: url }));
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json().catch(() => ({}));
+        setLogoError(err.error || "Upload failed. Please try again.");
+        return;
       }
+      const { url } = await uploadRes.json();
+
+      // Step 2: persist the blob URL to the user record
+      await fetch("/api/settings/branding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firmLogo: url }),
+      });
+
+      // Step 3: re-fetch branding so the img tag gets the server-converted data URL
+      const brandingRes = await fetch("/api/settings/branding");
+      if (brandingRes.ok) {
+        const data = await brandingRes.json();
+        setBranding(data);
+      }
+    } catch {
+      setLogoError("Something went wrong. Please try again.");
     } finally {
       setLogoUploading(false);
     }
