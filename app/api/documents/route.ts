@@ -4,12 +4,14 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { uploadFile } from "@/lib/blob";
 import { sendDocumentTaggedEmail } from "@/lib/email";
+import { getEmailBranding } from "@/lib/email-branding";
 import { logActivity } from "@/lib/activity";
 import { getAppUrl } from "@/lib/utils";
 
 async function notifyClientOfDocument(
   clientId: string,
   cpaUserId: string,
+  cpaPlan: string,
   docName: string
 ) {
   try {
@@ -26,12 +28,13 @@ async function notifyClientOfDocument(
     const cpaName = cpa?.name || "Your accountant";
     const appUrl = getAppUrl();
     const portalUrl = `${appUrl}/portal`;
+    const branding = await getEmailBranding(cpaUserId, cpaPlan);
 
     // Send to portal user email if available, otherwise client email
     const toEmail = client.portalUser?.email ?? client.email;
     const toName = client.portalUser?.name ?? client.name;
     if (toEmail) {
-      await sendDocumentTaggedEmail(toEmail, toName, cpaName, docName, portalUrl);
+      await sendDocumentTaggedEmail(toEmail, toName, cpaName, docName, portalUrl, branding);
     }
   } catch (err) {
     console.error("Failed to send document notification:", err);
