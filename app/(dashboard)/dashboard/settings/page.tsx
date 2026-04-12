@@ -48,6 +48,7 @@ export default function SettingsPage() {
   const [brandingSaving, setBrandingSaving] = useState(false);
   const [brandingSaved, setBrandingSaved] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState("");
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   const isPremium = session?.user?.plan === "premium";
