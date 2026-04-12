@@ -88,7 +88,7 @@ export async function PATCH(
           const toEmail = client.portalUser?.email ?? client.email;
           const toName = client.portalUser?.name ?? client.name;
           const branding = await getEmailBranding(session.user.id, session.user.plan || "free");
-          await sendDocumentTaggedEmail(toEmail, toName, cpaName, existing.originalName, `${appUrl}/portal`, branding);
+          await sendDocumentTaggedEmail(toEmail, toName, cpaName, existing.originalName, `${appUrl}/portal?cpa=${session.user.id}`, branding);
         }
       } catch (err) {
         console.error("Failed to send document tag notification:", err);
