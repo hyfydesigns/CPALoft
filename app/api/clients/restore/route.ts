@@ -6,6 +6,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 import { sendClientWelcomeBackEmail, sendClientInviteEmail } from "@/lib/email";
+import { getEmailBranding } from "@/lib/email-branding";
 import { getAppUrl } from "@/lib/utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const JSZip = require("jszip");
