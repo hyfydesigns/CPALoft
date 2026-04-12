@@ -109,8 +109,9 @@ export async function POST(req: NextRequest) {
       const cpaName = cpaUser?.name || "Your accountant";
       const appUrl = getAppUrl();
       const inviteUrl = `${appUrl}/portal/register?token=${inviteToken}`;
+      const branding = await getEmailBranding(session.user.id, session.user.plan || "free");
       try {
-        await sendClientInviteEmail(email, name, cpaName, inviteUrl);
+        await sendClientInviteEmail(email, name, cpaName, inviteUrl, branding);
       } catch (emailError) {
         console.error("Failed to send client invite email:", emailError);
         console.log("🔗 Client invite URL (dev):", inviteUrl);
