@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 import { sendClientInviteEmail } from "@/lib/email";
+import { getEmailBranding } from "@/lib/email-branding";
 import { logActivity } from "@/lib/activity";
 import { getAppUrl } from "@/lib/utils";
 
