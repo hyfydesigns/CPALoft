@@ -157,17 +157,18 @@ export async function POST(req: NextRequest) {
     });
     const cpaName = cpa?.name || "Your accountant";
     const appUrl = getAppUrl();
+    const branding = await getEmailBranding(session.user.id, session.user.plan || "free");
 
     // Send welcome-back or invite email
     if (meta.client.email) {
       const inviteUrl = `${appUrl}/portal/register?token=${inviteToken}`;
       try {
-        await sendClientWelcomeBackEmail(meta.client.email, meta.client.name, cpaName, inviteUrl);
+        await sendClientWelcomeBackEmail(meta.client.email, meta.client.name, cpaName, inviteUrl, branding);
       } catch (emailErr) {
         console.error("Failed to send welcome-back email:", emailErr);
         // Fall back to regular invite
         try {
-          await sendClientInviteEmail(meta.client.email, meta.client.name, cpaName, inviteUrl);
+          await sendClientInviteEmail(meta.client.email, meta.client.name, cpaName, inviteUrl, branding);
         } catch {}
       }
     }
