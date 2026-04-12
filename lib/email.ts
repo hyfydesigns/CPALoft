@@ -698,7 +698,8 @@ export async function sendClientWelcomeBackEmail(
   toEmail: string,
   toName: string,
   cpaName: string,
-  portalUrl: string
+  portalUrl: string,
+  branding?: EmailBranding
 ) {
   const { host, port, user, pass, from } = getSmtpConfig();
 
