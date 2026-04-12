@@ -15,6 +15,9 @@ export async function middleware(req: NextRequest) {
   if (!token && !isPortalPublic && (pathname === "/portal" || pathname.startsWith("/portal/"))) {
     const portalLogin = new URL("/portal/login", req.url);
     portalLogin.searchParams.set("callbackUrl", pathname);
+    // Preserve ?cpa= so the login page can show the firm's branding
+    const cpaId = req.nextUrl.searchParams.get("cpa");
+    if (cpaId) portalLogin.searchParams.set("cpa", cpaId);
     return NextResponse.redirect(portalLogin);
   }
 
