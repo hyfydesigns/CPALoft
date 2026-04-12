@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
 
     // Notify client if document is tagged to one
     if (clientId) {
-      notifyClientOfDocument(clientId, session.user.id, file.name);
+      notifyClientOfDocument(clientId, session.user.id, session.user.plan || "free", file.name);
       // Log activity
       try {
         await logActivity({
