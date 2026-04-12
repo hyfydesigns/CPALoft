@@ -291,6 +291,9 @@ export default function SettingsPage() {
                     {logoUploading ? "Uploading…" : branding.firmLogo ? "Change Logo" : "Upload Logo"}
                   </Button>
                   <p className="text-xs text-gray-400 mt-1">JPG, PNG or GIF · Max 2MB</p>
+                  {logoError && (
+                    <p className="text-xs text-red-600 mt-1">{logoError}</p>
+                  )}
                 </div>
               </div>
 
