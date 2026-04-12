@@ -27,7 +27,7 @@ async function notifyClientOfDocument(
     });
     const cpaName = cpa?.name || "Your accountant";
     const appUrl = getAppUrl();
-    const portalUrl = `${appUrl}/portal`;
+    const portalUrl = `${appUrl}/portal?cpa=${cpaUserId}`;
     const branding = await getEmailBranding(cpaUserId, cpaPlan);
 
     // Send to portal user email if available, otherwise client email
