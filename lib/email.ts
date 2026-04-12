@@ -471,22 +471,7 @@ export async function sendDocumentTaggedEmail(
         <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(26,107,84,0.08);">
 
           <!-- Header -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#1a6b54 0%,#0f2e24 100%);padding:36px 40px;text-align:center;">
-              <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
-                <tr>
-                  <td style="background:#1a6b54;border:2px solid rgba(45,212,160,0.3);border-radius:10px;width:40px;height:40px;text-align:center;vertical-align:middle;">
-                    <span style="font-family:Georgia,serif;font-weight:700;color:#f7fbfa;font-size:22px;line-height:40px;">L</span>
-                  </td>
-                  <td style="padding-left:12px;vertical-align:middle;">
-                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#f7fbfa;font-weight:700;">CPA</span>
-                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2dd4a0;font-weight:300;"> Loft</span>
-                  </td>
-                </tr>
-              </table>
-              <p style="color:rgba(247,251,250,0.7);font-size:13px;margin:12px 0 0 0;letter-spacing:0.5px;">Your accounting, elevated.</p>
-            </td>
-          </tr>
+          ${buildEmailHeader(branding)}
 
           <!-- Body -->
           <tr>
