@@ -51,9 +51,10 @@ export async function POST(req: NextRequest) {
       select: { name: true },
     });
     const cpaName = cpaUser?.name || "Your accountant";
+    const branding = await getEmailBranding(session.user.id, session.user.plan || "free");
 
     try {
-      await sendClientInviteEmail(client.email, client.name, cpaName, inviteUrl);
+      await sendClientInviteEmail(client.email, client.name, cpaName, inviteUrl, branding);
     } catch (emailError) {
       console.error("Failed to resend invite email:", emailError);
       console.log("🔗 Invite URL (dev):", inviteUrl);
