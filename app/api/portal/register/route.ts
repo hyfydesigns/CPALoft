@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         status: "active",
       },
       include: {
-        user: { select: { name: true } },
+        user: { select: { name: true, plan: true } },
       },
     });
 
@@ -138,8 +138,12 @@ export async function POST(req: NextRequest) {
       const cpaName = updatedClient.user?.name || "Your accountant";
       const appUrl = getAppUrl();
       const portalLoginUrl = `${appUrl}/portal/login`;
+      const branding = await getEmailBranding(
+        updatedClient.userId,
+        updatedClient.user?.plan || "free"
+      );
       try {
-        await sendClientWelcomeEmail(portalUser.email, portalUser.name ?? name, cpaName, portalLoginUrl);
+        await sendClientWelcomeEmail(portalUser.email, portalUser.name ?? name, cpaName, portalLoginUrl, branding);
       } catch (emailError) {
         console.error("Failed to send welcome email:", emailError);
       }
