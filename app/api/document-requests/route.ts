@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
         });
         const cpaName = cpaUser?.name || "Your accountant";
         const appUrl = getAppUrl();
-        const portalUrl = `${appUrl}/portal`;
+        const portalUrl = `${appUrl}/portal?cpa=${session.user.id}`;
         const branding = await getEmailBranding(session.user.id, session.user.plan || "free");
         await sendDocumentRequestEmail(
           client.email,
