@@ -782,7 +782,8 @@ export async function sendDocumentRequestEmail(
   cpaName: string,
   requestTitle: string,
   requestDescription: string | null | undefined,
-  portalUrl: string
+  portalUrl: string,
+  branding?: EmailBranding
 ) {
   const { host, port, user, pass, from } = getSmtpConfig();
 
