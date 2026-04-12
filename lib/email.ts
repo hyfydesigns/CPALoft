@@ -1,6 +1,56 @@
 import nodemailer from "nodemailer";
 import { getAppUrl } from "@/lib/utils";
 
+export interface EmailBranding {
+  logoUrl?: string | null;
+  displayName?: string | null;
+}
+
+function buildEmailHeader(branding?: EmailBranding): string {
+  const logo = branding?.logoUrl;
+  const name = branding?.displayName;
+
+  if (logo) {
+    // Firm logo image
+    return `
+      <tr>
+        <td style="background:#ffffff;padding:28px 40px 20px;text-align:center;border-bottom:2px solid #f0faf6;">
+          <img src="${logo}" alt="${name || 'Firm logo'}" style="max-height:64px;max-width:220px;object-fit:contain;display:block;margin:0 auto;" />
+          ${name ? `<p style="color:#6b7280;font-size:12px;margin:10px 0 0;font-weight:500;">${name}</p>` : ""}
+          <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;">Powered by CPA Loft</p>
+        </td>
+      </tr>`;
+  }
+
+  if (name) {
+    // Display name only, no logo
+    return `
+      <tr>
+        <td style="background:linear-gradient(135deg,#1a6b54 0%,#0f2e24 100%);padding:36px 40px;text-align:center;">
+          <p style="font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#f7fbfa;font-weight:700;margin:0;">${name}</p>
+          <p style="color:rgba(247,251,250,0.6);font-size:12px;margin:8px 0 0;">Powered by CPA Loft</p>
+        </td>
+      </tr>`;
+  }
+
+  // Default CPA Loft branding
+  return `
+      <tr>
+        <td style="background:linear-gradient(135deg,#1a6b54 0%,#0f2e24 100%);padding:36px 40px;text-align:center;">
+          <table cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>
+            <td style="background:#1a6b54;border:2px solid rgba(45,212,160,0.3);border-radius:10px;width:40px;height:40px;text-align:center;vertical-align:middle;">
+              <span style="font-family:Georgia,serif;font-weight:700;color:#f7fbfa;font-size:22px;line-height:40px;">L</span>
+            </td>
+            <td style="padding-left:12px;vertical-align:middle;">
+              <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#f7fbfa;font-weight:700;">CPA</span>
+              <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#2dd4a0;font-weight:300;"> Loft</span>
+            </td>
+          </tr></table>
+          <p style="color:rgba(247,251,250,0.7);font-size:13px;margin:12px 0 0 0;letter-spacing:0.5px;">Your accounting, elevated.</p>
+        </td>
+      </tr>`;
+}
+
 function getSmtpConfig() {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || "587");
