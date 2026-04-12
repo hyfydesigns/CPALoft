@@ -20,6 +20,19 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/portal";
   const noticeCpa = searchParams.get("notice") === "cpa";
+  const cpaId = searchParams.get("cpa");
+
+  const [branding, setBranding] = useState<PortalBranding | null>(null);
+
+  useEffect(() => {
+    if (!cpaId) return;
+    fetch(`/api/portal/public-branding?cpa=${cpaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.logoUrl || data.displayName) setBranding(data);
+      })
+      .catch(() => {});
+  }, [cpaId]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
