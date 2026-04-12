@@ -38,6 +38,7 @@ function RegisterForm() {
   const [clientInfo, setClientInfo] = useState<ClientInfo | null>(null);
   const [tokenError, setTokenError] = useState("");
   const [tokenLoading, setTokenLoading] = useState(true);
+  const [branding, setBranding] = useState<PortalBranding | null>(null);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -60,6 +61,13 @@ function RegisterForm() {
         } else {
           setClientInfo(data);
           setName(data.name || "");
+          // Fetch CPA branding if available
+          if (data.cpaId) {
+            fetch(`/api/portal/public-branding?cpa=${data.cpaId}`)
+              .then((r) => r.json())
+              .then((b) => { if (b.logoUrl || b.displayName) setBranding(b); })
+              .catch(() => {});
+          }
         }
       })
       .catch(() => setTokenError("Failed to validate invite link."))
