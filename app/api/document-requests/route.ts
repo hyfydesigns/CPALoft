@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { requirePro } from "@/lib/plan-gate";
 import { logActivity } from "@/lib/activity";
 import { sendDocumentRequestEmail } from "@/lib/email";
+import { getEmailBranding } from "@/lib/email-branding";
 import { getAppUrl } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
