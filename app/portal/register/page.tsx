@@ -22,6 +22,12 @@ interface ClientInfo {
   name: string;
   email?: string | null;
   company?: string | null;
+  cpaId?: string | null;
+}
+
+interface PortalBranding {
+  logoUrl: string | null;
+  displayName: string | null;
 }
 
 function RegisterForm() {
