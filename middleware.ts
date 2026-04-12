@@ -41,6 +41,8 @@ export async function middleware(req: NextRequest) {
     const portalLogin = new URL("/portal/login", req.url);
     portalLogin.searchParams.set("notice", "cpa");
     portalLogin.searchParams.set("callbackUrl", pathname);
+    const cpaId = req.nextUrl.searchParams.get("cpa");
+    if (cpaId) portalLogin.searchParams.set("cpa", cpaId);
     return NextResponse.redirect(portalLogin);
   }
 
