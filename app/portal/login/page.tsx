@@ -81,9 +81,20 @@ function LoginForm() {
     <div className="min-h-screen bg-gradient-to-br from-cloud via-mist to-forest-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex mb-4">
-            <Logo markSize={40} wordmarkSize="lg" />
-          </Link>
+          {branding?.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={branding.logoUrl}
+              alt={branding.displayName || "Firm logo"}
+              className="h-16 max-w-[200px] object-contain mx-auto mb-4"
+            />
+          ) : branding?.displayName ? (
+            <p className="text-xl font-bold text-gray-900 mb-4">{branding.displayName}</p>
+          ) : (
+            <Link href="/" className="inline-flex mb-4">
+              <Logo markSize={40} wordmarkSize="lg" />
+            </Link>
+          )}
           <h1 className="text-2xl font-bold text-gray-900">Client Portal</h1>
           <p className="text-gray-500 mt-1 text-sm">
             Sign in to upload documents to your CPA
