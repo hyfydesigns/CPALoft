@@ -10,6 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, AlertCircle, Loader2, Info } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 
+interface PortalBranding {
+  logoUrl: string | null;
+  displayName: string | null;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
