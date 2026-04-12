@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
         name: true,
         email: true,
         company: true,
+        userId: true,
         portalUserId: true,
       },
     });
