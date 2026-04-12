@@ -186,7 +186,8 @@ export async function sendClientInviteEmail(
   toEmail: string,
   toName: string,
   cpaName: string,
-  inviteUrl: string
+  inviteUrl: string,
+  branding?: EmailBranding
 ) {
   const { host, port, user, pass, from } = getSmtpConfig();
 
