@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
       name: client.name,
       email: client.email,
       company: client.company,
+      cpaId: client.userId,
     });
   } catch (error) {
     console.error("Token validation error:", error);
