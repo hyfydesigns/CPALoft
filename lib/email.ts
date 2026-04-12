@@ -436,7 +436,8 @@ export async function sendDocumentTaggedEmail(
   toName: string,
   cpaName: string,
   docName: string,
-  portalUrl: string
+  portalUrl: string,
+  branding?: EmailBranding
 ) {
   const { host, port, user, pass, from } = getSmtpConfig();
 
